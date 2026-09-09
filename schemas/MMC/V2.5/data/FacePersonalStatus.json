@@ -1,0 +1,24 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMC/V2.5/data/FacePersonalStatus.json",
+  "title":                    "Face Personal Status V2.5",
+  "description":              "Personal Status of the Face modality: the Cognitive State, Emotion, and Social Attitude Factors carried by the face. None is required; at least one shall be present.",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "FacePersonalStatusID" ],
+  "anyOf":                    [ { "required": [ "FaceCognitiveState" ] },
+                              { "required": [ "FaceEmotion" ] },
+                              { "required": [ "FaceSocialAttitude" ] } ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMC-FPS-V2.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "FacePersonalStatusID":  { "type": "string" },
+    "FacePersonalStatusTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "FaceCognitiveState":    { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/CognitiveState.json" },
+    "FaceEmotion":           { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/Emotion.json" },
+    "FaceSocialAttitude":    { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/SocialAttitude.json" },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

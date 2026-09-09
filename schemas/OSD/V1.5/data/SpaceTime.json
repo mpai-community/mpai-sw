@@ -1,0 +1,17 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json",
+  "title":                  "Space Time V1.5",
+  "type":                   "object",
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "OSD-SPT-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "SpaceTimeID":          { "type": "string" },
+
+    "SpatialAttitude1":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" },
+    "SpatialAttitude2":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" },
+
+    "Time":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

@@ -1,0 +1,27 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/OSD/V1.5/data/BasicTextObject.json",
+  "title":                      "Basic Text Object V1.5",
+  "type":                       "object",
+  "required":                   ["Header", "BasicTextObjectID" ],
+  "additionalProperties":       false,
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "OSD-BTO-V1.5" },
+    "MInstanceID":              { "type": "string" },
+    "UEnvironmentID":           { "type": "string" },
+    "BasicTextObjectID":        { "type": "string" },
+    "BasicTextObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BasicTextData":            { "type": "array", "minItems": 0, "items": { "oneOf": [
+                                { "type": "object", "required": ["Data"], "additionalProperties": false, "properties": {
+      "Data":                   { "type": "string" } } },
+                                { "type": "object", "required": ["Length", "DataURI"], "additionalProperties": false, "properties": {
+      "Length":                 { "type": "integer", "minimum": 0 },
+      "DataURI":                { "type": "string", "format": "uri" } } },
+                                { "type": "object", "required": ["ID"], "additionalProperties": false, "properties": {
+      "ID":                     { "type": "string" } } } ] } },
+
+    "TextQualifier":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/TextQualifier.json" },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048 } } }

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/SpeechStreamFormats.json",
+  "title":   "Speech Stream Formats V1.5",
+  "type":    "string", "oneOf": [
+    { "const": "DASH",
+      "description": "Dynamic Adaptive Streaming over HTTP (DASH), an ISO standard for segmented adaptive streaming of speech and audio over HTTP." },
+    { "const": "HLS",
+      "description": "HTTP Live Streaming (HLS), Apple's segmented streaming protocol widely used for speech and audio playback across devices." },
+    { "const": "RTMP",
+      "description": "Real-Time Messaging Protocol (RTMP), a low-latency streaming protocol commonly used for live audio contribution and ingest." },
+    { "const": "RTSP",
+      "description": "Real-Time Streaming Protocol (RTSP), a control protocol for streaming media that supports interactive playback of audio streams." },
+    { "const": "WebRTC",
+      "description": "Web Real-Time Communication (WebRTC), a peer-to-peer, ultra-low-latency streaming framework for live speech and audio communication." },
+    { "const": "Icecast",
+      "description": "Icecast streaming, an HTTP-based protocol used for continuous live audio streams, including radio and speech channels." },
+    { "const": "SRT",
+      "description": "Secure Reliable Transport (SRT), a modern low-latency, packet-lossÃ¢â‚¬â€œresilient streaming protocol suitable for live speech contribution." },
+    { "const": "HDS",
+      "description": "HTTP Dynamic Streaming (HDS), AdobeÃ¢â‚¬â„¢s segmented streaming protocol, historically used for audio and video distribution." } ] }

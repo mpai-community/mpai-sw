@@ -1,0 +1,3 @@
+Controller deployment is based on ImplementerID + ImplementationID.
+AIMName identifies the MPAI AIM specification only.
+Discovery by AIMName is considered a MAS-level concern.

@@ -1,0 +1,12 @@
+{ "$id": "https://schemas.mpai.community/TFA/V1.5/types/MLModelAssetTypes.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ML Model Asset Types TFA V1.5",
+  "description": "Types of assets composing a Machine Learning Model.",
+  "oneOf": [
+    { "const": "Model" },
+    { "const": "Configuration" },
+    { "const": "Tokenizer" },
+    { "const": "Vocabulary" },
+    { "const": "Embeddings" },
+    { "const": "Metadata" },
+    { "const": "License" } ] }

@@ -1,0 +1,21 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/AIF/V3.0/data/AIMInstance.json",
+  "title":                "AIM Instance V3.0",
+  "type":                 "object",
+  "required":             [ "Header", "AIMInstanceID", "AIMInstance" ],
+  "additionalProperties": false,  
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "AIF-AIN-V3.0" },
+    "AIMInstanceID":      { "type": "string" },
+
+    "AIMInstance":        { "type": "array", "minItems": 1, "items": { "oneOf": [
+                          { "type": "object", "required": [ "AIMType" ], "additionalProperties": false, "properties": {
+      "AIMType":          { "type": "string", "pattern": "^[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}$" } } },
+                          { "type": "object", "required": [ "AIMID" ], "additionalProperties": false, "properties": {
+      "AIMID":            { "type": "string" } } },
+                          { "type": "object", "required": [ "ImplementerAIMID" ], "additionalProperties": false, "properties": {
+      "ImplementerAIMID": { "type": "string" } } } ] } },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }

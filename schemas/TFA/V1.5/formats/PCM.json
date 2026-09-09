@@ -1,0 +1,13 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json",
+  "title":                  "PCM", "type": "object", "properties": {
+
+    "Header":               { "type": "string", "const": "TFA-PCM-V1.5" },
+
+    "PCM":                  { "type": "object", "properties": {
+      "SamplingFrequency":  { "type": "number" },
+      "SamplePrecision":    { "type": "number" },
+      "Precision":          { "type": "integer" } } },
+
+  "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/nrdata/DataExchangeMetadata.json" },
+  "DescrMetadata":          { "type": "string" } } }

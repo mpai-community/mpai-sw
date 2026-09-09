@@ -1,0 +1,47 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMC/V2.5/data/CognitiveState.json",
+  "title":                    "Cognitive State V2.5",
+  "description":              "Cognitive State labels with general and specific adjectival labels, plus an optional Degree in [0,1].",
+  "type":                     "object",
+  "required":                 [ "Header", "CognitiveStateCategory" ],
+  "additionalProperties":     false,
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMC-ECS-V2.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "EntityCognitiveStateID": { "type": "string" },
+    "EntityCognitiveStateSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "CognitiveStateCategory": { "type": "object", "additionalProperties": false, "properties": {
+
+      "AROUSAL":              { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "aroused/excited/energetic": { "type": "string", "enum": ["cheerful", "playful", "lethargic", "sleepy"] } } } } },
+
+      "ATTENTION":            { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "attentive":        { "type": "string", "enum": ["expectant/anticipating", "thoughtful", "distracted/absent-minded", "vigilant", "hopeful/optimistic"] } } } } },
+
+      "BELIEF":               { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "credulous":        { "type": "string", "enum": ["credulous"] },
+          "skeptical":        { "type": "string", "enum": ["skeptical"] } } } } },
+
+      "INTEREST":             { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "interested":       { "type": "string", "enum": ["fascinated", "curious", "bored"] } } } } },
+
+      "SURPRISE":             { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "surprised":        { "type": "string", "enum": ["astounded", "startled"] } } } } },
+
+      "UNDERSTANDING":        { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "comprehending":    { "type": "string", "enum": ["uncomprehending", "bewildered/puzzled"] } } } } } } },
+
+    "Degree":                 { "type": "number", "minimum": 0, "maximum": 1,
+                                "description": "Optional intensity/confidence of the chosen Cognitive State label, in [0,1]." },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

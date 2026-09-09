@@ -1,0 +1,46 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/VisualGeometry.json",
+  "title":                    "Visual Geometry V1.5",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "MInstanceID", "VisualGeometry" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "OSD-VGM-V1.5" },
+    "MInstanceID":            { "type": "string", "minLength": 1 },
+    "MEnvironmentID":         { "type": "string" },
+    "LicenceID":              { "type": "string", "minLength": 1 },
+
+    "VisualGeometry":         { "type": "object", "description": "Surface-based geometric representation.", "required": ["GeometryType", "GeometryData"], "properties": {
+
+      "GeometryType":         { "type": "string", "enum": ["TriangleMesh", "PolygonSurface", "NURBSSurface"], "description": "Type of geometry format." },
+
+      "GeometryData":         { "oneOf": [
+                              { "$ref": "#/$defs/TriangleMesh" },
+                              { "$ref": "#/$defs/PolygonSurface" },
+                              { "$ref": "#/$defs/NURBSSurface" } ] } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                    {
+
+    "TriangleMesh":           { "type": "object", "required": ["Vertices","Faces"], "properties": {
+      "Vertices":             { "type": "array", "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } },
+      "Faces":                { "type": "array", "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "integer","minimum": 0 } } },
+      "Normals":              { "type": "array", "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } },
+      "FaceNormals":          { "type": "array", "items": { "type": "integer" } },
+      "TexCoords":            { "type": "array", "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } } },
+      "VertexTexCoordIndex":  { "type": "array", "items": { "type": "integer" } } } },
+
+    "PolygonSurface":         { "type": "object", "required": ["Vertices","Faces"], "properties": {
+      "Vertices":             { "type": "array", "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } },
+      "Faces":                { "type": "array", "items": { "type": "array", "minItems": 3, "items": { "type": "integer","minimum": 0 } } },
+      "Normals":              { "type": "array", "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } } } },
+
+    "NURBSSurface":           { "type": "object", "required": ["ControlPoints","DegreeU","DegreeV","KnotU","KnotV"], "properties": {
+      "ControlPoints":        { "type": "array", "items": { "type": "array", "items": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "number" } } } },
+      "DegreeU":              { "type": "integer","minimum": 1 },
+      "DegreeV":              { "type": "integer","minimum": 1 },
+      "KnotU":                { "type": "array", "items": { "type": "number" } },
+      "KnotV":                { "type": "array", "items": { "type": "number" } } } } } }

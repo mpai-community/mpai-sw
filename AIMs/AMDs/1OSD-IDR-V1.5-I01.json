@@ -1,0 +1,30 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "OSD-IDR-V1.5-I01", "AIMName": "OSD-IDR-V1.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Identity Reconciliation: reconciles the Face ID and the Speaker ID into a single User ID, and issues the machine's Response (the words to say) together with the Personal Status the machine should display - serious while testing, welcoming when the user is recognised, reproaching when not.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "FaceID",          "Direction": "Input",  "DataType": "OSD-IID-V1.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeakerID",       "Direction": "Input",  "DataType": "OSD-IID-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "UserID",          "Direction": "Output", "DataType": "OSD-IID-V1.5", "Technology":                  "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatus",  "Direction": "Output", "DataType": "MMC-EPS-V2.5", "Technology":                  "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "Response",        "Direction": "Output", "DataType": "OSD-BTO-V1.5", "Technology":                  "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-IDR-V1.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Osd.Idr",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "0.25 GB", "Request": "0.5 GB", "Maximum": "1 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Low", "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/"}]}

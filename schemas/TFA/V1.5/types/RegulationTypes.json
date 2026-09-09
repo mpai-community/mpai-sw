@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/types/RegulationTypes.json",
+  "title":   "Regulation Types v1.5",
+  "type":    "string", "enum": [ "AI Act", "CAIO", "Data Act", "Data Governance Act", "EBSI", "GDPR" ] }

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/VirtualCurrencies.json",
+  "title":   "Virtual Currencies V1.5",
+  "type":    "string", "oneOf": [
+    { "const": "ADA",      "description": "ADA â€” native token of the Cardano blockchain platform." },
+    { "const": "ALGO",     "description": "ALGO â€” utility token of the Algorand blockchain." },
+    { "const": "ARKM",     "description": "ARKM â€” token used within the Arkham intelligence platform." },
+    { "const": "AUR",      "description": "AUR â€” token historically associated with the Auroracoin project." },
+    { "const": "AVAX",     "description": "AVAX â€” native asset of the Avalanche smartâ€‘contract platform." },
+
+    { "const": "BCH",      "description": "BCH â€” Bitcoin Cash, a fork of Bitcoin focused on larger block sizes." },
+    { "const": "BTC",      "description": "BTC â€” Bitcoin, the original decentralized digital currency." },
+
+    { "const": "CKB",      "description": "CKB â€” Common Knowledge Base token of the Nervos Network." },
+
+    { "const": "DASH",     "description": "DASH â€” digital cashâ€“oriented cryptocurrency offering fast settlement." },
+    { "const": "DESO",     "description": "DESO â€” token supporting decentralized socialâ€‘network applications." },
+    { "const": "DOGE",     "description": "DOGE â€” memetic proofâ€‘ofâ€‘work cryptocurrency based on the Dogecoin protocol." },
+    { "const": "DOT",      "description": "DOT â€” token of the Polkadot multiâ€‘chain interoperability platform." },
+
+    { "const": "EOS",      "description": "EOS â€” token used for resources and governance on the EOSIO platform." },
+    { "const": "ETC",      "description": "ETC â€” Ethereum Classic, maintaining Ethereum's original chain state." },
+    { "const": "ETH",      "description": "ETH â€” native asset of the Ethereum smartâ€‘contract network." },
+
+    { "const": "FIRO",     "description": "FIRO â€” privacyâ€‘oriented cryptocurrency previously known as Zcoin." },
+
+    { "const": "GRC",      "description": "GRC â€” Gridcoin, associated with distributed computing participation." },
+
+    { "const": "LTC",      "description": "LTC â€” Litecoin, a peerâ€‘toâ€‘peer cryptocurrency based on faster block times." },
+
+    { "const": "MZC",      "description": "MZC â€” Mazacoin, historically linked to communityâ€‘based digital currency projects." },
+
+    { "const": "NEO",      "description": "NEO â€” token powering the Neo smartâ€‘economy blockchain." },
+    { "const": "NMC",      "description": "NMC â€” Namecoin, used for decentralized naming and identity." },
+    { "const": "NXT",      "description": "NXT â€” early proofâ€‘ofâ€‘stake cryptocurrency platform." },
+
+    { "const": "PPC",      "description": "PPC â€” Peercoin, one of the earliest proofâ€‘ofâ€‘stake systems." },
+
+    { "const": "SAFEMOON", "description": "SAFEMOON â€” token recognized for its redistribution and feeâ€‘based model." },
+    { "const": "SHIB",     "description": "SHIB â€” Shiba Inu token, an ERCâ€‘20 memetic digital asset." },
+    { "const": "SOL",      "description": "SOL â€” native token of the Solana highâ€‘throughput blockchain." },
+
+    { "const": "TIT",      "description": "TIT â€” token name associated with smaller or experimental cryptocurrency projects." },
+    { "const": "TRX",      "description": "TRX â€” Tron network token supporting smartâ€‘contract applications." },
+
+    { "const": "USDT",     "description": "USDT â€” Tether, a U.S.â€‘dollarâ€“linked stablecoin." },
+
+    { "const": "VTC",      "description": "VTC â€” Vertcoin, a proofâ€‘ofâ€‘work cryptocurrency emphasizing mining accessibility." },
+
+    { "const": "XBT",      "description": "XBT â€” alternative ticker widely used to denote Bitcoin." },
+    { "const": "XDG",      "description": "XDG â€” exchange ticker variant used for Dogecoin." },
+    { "const": "XLM",      "description": "XLM â€” Stellar Lumens, token used on the Stellar payments network." },
+    { "const": "XMR",      "description": "XMR â€” Monero, a privacyâ€‘preserving cryptocurrency." },
+    { "const": "XNO",      "description": "XNO â€” Nano, a lowâ€‘latency digital currency using blockâ€‘lattice design." },
+    { "const": "XPM",      "description": "XPM â€” Primecoin, mined via primeâ€‘number search algorithms." },
+    { "const": "XRP",      "description": "XRP â€” digital asset used on the XRP Ledger for crossâ€‘ledger transfers." },
+    { "const": "XVG",      "description": "XVG â€” Verge, a privacyâ€‘focused cryptocurrency." },
+
+    { "const": "ZEC",      "description": "ZEC â€” Zcash, a cryptocurrency offering zeroâ€‘knowledge privacy features." } ] }

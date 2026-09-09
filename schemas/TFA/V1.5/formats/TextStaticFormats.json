@@ -1,0 +1,7 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id":   "https://schemas.mpai.community/TFA/V1.5/formats/TextStaticFormats.json",
+    "title":  "Text Static Formats V1.6",
+    "type":  "string",
+    "enum":  [ "ASCII", "ISO/IEC 646", "ISOIEC 8859-1", "ISOIEC 8859-2", "ISOIEC 8859-3", "ISOIEC 8859-4", "ISOIEC 8859-5", "ISOIEC 8859-6",
+               "ISOIEC 8859-7", "ISOIEC 8859-8", "ISOIEC 8859-9", "ISOIEC 8859-10", "ISOIEC 8859-11",  "ISOIEC 8859-12", "ISOIEC 8859-13", "ISOIEC 8859-14",
+               "ISOIEC 8859-15", "ISOIEC 8859-16", "UTF-8", "UTF-16", "UTF-32" ] }

@@ -1,0 +1,59 @@
+{ "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "$id":                              "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelObject.json",
+  "title":                            "Basic 3D Model Object V1.5",
+  "type":                             "object",
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "OSD-B3O-V1.5" },
+    "MInstanceID":                    { "type": "string" },
+    "UEnvironmentID":                 { "type": "string" },
+    "Basic3DModelObjectID":           { "type": "string" },
+    "Basic3DModelObjectTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "ParentObjects":                  { "type": "array", "items": { "type": "object", "properties": {
+      "ParentObjectID":               { "type": "string" },
+      "ParentObjectSpaceTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "ChildObjects":                   { "type": "array", "items": { "type": "object", "properties": {
+      "ChildObjectID":                { "type": "string" },
+      "ChildObjectSpaceTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "Basic3DModelObjectSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "Basic3DModelObjectData":         { "type": "array", "items": { "oneOf": [
+                                      { "type": "object", "properties": {
+      "Data":                         { "type": "string" } } },
+                                      { "type": "object", "properties": {
+      "DataLength":                   { "type": "integer" },
+      "DataURI":                      { "type": "string", "format": "uri" } } },
+                                      { "type": "object", "properties": {
+      "ID":                           { "type": "string" } } } ] } },
+
+    "Basic3DModelObjectProperties":   { "type": "object", "properties": {
+
+      "PerceptStatus":                { "type": "boolean" },
+      "Resize":                       { "type": "array", "items": { "type": "object", "properties": {
+        "Rx":                         { "type": "number" },
+        "Ry":                         { "type": "number" },
+        "Rz":                         { "type": "number" } } } },
+      "Mass":                         { "type": "number" },
+      "Material":                     { "type": "boolean" },
+      "Gravity":                      { "type": "boolean" },
+      "TextureMapOrMapID":            { "type": "array", "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/TextureMap.json" },
+                                      { "type": "string" } ] } },
+
+      "Basic3DModelObjectIdentifier": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" },
+
+      "AcousticProfile":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AcousticProfile.json" },
+
+      "EulerAngles":                  { "type": "object", "properties": {
+        "alpha":                      { "type": "number" },
+        "beta":                       { "type": "number" },
+        "gamma":                      { "type": "number" } } } } },
+
+    "3DModelQualifier":               { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/VisualQualifier.json" },
+
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048 } } }

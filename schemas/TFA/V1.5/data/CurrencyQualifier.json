@@ -1,0 +1,29 @@
+{ "$id":                  "https://schemas.mpai.community/TFA/V1.5/data/CurrencyQualifier.json",
+  "$schema":              "https://json-schema.org/draft/2020-12/schema",
+
+  "title":                "Currency Qualifier V1.5",
+  "description":          "Currency categories, formats, and implementation-defined attributes.",
+  "type":                 "object",
+  "required":             [ "Header", "CurrencyQualifierID", "SubType", "Format" ],
+  "additionalProperties": false,
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "TFA-CUQ-V1.5" },
+    "MInstanceID":        { "type": "string" },
+    "UEnvironmentID":     { "type": "string" },
+
+    "CurrencyQualifierID":{ "type": "string" },
+    "CurrencyQualifierTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubType":            { "type": "object", "additionalProperties": false, "properties": {
+      "Categories":       { "type": "array", "items": { "type": "string", "enum": [ "Real", "Virtual" ] },
+                          "minItems": 1, "uniqueItems": true } } },
+
+    "Format":             { "type": "object", "additionalProperties": false, "properties": {
+      "RealCurrency":     { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/RealCurrencies.json" },
+      "VirtualCurrency":  { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/VirtualCurrencies.json" } } },
+
+    "Attributes":         { "type": "object", "additionalProperties": true },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }

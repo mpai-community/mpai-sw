@@ -1,0 +1,62 @@
+{ "$schema":            "https://json-schema.org/draft/2020-12/schema",
+  "$id":                "https://schemas.mpai.community/MMM4/V2.2/data/ProcessAction.json",
+  "title":              "Process Action V2.2",
+  "type":               "object",
+  "description":        "Action initiated by an A-User Process",
+  "required":           [ "Header", "MInstanceID", "ProcessActionID", "RQ-Complements", "PAStatus" ],
+  "properties":         {
+
+    "Header":           { "type": "string", "const": "MMM-PAC-V2.2" },
+    "MInstanceID":      { "description": "Unique identifier for the metaverse instance", "type": "string" },
+    "UEnvironmentID":   { "type": "string" },
+    "ProcessActionID":  { "description": "Unique identifier for this ProcessAction", "type": "string" },
+    "ProcessActionTime":{ "description": "Timestamp of Process Action emission",
+                          "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "RQ-Complements":   { "description": "Request-side complements framing the action", "$ref": "#/$defs/Prepositions" },
+    "RS-Complements":   { "description": "Response-side complements framing the outcome", "$ref": "#/$defs/Prepositions" },
+
+    "PAStatus":         { "description": "Status of the ProcessAction", "type": "array",
+                          "required": ["Ack", "Request", "Error" ], "items": { "oneOf": [
+                        { "description": "Acknowledgement of successful execution", "type": "object", "properties": {
+      "Ack":            { "type": "string", "enum": [ "Ack" ] } } },
+                        { "description": "Value Request", "type": "object", "properties": {
+      "Request":        { "$ref": "https://schemas.mpai.community/MMM4/V2.2/data/Value.json" } } },
+                        { "description": "Error encountered during processing", "type": "object", "properties": {
+      "Error":          { "type": "string", "enum": [ "Clash","FaultyReq","IncID","IncDQ","InsRights", "InsValue", "LocOOR",
+                          "PostRef","QualNS" ] } } } ] } },
+
+    "DataXMData":       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":    { "type": "string", "maxLength": 2048 } },
+
+  "$defs": {
+    "Prepositions":     { "description": "Array of semantic complements framing the action", "type": "array", "items": {  "anyOf": [
+                        { "description": "No process specified", "type": "object", "properties": {
+                          "NilProcess": { "description": "Null process reference", "type": "string" } } },
+
+                        { "description": "No item specified", "type": "object", "properties": {
+                          "NilItem": { "description": "Null item reference", "type": "string" } } },
+
+                        { "description": "Relevant location", "type": "object", "properties": {
+                          "AtProcess": { "description": "Process location reference", "type": "string" } } },
+
+                        { "description": "Relevant location", "type": "object", "properties": {
+                          "AtItem": { "description": "Item location reference", "type": "string" } } },
+
+                        { "description": "Relevant process", "type": "object", "properties": {
+                          "FromProcess": { "description": "Source process reference", "type": "string" } } },
+
+                        { "description": "Relevant item", "type": "object", "properties": {
+                          "FromItem": { "description": "Source item reference", "type": "string" } } },
+
+                        { "description": "Target process", "type": "object", "properties": {
+                          "ToProcess": { "description": "Target process reference", "type": "string" } } },
+
+                        { "description": "Target item", "type": "object", "properties": {
+                          "ToItem": { "description": "Target item reference", "type": "string" } } },
+
+                        { "description": "Associated process", "type": "object", "properties": {
+                          "WithProcess": { "description": "Associated process reference", "type": "string" } } },
+
+                        { "description": "Associated item", "type": "object", "properties": {
+                          "WithItem": { "description": "Associated item reference", "type": "string" } } } ] } } } }

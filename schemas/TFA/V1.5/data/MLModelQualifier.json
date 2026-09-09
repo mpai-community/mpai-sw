@@ -1,0 +1,37 @@
+{ "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/MLModelQualifier.json",
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "title":                  "ML Model Qualifier V1.5",
+  "description":            "Characteristics and regulatory attributes of a machine learning model.",
+  "type":                   "object",
+  "required":               [ "Header", "MLModelQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-MMQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "MLModelQualifierID":   { "type": "string" },
+    "MLModelQualifierTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":              { "type": "object", "additionalProperties": false, "properties": {
+      "MLModelType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MLModelTypes.json" },
+      "NNModelType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelTypes.json" } } },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+      "Extension":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelExtensions.json" },
+      "Framework":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelFrameworks.json" },
+      "Exchange":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelExchange.json" } } },
+
+    "Attributes":           { "$ref": "#/$defs/MLAttributes" },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                  {
+    "MLAttributes":         { "type": "object", "additionalProperties":  false, "properties": {
+      "ModelAssets":        { "type": "array", "items": { "type": "object", "required": ["AssetType"], "additionalProperties": false, "properties": {
+        "AssetType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MLModelAssetTypes.json" } } } },
+      "MLModelManifest":    { "$ref": "https://schemas.mpai.community/AIP/V1.0/data/MLModelManifest.json" },
+      "RegulationTypes":    { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/RegulationTypes.json" },
+      "CertificationType":  { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/CertificationTypes.json" },
+      "Validity":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" } } } } }

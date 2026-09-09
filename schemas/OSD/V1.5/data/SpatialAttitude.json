@@ -1,0 +1,33 @@
+{ "$schema":                   "https://json-schema.org/draft/2020-12/schema",
+  "$id":                       "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json",
+  "title":                     "Spatial Attitude V1.5",
+  "type":                      "object",
+  "additionalProperties":      false,
+  "required":                  [ "Header", "ObjectSpatialAttitudeID", "Position", "Orientation" ],
+  "properties":                {
+
+    "Header":                  { "type": "string", "const": "OSD-OSA-V1.5", "description": "Spatial Attitude Header â€“ Standard OSD-OSA-Vx.y" },
+    "MInstanceID":             { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Spatial Attitude is defined." },
+    "UEnvironmentID":          { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Spatial Attitude is defined." },
+    "ObjectSpatialAttitudeID": { "type": "string", "description": "Unique identifier of this Spatial Attitude instance." },
+    "SpatialAttitudeTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Spatial Attitude instance was produced." },
+
+    "General":                 { "type": "object", "additionalProperties": false, "required": [ "CoordType" ],
+                                 "description": "General classification data of the Object.", "properties": {
+      "CoordType":             { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/CoordinateTypes.json", "description": "Coordinate type: one of Cartesian, Spherical, Geodesic, Toroidal." },
+      "ObjectType":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/ObjectTypes.json", "description": "Type of the Object: one of Digital Human, Generic." },
+      "MediaType":             { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MediaTypes.json",
+                                 "description": "Media type: one of Speech, Audio, Visual, Audio-Visual, Haptic, Smell, RADAR, LiDAR, Ultrasound." } } },
+
+    "Position":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Position.json", "description": "Position of the Object as specified by the Position Data Type." },
+
+    "Orientation":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Orientation.json", "description": "Orientation of the Object as specified by the Orientation Data Type." },
+
+    "DataXMData":              { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                 "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Spatial Attitude instance in a trusted data exchange context." },
+    "DescrMetadata":           { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Spatial Attitude instance (plain text, max 2048 characters)." } },
+
+  "$defs": {
+    "3DModelEventIDOr3DModelEvent": { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelEventDescriptors.json" },
+                                    { "type": "string" } ] } } } }

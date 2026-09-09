@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>Mpai.UaKit</AssemblyName>
+    <RootNamespace>Mpai.UaKit</RootNamespace>
+    <DefineConstants>$(DefineConstants);WINDOWS_DEVICES</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\TOD\Mpai.Osd.Tod.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\SOA\Mpai.Mmc.Soa.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\CAE3\V1.0\AOA.Windows\Mpai.Cae.Aoa.Windows.csproj" />
+  </ItemGroup>
+</Project>

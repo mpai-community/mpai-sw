@@ -1,0 +1,39 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/OSD/V1.5/data/Position.json",
+  "title":                  "Position V1.5",
+  "type":                   "object",
+  "additionalProperties":   false,
+  "required":               [ "Header", "PositionID" ],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "OSD-OPS-V1.5", "description": "Position Header â€“ Standard OSD-OPS-Vx.y" },
+    "MInstanceID":          { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Position is defined." },
+    "UEnvironmentID":       { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Position is defined." },
+    "PositionID":           { "type": "string", "description": "Unique identifier of this Position instance." },
+    "PositionTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Position instance was produced." },
+
+    "PositionSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Position applies." },
+
+    "General":              { "type": "object", "additionalProperties": false, "required": [ "CoordType" ], "description": "General classification data of the Object.", "properties": {
+      "CoordType":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/CoordinateTypes.json", "description": "Coordinate type: one of Cartesian, Spherical, Geodesic, Toroidal." },
+      "ObjectType":         { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/ObjectTypes.json", "description": "Type of the Object: one of Digital Human, Generic." },
+      "MediaType":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MediaTypes.json", "description": "Media type: one of Speech, Audio, Visual, 3D Model, Audio-Visual, Haptic, Smell, RADAR, LiDAR, Ultrasound." } } },
+
+    "CartPosition":         { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Cartesian position (X, Y, Z) in metres." },
+    "CartPositionAccuracy": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each Cartesian position component (X, Y, Z) in metres." },
+    "SpherPosition":        { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Spherical position (r, Ï†, Î¸) in metres and degrees." },
+    "SpherPositionAccuracy":{ "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each spherical position component (r, Ï†, Î¸)." },
+
+    "CartVelocity":         { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Cartesian velocity (X, Y, Z) in metres/s." },
+    "CartVelocityAccuracy": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each Cartesian velocity component (X, Y, Z) in metres/s." },
+    "SpherVelocity":        { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Spherical velocity (r, Ï†, Î¸) in metres/s and degrees/s." },
+    "SpherVelocityAccuracy":{ "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each spherical velocity component (r, Ï†, Î¸)." },
+
+    "CartAccel":            { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Cartesian acceleration (X, Y, Z) in metres/sÂ²." },
+    "CartAccelAccuracy":    { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each Cartesian acceleration component (X, Y, Z) in metres/sÂ²." },
+    "SpherAccel":           { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Spherical acceleration (r, Ï†, Î¸) in metres/sÂ² and degrees/sÂ²." },
+    "SpherAccelAccuracy":   { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each spherical acceleration component (r, Ï†, Î¸)." },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                              "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Position in a trusted data exchange context." },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Position instance (plain text, max 2048 characters)." } } }

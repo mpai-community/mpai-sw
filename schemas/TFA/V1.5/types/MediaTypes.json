@@ -1,0 +1,6 @@
+{ "$schema":  "https://json-schema.org/draft/2020-12/schema",
+  "$id":      "https://schemas.mpai.community/TFA/V1.5/types/MediaTypes.json",
+  "title":    "Media Types V1.5",
+  "type":     "string", "enum": [ "3D Model", "Audio", "AudioVisual", "Haptic", "LiDAR", "OfflineMap", "RADAR", "Smell",
+                                  "Speech", "Text", "Ultrasound", "Visual" ] }
+

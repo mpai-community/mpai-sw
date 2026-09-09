@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CAV Ã¢â‚¬â€ 3D Visual Delivery (FACS)</title>
+<style>
+  :root { --bg:#141a24; --panel:#1e2632; --ink:#e8ecf2; --accent:#3b82f6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  #app { display:flex; flex-direction:column; height:100%; }
+  #stage { position:relative; flex:1 1 auto; min-height:0; }
+  #canvas { width:100%; height:100%; display:block; }
+  #status { position:absolute; top:14px; left:0; right:0; text-align:center;
+    font-size:20px; font-weight:600; letter-spacing:.3px; pointer-events:none;
+    text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  #loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:#9fb0c6; }
+  #panel { flex:0 0 auto; background:var(--panel); padding:12px; }
+  #emotions { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  button { font-size:14px; padding:9px 14px; border:none; border-radius:8px;
+    background:#e8ecf2; color:#1e242e; cursor:pointer; }
+  button:hover { background:#fff; }
+  #speak { background:var(--accent); color:#fff; font-size:16px; padding:11px 26px;
+    display:block; margin:0 auto 10px; }
+  .hint { text-align:center; color:#7f8ca0; font-size:12px; margin-top:8px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+    <div id="loading">Loading the CAV's faceÃ¢â‚¬Â¦</div>
+  </div>
+  <div id="panel">
+  <audio id="responseAudio" preload="auto"></audio>
+    <div class="hint">The realistic 3D face is driven by our FACS Action Units (emotion -> EM-FACS -> AU -> ARKit blendshapes). Drag to rotate.</div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+// A realistic ReadyPlayerMe head with full ARKit blendshapes + Oculus visemes
+// (the avatar used by the open-source TalkingHead project). Served from the RPM CDN.
+// The avatar GLB is served locally (python -m http.server 8000 in the folder
+// D:\\AI\\TestData\\Avatars), so no external CDN is fetched at view time.
+// It is a realistic ReadyPlayerMe head with ARKit blendshapes + Oculus visemes.
+const AVATAR_URL = 'https://cavapp.local/cav-avatar.glb';
+
+// ---- EM-FACS: emotion -> FACS Action Units (the same model as our C# core) ----
+const EMFACS = {
+  HAPPINESS: ['AU6','AU12'],
+  SADNESS:   ['AU1','AU4','AU15'],
+  ANGER:     ['AU4','AU5','AU7','AU23'],
+  FEAR:      ['AU1','AU2','AU4','AU5','AU20','AU26'],
+  DISGUST:   ['AU9','AU15','AU17'],
+  SURPRISE:  ['AU1','AU2','AU5','AU26'],
+  CALMNESS:  []
+};
+
+// ---- FACS Action Unit -> ARKit blendshape (morph target) mapping ----
+// Each AU activates the anatomically-corresponding ARKit blendshape(s), so the
+// realistic face is driven by the FACS descriptor, not by presets.
+const AU_TO_ARKIT = {
+  AU1:  [['browInnerUp',1.0]],
+  AU2:  [['browOuterUpLeft',1.0],['browOuterUpRight',1.0]],
+  AU4:  [['browDownLeft',1.0],['browDownRight',1.0]],
+  AU5:  [['eyeWideLeft',1.0],['eyeWideRight',1.0]],
+  AU6:  [['cheekSquintLeft',1.0],['cheekSquintRight',1.0],['mouthSmileLeft',0.15],['mouthSmileRight',0.15]],
+  AU7:  [['eyeSquintLeft',1.0],['eyeSquintRight',1.0]],
+  AU9:  [['noseSneerLeft',1.0],['noseSneerRight',1.0]],
+  AU12: [['mouthSmileLeft',0.5],['mouthSmileRight',0.5]],
+  AU15: [['mouthFrownLeft',1.0],['mouthFrownRight',1.0]],
+  AU17: [['mouthShrugLower',1.0]],
+  AU20: [['mouthStretchLeft',1.0],['mouthStretchRight',1.0]],
+  AU23: [['mouthPressLeft',1.0],['mouthPressRight',1.0]],
+  AU25: [['jawOpen',0.4]],
+  AU26: [['jawOpen',1.0]]
+};
+
+const EMOTIONS = ['Happy','Sad','Angry','Fearful','Disgusted','Surprised','Calm'];
+const CAT = { Happy:'HAPPINESS', Sad:'SADNESS', Angry:'ANGER', Fearful:'FEAR',
+              Disgusted:'DISGUST', Surprised:'SURPRISE', Calm:'CALMNESS' };
+
+// ---- three.js scene ----
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x141a24);
+// Image-based lighting: essential for realistic PBR skin. RoomEnvironment is
+// built into three.js (no external HDR file needed, so it works offline/VPN).
+const pmrem = new THREE.PMREMGenerator(renderer);
+// Fallback synthetic environment (instant), replaced by the real HDR when it loads.
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+// Real photographic studio HDR - the biggest realism gain for PBR skin.
+new RGBELoader().load('https://cavapp.local/studio.hdr', (hdr) => {
+  hdr.mapping = THREE.EquirectangularReflectionMapping;
+  const env = pmrem.fromEquirectangular(hdr).texture;
+  scene.environment = env;
+  hdr.dispose();
+}, undefined, (err) => console.warn('HDR not loaded, using RoomEnvironment fallback', err));
+const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+const controls = new OrbitControls(camera, canvas);
+controls.enablePan = false;
+controls.minDistance = 0.45; controls.maxDistance = 1.8;
+
+// lighting for a flattering, realistic look
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 0.6));
+const key  = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(1.5, 2.0, 2.5); scene.add(key);
+const fill = new THREE.DirectionalLight(0xbcd0ff, 0.9); fill.position.set(-2.0, 0.5, 1.5); scene.add(fill);
+const rim  = new THREE.DirectionalLight(0xffffff, 1.4); rim.position.set(-1.0, 1.5, -2.5); scene.add(rim);
+
+let morphMeshes = [];   // meshes with morph targets
+let currentAUs = {};    // AU -> weight
+let speaking = false;
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+// Apply the current AU weights (+ optional viseme) to every morph mesh.
+function applyMorphs(visemeJaw = 0) {
+  // Accumulate ARKit target weights from active AUs.
+  const targets = {};
+  for (const [au, w] of Object.entries(currentAUs)) {
+    const map = AU_TO_ARKIT[au];
+    if (!map) continue;
+    for (const [name, scale] of map)
+      targets[name] = Math.min(1, (targets[name]||0) + w*scale);
+  }
+  // Lip-sync overrides the jaw while speaking.
+  if (visemeJaw > 0) targets['jawOpen'] = Math.max(targets['jawOpen']||0, visemeJaw);
+
+  for (const mesh of morphMeshes) {
+    const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences;
+    // reset the ones we touch (leave others at 0)
+    for (let i=0;i<infl.length;i++) infl[i] = 0;
+    for (const [name, val] of Object.entries(targets)) {
+      const idx = dict[name];
+      if (idx !== undefined) infl[idx] = val;
+    }
+  }
+}
+
+function setEmotion(category, intensity=0.9) {
+  currentAUs = {};
+  for (const au of (EMFACS[category]||[])) currentAUs[au] = intensity;
+  applyMorphs();
+}
+
+// ---- load the avatar ----
+const loader = new GLTFLoader();
+loader.load(AVATAR_URL, (gltf) => {
+  const avatar = gltf.scene;
+  avatar.traverse(o => {
+    if (o.isMesh && o.morphTargetDictionary) morphMeshes.push(o);
+  });
+  scene.add(avatar);
+
+  // Frame the camera on the head.
+  const box = new THREE.Box3().setFromObject(avatar);
+  const size = box.getSize(new THREE.Vector3());
+  const headY = box.max.y - size.y*0.085;         // eye/upper-head height
+  camera.position.set(0.0, headY, 0.72);          // closer, portrait framing
+  camera.fov = 26; camera.updateProjectionMatrix();
+  controls.target.set(0, headY, 0);
+  controls.update();
+
+  document.getElementById('loading').style.display = 'none';
+  setEmotion('CALMNESS', 0);
+  resize();
+}, (e) => {
+  const pct = e.total ? Math.round(e.loaded/e.total*100) : 0;
+  document.getElementById('loading').textContent = `Loading the CAV's faceÃ¢â‚¬Â¦ ${pct}%`;
+}, (err) => {
+  document.getElementById('loading').textContent =
+    'Could not load the avatar (network?). Check the console.';
+  console.error(err);
+});
+
+// ---- lip-sync: animate the jaw/mouth in a talking rhythm for ~2.5s ----
+async function speak() {
+  if (speaking) return; speaking = true;
+  const t0 = performance.now();
+  return new Promise(resolve => {
+    function step(now) {
+      const t = (now - t0)/1000;
+      if (t > 2.5) { applyMorphs(0); speaking = false; resolve(); return; }
+      // syllable-like envelope with jitter
+      const env = Math.abs(Math.sin(t*11)) * (0.5 + 0.5*Math.random()) * 0.7;
+      applyMorphs(env);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// ---- Smile decay: when speech ends, the raised lips should not snap to zero.
+// Ease them down over ~1s to a small residual, so a trace of happiness remains.
+const SMILE_TARGETS = ['mouthSmileLeft','mouthSmileRight','cheekSquintLeft','cheekSquintRight'];
+let smileFadeRAF = null;
+function fadeSmileToTrace(durationMs = 1000, traceFrac = 0.3) {
+  if (smileFadeRAF) { cancelAnimationFrame(smileFadeRAF); smileFadeRAF = null; }
+  // snapshot the smile influences at speech end, per mesh
+  const snap = morphMeshes.map(mesh => {
+    const s = {};
+    for (const name of SMILE_TARGETS) {
+      const i = mesh.morphTargetDictionary[name];
+      if (i !== undefined) s[name] = mesh.morphTargetInfluences[i];
+    }
+    return s;
+  });
+  // mouth/jaw return to rest immediately; only the smile lingers and eases down
+  for (const mesh of morphMeshes) {
+    const infl = mesh.morphTargetInfluences;
+    for (let i = 0; i < infl.length; i++) infl[i] = 0;
+  }
+  currentAUs = {};   // emotion cleared; the trace is driven directly below
+  const t0 = performance.now();
+  function step(now) {
+    const k = Math.min(1, (now - t0) / durationMs);
+    const ease = 1 - Math.pow(1 - k, 2);          // ease-out
+    const f = 1 + (traceFrac - 1) * ease;          // 1.0 -> traceFrac
+    morphMeshes.forEach((mesh, mi) => {
+      const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences, s = snap[mi];
+      for (const name of SMILE_TARGETS) {
+        const i = dict[name];
+        if (i !== undefined && s[name] !== undefined) infl[i] = s[name] * f;
+      }
+    });
+    smileFadeRAF = (k < 1) ? requestAnimationFrame(step) : null;
+  }
+  smileFadeRAF = requestAnimationFrame(step);
+}
+
+// ---- UI ----
+const status = document.getElementById('status');
+
+
+
+
+// ---- FDO timeline playback: load the FDO (response-fdo.json) + speech (response-speech.wav),
+//      play the audio, and animate the face through the timeline frames synced to audio time. ----
+let responseFrames = null;   // [{ t, targets: {arkitName: weight} }]
+
+// Receive the CAV response (FDO timeline + speech WAV) from the host app via a
+// WebView message (window.chrome.webview), instead of fetching files.
+function receiveResponse(fdoJson, speechWavBase64) {
+  try {
+    const fdo = JSON.parse(fdoJson);
+    const items = fdo.FaceDescriptorsData || [];
+    responseFrames = items.map(item => {
+      // frame time (seconds) from SimpleTime.SimpleTimeData[0].StartTime
+      let t = 0;
+      try { t = item.Time.SimpleTimeData[0].StartTime; } catch(e) {}
+      // per-frame AU weights (FaceActionUnits JSON in Data)
+      let aus = {};
+      try { aus = JSON.parse(item.Data).ActionUnits || {}; } catch(e) {}
+      // map AU names -> ARKit blendshape targets (reuse AU_TO_ARKIT)
+      const targets = {};
+      for (const [au, w] of Object.entries(aus)) {
+        // au like "AU12_LipCornerPull" -> key "AU12"
+        const key = au.split('_')[0];
+        const map = AU_TO_ARKIT[key];
+        if (!map) continue;
+        for (const [name, scale] of map) targets[name] = Math.min(1, (targets[name]||0) + w*scale);
+      }
+      return { t, targets };
+    }).sort((a,b) => a.t - b.t);
+    const audio = document.getElementById('responseAudio');
+    if (speechWavBase64) audio.src = 'data:audio/wav;base64,' + speechWavBase64;
+    // Auto-play the response as soon as it arrives.
+    playResponse();
+  } catch(e) {
+    (document.getElementById('status')||{}).textContent = 'Bad response payload';
+    console.error(e);
+  }
+}
+
+// Listen for messages from the host app (the C# WebView3DModelDelivery device).
+if (window.chrome && window.chrome.webview) {
+  window.chrome.webview.addEventListener('message', ev => {
+    const m = ev.data;
+    if (m && m.Kind === 'render') receiveResponse(m.FaceDescriptors, m.SpeechWavBase64);
+  });
+}
+
+// Apply the timeline frame nearest the audio's current time (with linear interpolation).
+function applyResponseFrame(timeSec) {
+  if (!responseFrames || responseFrames.length === 0) return;
+  // find surrounding frames
+  let i = 0; while (i < responseFrames.length-1 && responseFrames[i+1].t <= timeSec) i++;
+  const a = responseFrames[i], b = responseFrames[Math.min(i+1, responseFrames.length-1)];
+  const span = Math.max(1e-3, b.t - a.t);
+  const k = Math.min(1, Math.max(0, (timeSec - a.t)/span));
+  // interpolate targets
+  const targets = {};
+  for (const [name, w] of Object.entries(a.targets)) targets[name] = w*(1-k);
+  for (const [name, w] of Object.entries(b.targets)) targets[name] = (targets[name]||0) + w*k;
+  // apply to the meshes
+  for (const mesh of morphMeshes) {
+    const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences;
+    for (let j=0;j<infl.length;j++) infl[j] = 0;
+    for (const [name, val] of Object.entries(targets)) { const idx = dict[name]; if (idx !== undefined) infl[idx] = val; }
+  }
+}
+
+let playing = false;
+async function playResponse() {
+  if (!responseFrames) return;
+  const audio = document.getElementById('responseAudio');
+  playing = true;
+  (document.getElementById('status')||{}).textContent = 'CAV speaking...';
+  audio.currentTime = 0;
+  await audio.play();
+  audio.onended = () => { playing = false; fadeSmileToTrace(1000, 0.3); (document.getElementById('status')||{}).textContent = 'CALMNESS / calm'; };
+}
+
+
+// ---- render loop ----
+function loop() {
+  requestAnimationFrame(loop);
+  if (playing) { const audio = document.getElementById('responseAudio'); applyResponseFrame(audio.currentTime); }
+  controls.update();
+  renderer.render(scene, camera);
+}
+resize(); loop();
+</script>
+</body>
+</html>

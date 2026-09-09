@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id":    "https://schemas.mpai.community/TFA/V1.5/formats/TextDynamicFormats.json",
+    "title":  "Text Dynamic Formats V1.5",
+    "type":   "string", "enum":  [ "TimedTextML", "WebVTT" ] }

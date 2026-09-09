@@ -1,0 +1,5 @@
+ { "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":      "https://schemas.mpai.community/TFA/V1.5/types/NNModelTypes.json",
+  "title":    "NN Model Types V1.5",
+  "type":     "string", "enum": [ "Convolutional-with-residuals", "Convolutional-without-residuals", "Deconvolutional",
+                                  "Eco-State-Neural-Network", "Feed-Forward", "Modular", "Recurrent", "Transformer" ] }

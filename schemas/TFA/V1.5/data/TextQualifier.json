@@ -1,0 +1,31 @@
+{ "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/TextQualifier.json",
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+
+  "title":                  "Text Qualifier V1.5",
+  "description":            "Qualifier describing the structure, metadata, and linguistic properties of text data.",
+  "type":                   "object",
+  "required":               [ "Header", "TextQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-TXQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "TextQualifierID":      { "type": "string" },
+    "TextQualifierTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":              { "type": "object" },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+        "ContentFormat":    { "type": "object", "additionalProperties": false, "properties": {
+        "Static":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/TextStaticFormats.json" },
+        "Dynamic":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/TextDynamicFormats.json" } } } } },
+
+    "Attributes":           { "type": "object", "additionalProperties": false, "properties": {
+      "ObjectIdentifier":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" },
+      "Language":           { "type": "object", "additionalProperties": false, "properties": {
+        "LanguageCode":     { "type": "string" },
+        "LanguageFormat":   { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/LanguageFormats.json" } } } } },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048 } } }

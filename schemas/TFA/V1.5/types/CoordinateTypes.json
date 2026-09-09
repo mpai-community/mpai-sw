@@ -1,0 +1,7 @@
+{ "$schema":     "https://json-schema.org/draft/2020-12/schema",
+  "$id":         "https://schemas.mpai.community/TFA/V1.5/types/CoordinateTypes.json",
+  "title":       "Coordinate Types V1.5",
+  "description": "Enumeration of supported coordinate system types for TFA V1.5.",
+  "type":        "string",
+  "enum":        [ "Cartesian", "Spherical", "Cylindrical", "Geodetic", "Toroidal" ] }
+

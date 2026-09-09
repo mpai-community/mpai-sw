@@ -1,0 +1,22 @@
+{ "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/TimeQualifier.json",
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "title":                  "Time Qualifier V1.5",
+  "description":            "Qualifier describing subtypes, formats, and attributes for temporal structures.",
+  "type":                   "object",
+  "required":               [ "Header", "TimeQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-TIQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "TimeQualifierID":      { "type": "string" },
+
+    "SubTypes":              { "type": "object", "additionalProperties": true },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+      "MPAIFormat":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+      "OtherFormats":       { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/TimeFormats.json" } } },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

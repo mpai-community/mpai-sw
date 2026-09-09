@@ -1,0 +1,40 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/AcousticProfile.json",
+  "title":                    "Acoustic Profile V1.5",
+  "description":              "Frequency range, timbre, spectrum, loudness, reflectivity, reverberation, diffusion, absorption.",
+                              "type": "object", "required": ["Header", "AcousticProfileID", "FrequencyRange", "Loudness"], "additionalProperties": false, "properties": {
+
+    "Header":                 { "type": "string", "const": "OSD-OAC-V1.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "AcousticProfileID":      { "type": "string", "description": "Unique identifier for this AcousticProfile" },
+    "AcousticProfileTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "FrequencyRange":         { "type": "object", "required": ["MinFrequencyHz", "MaxFrequencyHz"], "additionalProperties": false, "description": "Nominal frequency bounds of the audio object in Hz", "properties": {
+      "MinFrequencyHz":       { "type": "number", "minimum": 0 },
+      "MaxFrequencyHz":       { "type": "number", "minimum": 0 } } },
+
+    "Spectrogram":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Plot.json" },
+
+    "Loudness":               { "type": "number", "description": "Perceptual loudness (e.g., LUFS in dB)" },
+
+    "Reflectivity":           { "type": "array", "items": { "type": "object", "required": ["EarlyReflectionTime", "LateReflectionTime"], "additionalProperties": false, "properties": {
+      "EarlyReflectionTime":  { "type": "number", "minimum": 0 },
+      "LateReflectionTime":   { "type": "number", "minimum": 0 } } } },
+
+    "Reverberation":          { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+      "RT60":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Plot.json" },
+      "RT30":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Plot.json" },
+      "RT20":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Plot.json" },
+      "EDT":                  { "type": "number", "minimum": 0 } } } },
+
+    "Diffusion":              { "type": "number", "minimum": 0 },
+
+    "Absorption":             { "type": "number", "minimum": 0 },
+
+    "Doppler":                { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+      "DirectSoundFactor":    { "type": "number", "minimum": 0, "maximum": 1 },
+      "IndirectSound":        { "type": "number", "minimum": 0 } } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

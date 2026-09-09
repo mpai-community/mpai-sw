@@ -1,0 +1,13 @@
+bin/
+obj/
+_build/
+.vs/
+SharedStorage/
+Models/
+*.bak
+*.mangled.bak
+*.opencv.bak
+*.tfmbak
+*-diag.log
+_pack_*/
+_test_*/

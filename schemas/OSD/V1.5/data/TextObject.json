@@ -1,0 +1,47 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/TextObject.json",
+  "title":                          "Text Object V1.5",
+  "description":                    "A Data Type including a collection of Basic Text Objects, with optional hierarchical structure where Text Objects contain Basic Text Objects and Text Objects.",
+  "type":                           "object",
+  "additionalProperties":           false,
+  "required":                       [ "Header", "TextObjectID", "TextObjectSpaceTime" ],
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "OSD-TXO-V1.5" },
+    "MInstanceID":                  { "type": "string", "description": "Identifier of M-Instance." },
+    "UEnvironmentID":                { "type": "string", "description": "Identifier of the U-Environment." },
+    "TextObjectID":                 { "type": "string", "description": "Identifier of the Text Object." },
+    "TextObjectTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Text Object was produced." },
+
+    "TextObjectSpaceTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space/Time where/when this Text Object is located." },
+
+    "UserPoV":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicTextObjectCount":         { "type": "integer", "minimum": 0, "description": "Set of Parent Text Objects." },
+    "BasicTextObjects":             { "type": "array", "minItems": 0, "description": "Set of Basic Text Objects.", "items": { "type": "object", "additionalProperties": false, "properties": {
+      "BasicTextObjectSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Basic Text Object in the Text Object." },
+      "BTObjectIDOrBTObject":       { "$ref": "#/$defs/BTObjectIDOrBTObject", "description": "A Basic Text Object in the Text Object." } } } },
+
+    "SubTextObjectCount":           { "type": "integer", "minimum": 0, "description": "Number of Text Objects." },
+    "SubTextObjects":               { "type": "array", "minItems": 0, "description": "Set of Text Objects.", "items": { "type": "object", "additionalProperties": false, "properties": {
+      "SubTextObjectSpaceTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Text Object in the Text Object." },
+      "SubTObjectIDOrSubTObject":   { "$ref": "#/$defs/SubTObjectIDOrSubTObject", "description": "A Text Object in the Text Object." } } } },
+
+    "BTObjectOrTObject":            { "$ref": "#/$defs/BTObjectOrTObject" },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json", "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Text Object instance in a trusted data exchange context." },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Text Object instance (plain text, max 2048 characters)." } },
+
+  "$defs":                          {
+
+    "BTObjectOrTObject":            { "type": "array", "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicTextObject.json" },
+                                      { "$ref": "#/$defs/BTObjectOrTObject" } ] } },
+
+    "BTObjectIDOrBTObject":         { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicTextObject.json" },
+                                      { "type": "string" } ] } },
+
+    "SubTObjectIDOrSubTObject":     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/TextObject.json" },
+                                      { "type": "string" } ] } } } }

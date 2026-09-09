@@ -1,0 +1,4 @@
+{ "$schema":  "https://json-schema.org/draft/2020-12/schema",
+  "$id":      "https://schemas.mpai.community/OSD/V1.5/data/CoordinateTypes.json",
+  "title":    "Coordinate Types V1.5",
+  "type":     "string", "enum": [ "Cartesian", "Spherical", "Geodesic", "Toroidal" ] }

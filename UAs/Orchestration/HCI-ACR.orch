@@ -1,0 +1,61 @@
+# =============================================================================
+#  HCI-ACR.orch  -  User-Agent orchestration for the MMC-ACR Module
+#
+#  Workflow Description (WDL v0.1). UA-side only: real-world I/O
+#  (prompt/present/capture/type), timing (wait), the boundary exchange with the
+#  Controller (start / capture->module / await / stop), and persistence of the
+#  result to Shared Storage via the Controller's storage API.
+#
+#  The UA DRIVES the Module through the Controller. The Module (a black box here)
+#  computes the Face Descriptors and Speech Descriptors and renders the
+#  confirmation; the UA never names an AIM. The User Name is the UA's own datum
+#  (typed characters), NOT a Module port: the UA writes {UserName -> descriptors,
+#  times} to Shared Storage - the same gallery MMC-MAC reads. Routing among the
+#  Module's AIMs is by data type per the Module's L3 (1MMC-ACR-V2.5-I01.json).
+#  Chain of command: User <-> UserAgent -> Controller -> AIMs -> Controller.
+# =============================================================================
+
+workflow HCI-ACR  over module MMC-ACR-V2.5
+{
+    start module MMC-ACR-V2.5
+
+    # --- Name: typed characters (ASR is unreliable for bare names) ---
+    prompt  "Welcome to the CAV Access Control Registration Service. Please type your name."
+    type    UserName                                   # UA text box -> UserName (UA datum, not a Module port)
+
+    # --- Face: prompt, give the human ~1s to turn, then supply face + time ---
+    prompt  "Look at the camera."
+    wait    1s
+    capture FaceObject   (OSD-BVO-V1.5) -> module
+    supply  FaceTime     (OSD-STM-V1.5) -> module      # from the UA clock
+
+    # --- Speech: prompt, capture a short sample, supply speech + time ---
+    prompt  "Please speak a short sentence so I can learn your voice."
+    capture SpeechObject (OSD-BSO-V1.5) -> module
+    supply  SpeechTime   (OSD-STM-V1.5) -> module      # from the UA clock
+
+    # --- Confirmation utterance: UA supplies fixed Response text + a light smile ---
+    supply  Response       (OSD-BTO-V1.5) -> module    # "{UserName}, thank you..." (see below)
+    supply  PersonalStatus (MMC-EPS-V2.5) -> module    # light smile (low-intensity HAPPINESS)
+
+    # --- Read the Module's outputs (by data type) ---
+    await   module outputs FaceDescriptors        (PAF-FDO-V1.6),
+                           SpeechDescriptors       (MMC-SDO-V2.5),
+                           VocalResponse           (OSD-BSO-V1.5),
+                           MachineFaceDescriptors  (PAF-FDO-V1.6)
+
+    # --- Persist the enrolment to Shared Storage (UA limb, via the Controller) ---
+    #   subject:<UserName> -> { FaceDescriptors content, SpeechDescriptors content,
+    #                           FaceTime, SpeechTime, FaceContentFormat, SpeechContentFormat }
+    #   The times are read from the descriptors the Module produced (they carry
+    #   FaceDescriptorsObjectTime / SpeechDescriptorsObjectTime). MMC-MAC reads
+    #   this same gallery to recognise.
+    store   gallery subject:UserName <- FaceDescriptors, SpeechDescriptors
+
+    # --- Present the confirmation (avatar speaks with a light smile) ---
+    present VocalResponse
+    present MachineFaceDescriptors
+    present "{UserName}, thank you for joining the CAV Access Control Registration Service. You should speak your passphrase when you enter the service."
+
+    stop module
+}

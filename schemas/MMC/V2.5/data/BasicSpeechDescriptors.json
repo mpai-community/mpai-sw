@@ -1,0 +1,21 @@
+{ "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "$id":                              "https://schemas.mpai.community/MMC/V2.5/data/BasicSpeechDescriptors.json",
+  "title":                            "Basic Speech Descriptors V2.5",
+  "type":                             "object",
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "MMC-SPD-V2.5" },
+    "MInstanceID":                    { "type": "string" },
+    "UEnvironmentID":                 { "type": "string" },
+    "BasicSpeechDescriptorsID":       { "type": "string" },
+    "BasicSpeechDescriptorsTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BasicSpeechDescriptorsDuration": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SpeechDescriptorsData":          { "type": "object", "properties": {
+      "Pitch":                        { "type": "number" },
+      "Intensity":                    { "type": "number" },
+      "Tempo":                        { "type": "number" } } },
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048 } } }

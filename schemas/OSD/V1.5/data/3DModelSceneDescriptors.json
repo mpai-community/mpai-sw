@@ -1,0 +1,40 @@
+{ "$schema":                              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                  "https://schemas.mpai.community/OSD/V1.5/data/3DModelSceneDescriptors.json",
+  "title":                                "3D Model Scene Descriptors V1.5",
+  "type":                                 "object",
+  "required":                             [ "Header", "3DModelSceneDescriptorsID", "3DModelSceneDescriptorsSpaceTime" ],
+  "additionalProperties":                 false,
+  "properties":                           {
+
+    "Header":                             { "type": "string", "const": "OSD-3SD-V1.5" },
+    "MInstanceID":                        { "type": "string" },
+    "3DModelSceneDescriptorsID":          { "type": "string" },
+    "3DModelSceneDescriptorsSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "ObjectCount":                        { "type": "integer" },
+    "Objects":                            { "type": "array", "items": { "type": "object",
+                                            "additionalProperties": false, "properties": {
+      "ObjectSpaceTime":                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "ObjectIDOrObject":                 { "$ref": "#/$defs/ObjectIDOrObject" } } } },
+
+    "Sub3DModelSceneCount":               { "type": "integer" },
+    "Sub3DModelScenes":                   { "type": "array", "items": { "type": "object",
+                                          "additionalProperties": false, "properties": {
+      "Sub3DModelSceneSpaceTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "Sub3SceneIDOrSub3Scene":            { "$ref": "#/$defs/Sub3SceneIDOrSub3Scene" } } } },
+
+    "B3SceneOr3Scene":                    { "$ref": "#/$defs/B3SceneOr3Scene" },
+
+    "DataXMData":                         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                      { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                                {
+    "ObjectIDOrObject":                   { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelObject.json" },
+                                          { "type": "string" } ] } },
+    "Sub3SceneIDOrSub3Scene":             { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelSceneDescriptors.json" },
+                                          { "type": "string" } ] } },
+    "B3SceneOr3Scene":                    { "type": "array", "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelSceneDescriptors.json" },
+                                          { "$ref": "#/$defs/B3SceneOr3Scene" } ] } } } }

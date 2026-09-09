@@ -1,0 +1,19 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/RightParallelepiped.json",
+  "title":                          "Right Parallelepiped V1.5",
+  "type":                           "object",
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "OSD-RPP-V1.5" },
+    "MInstanceID":                  { "type": "string" },
+    "UEnvironmentID":               { "type": "string" },
+    "RightParallelepipedID":        { "type": "string" },
+
+    "RightParallelepipedSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "RightParallelepiped":          { "type": "array", "minItems": 1, "maxItems": 4, "items": {
+                                      "type": "object", "properties": {
+      "Point":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Point.json" } } } },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048 } } }

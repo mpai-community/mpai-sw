@@ -1,0 +1,33 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/CAE1/V2.5/data/MicrophoneArrayGeometry.json",
+
+  "title":                          "Microphone Array Geometry V2.5", "description": "Geometry, spatial descriptors, & attributes of a microphone array.",
+                                    "type": "object", "additionalProperties": false, "unevaluatedProperties": false,
+                                    "required": [ "Header", "MInstanceID", "MicrophoneArrayGeometryID", "MicrophoneArraySpaceTime", "MicrophoneArrayAttributes", "MicrophoneAttributes" ], "properties": {
+
+    "Header":                       { "type": "string", "const": "CAE-MAG-V2.5" },
+    "MInstanceID":                  { "type": "string" },
+    "UEnvironmentID":               { "type": "string" },
+    "MicrophoneArrayGeometryID":    { "type": "string" },
+    "MicrophoneArrayTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+    "MicrophoneArraySpaceTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "MicrophoneArrayAttributes":    { "description": "Array-level configuration parameters.",
+                                      "required": ["ArrayType", "SamplingParameters", "NumberofMicrophones"], "type": "object",
+                                      "additionalProperties": false, "properties": {
+      "ArrayType":                  { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MicrophoneArrayTypes.json" },
+      "ArrayScat":                  { "type": "integer", "minimum": 0 },
+      "ArrayFilterURI":             { "type": "string", "format": "uri" },
+      "SamplingParameters":         { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json" },
+      "BlockSize":                  { "type": "integer", "minimum": 1 },
+      "NumberofMicrophones":        { "type": "integer", "minimum": 1 } } },
+
+    "MicrophoneAttributes":         { "description": "PerÃ¢â‚¬â€˜microphone configuration entries.", "type": "array", "minItems": 1, "items": { "type": "object",
+                                      "additionalProperties": false, "required": ["MicrophoneID", "MicrophonePointOfView", "MicrophoneDirectivityFormat"],
+                                      "properties": {
+      "MicrophoneID":               { "type": "integer", "minimum": 0 },
+      "MicrophoneDirectivityFormat":{ "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/MicrophoneDirectivityFormats.json" },
+      "MicrophonePointOfView":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" }  } } },
+
+    "DataXMData":                   {"$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048 } } }

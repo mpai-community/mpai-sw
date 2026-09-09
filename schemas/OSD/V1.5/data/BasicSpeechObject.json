@@ -1,0 +1,41 @@
+{ "$schema":                            "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json",
+  "title":                              "Basic Speech Object V1.5",
+  "type":                               "object",
+  "properties":                         {
+
+    "Header":                           { "type": "string", "const": "OSD-BSO-V1.5" },
+    "MInstanceID":                      { "type": "string" },
+    "UEnvironmentID":                   { "type": "string" },
+    "BasicSpeechObjectID":              { "type": "string" },
+    "BasicSpeechObjectTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "ParentObjects":                    { "type": "array", "items": { "type": "object", "properties": {
+      "ParentObjectID":                 { "type": "string" },
+      "ParentObjectSpaceTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "ChildObjects":                     { "type": "array", "items": { "type": "object", "properties": {
+      "ChildObjectID":                  { "type": "string" },
+      "ChildObjectSpaceTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "BasicSpeechObjectSpaceTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "BasicSpeechObjectData":            { "type": "array", "items": { "anyOf": [
+                                        { "type": "object", "properties": {
+      "Data":                           { "type": "string" } } },
+                                        { "type": "object", "properties": {
+      "DataLength":                     { "type": "integer" },
+      "DataURI":                        { "type": "string", "format": "uri" } } },
+                                        { "type": "object", "properties": {
+      "ID":                             { "type": "string" } } } ] } },
+
+    "BasicSpeechObjectProperties":      { "type": "object", "properties": {
+
+      "PerceptStatus":                  { "type": "boolean" },
+      "AcousticProfile":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AcousticProfile.json" },
+      "BasicSpeechObjectIdentifier":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" } } },
+
+    "BasicSpeechDataQualifier":         { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/SpeechQualifier.json" },
+
+    "DataXMData":                       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                    { "type": "string", "maxLength": 2048 } } }

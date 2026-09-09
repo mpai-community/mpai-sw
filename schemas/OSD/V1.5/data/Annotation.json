@@ -1,0 +1,26 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/OSD/V1.5/data/Annotation.json",
+  "title":                  "Annotation V1.5",
+  "type":                   "object",
+  "additionalProperties":   false,
+  "required":               [ "Header", "AnnotationID", "AnnotationSpaceTime" ],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "OSD-ANN-V1.5" },
+    "MInstanceID":          { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) whose Object or Scene contains this Annotation." },
+    "UEnvironmentID":       { "type": "string", "description": "Identifier of the U-Environment (Real Space) whose Object or Scene contains this Annotation." },
+    "AnnotationID":         { "type": "string", "description": "Unique identifier of this Annotation." },
+    "AnnotationTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Annotation was produced." },
+
+    "AnnotationData":       { "type": "array", "minItems": 0, "description": "The actual Annotation content.",
+                              "items": { "type": "object", "additionalProperties": false, "properties": {
+      "AnnotationJSONText": { "type": "string", "description": "JSON text of the Annotation, conforming to the JSON Schema of the annotated Item." },
+      "AnnotationSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                              "description": "Space and Time where and when this Annotation item is attached within the Object or Scene or other data." },
+      "ProcessActions":     { "type": "array", "minItems": 0, "description": "Permitted actions on the annotated Data.",
+                              "items": { "type": "object", "additionalProperties": false, "properties": {
+      "ProcessActionID":    { "type": "string", "description": "Identifier of a permitted Process Action on the annotated Data." } } } } } } },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                              "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Annotation in a trusted data exchange context." },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Annotation (plain text, max 2048 characters)." } } }

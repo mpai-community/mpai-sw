@@ -1,0 +1,53 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/VisualObject.json",
+  "title":                          "Visual Object V1.5",
+  "description":                    "A Data Type including a collection of Basic Visual Objects, with optional hierarchical structure where Visual Objects contain Basic Visual Objects and Visual Objects.",
+  "type":                           "object",
+  "additionalProperties":           false,
+  "required":                       [ "Header", "MInstanceID", "VisualObjectID", "VisualObjectSpaceTime" ],
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "OSD-VIO-V1.5", "description": "Visual Object Header â€“ Standard OSD-VIO-Vx.y." },
+    "MInstanceID":                  { "type": "string", "description": "Identifier of M-Instance." },
+    "UEnvironmentID":               { "type": "string", "description": "Identifier of the U-Environment." },
+    "VisualObjectID":               { "type": "string", "description": "Identifier of the Visual Object." },
+    "VisualObjectSpaceTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space-Time of Visual Object." },
+
+    "UserPoV":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "VisualObjectProperties":       { "type": "object", "additionalProperties": false, "description": "Physical properties of the Visual Object.", "properties": {
+      "Mass":                       { "type": "number", "description": "Mass of the Visual Object." },
+      "Material":                   { "type": "boolean", "description": "Material property of the Visual Object." },
+      "Gravity":                    { "type": "boolean", "description": "Gravity property of the Visual Object." },
+      "TextureMap":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/TextureMap.json", "description": "Texture Map of the Visual Object." } } },
+
+    "BasicVisualObjectCount":       { "type": "integer", "minimum": 0, "description": "Number of Basic Visual Objects." },
+    "BasicVisualObjects":           { "type": "array", "minItems": 0, "description": "Set of Basic Visual Objects.",
+                                      "items": { "type": "object", "additionalProperties": false, "properties": {
+      "BasicVisualObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space-Time of a Basic Visual Object in the Visual Object." },
+      "BVObjectIDOrBVObject":       { "$ref": "#/$defs/BVObjectIDOrBVObject", "description": "A Basic Visual Object in the Visual Object." } } } },
+
+    "SubVisualObjectCount":         { "type": "integer", "minimum": 0, "description": "Number of Visual Objects." },
+    "SubVisualObjects":             { "type": "array", "minItems": 0, "description": "Set of Visual Objects.",
+                                      "items": { "type": "object", "additionalProperties": false, "properties": {
+      "SubVisualObjectSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space-Time of a Visual Object in the Visual Object." },
+      "SubVObjectIDOrSubVObject":   { "$ref": "#/$defs/SubVObjectIDOrSubVObject", "description": "A Visual Object in the Visual Object." } } } },
+
+    "BVObjectOrVObject":            { "$ref": "#/$defs/BVObjectOrVObject" },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json", "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Visual Object instance in a trusted data exchange context." },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Visual Object instance (plain text, max 2048 characters)." } },
+
+  "$defs":                          {
+
+    "BVObjectOrVObject":            { "type": "array", "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualObject.json" },
+                                      { "$ref": "#/$defs/BVObjectOrVObject" } ] } },
+
+    "BVObjectIDOrBVObject":         { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualObject.json" },
+                                      { "type": "string" } ] } },
+
+    "SubVObjectIDOrSubVObject":     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/VisualObject.json" },
+                                      { "type": "string" } ] } } } }

@@ -1,0 +1,32 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/MMC/V2.5/data/SpeechDescriptorsObject.json",
+  "title":                      "Speech Descriptors Object V2.5",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "SpeechDescriptorsObjectID", "SpeechDescriptorsData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "pattern": "^MMC-SDO-V[0-9]{1,2}[.][0-9]{1,2}$",
+                                  "description": "Speech Descriptors Object Header - Standard MMC-SDO-Vx.y" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Speech is or is intended to be located." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Speech is or is intended to be located." },
+    "SpeechDescriptorsObjectID":{ "type": "string", "description": "Unique identifier of this Speech Descriptors Object instance." },
+    "SpeechDescriptorsObjectTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Speech Descriptors Object was produced." },
+
+    "SpeechDescriptorsObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Speech is located." },
+
+    "SpeechDescriptorsData":    { "type": "array", "minItems": 0, "description": "Speech Descriptors Data representing speaker features of an Entity.", "items": { "anyOf": [
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "DataLength":             { "type": "integer", "description": "Length of the Speech Descriptors Data." },
+      "DataURI":                { "type": "string", "format": "uri", "description": "URI reference to the Speech Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Data":                   { "type": "string", "description": "Inline Speech Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "DataID":                 { "type": "string", "description": "Identifier referencing Speech Descriptors Data stored elsewhere." } } } ] } },
+
+    "SpeechDescriptorsQualifier": { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/SpeechDescriptorsQualifier.json",
+                                  "description": "Qualifier providing information on Sub-Types, Formats, and Attributes of Speech Descriptors Data." },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Speech Descriptors Object in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Speech Descriptors Object (plain text, max 2048 characters)." } } }

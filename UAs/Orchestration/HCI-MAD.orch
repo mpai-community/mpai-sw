@@ -1,0 +1,30 @@
+# HCI-MAD.orch  -  Multimodal Anonymous Dialogue (WDL)
+# The User Agent drives MMC-MAD-V2.5 through the Controller. No identity; no affect
+# input (EDP therefore emits no machine Personal Status; the avatar renders neutrally).
+# Conversation memory is the running Summary: the UA carries each turn's EditedSummary
+# back in as the next turn's Summary.
+
+on launch:
+    # Welcome is NOT part of the dialogue: a one-shot PAF-RSR render (neutral).
+    present welcome via RSR (neutral):
+        "Welcome to the HCI Multimodal Dialogue Service.
+         Press Start to initiate a conversation, Stop to close a conversation."
+
+on Start:
+    set Summary = ""
+    loop until Stop:
+        listen                                              # avatar waits for the user
+        acquire InputSpeech (OSD-BSO-V1.5) via VAD          # VAD detects end-of-utterance
+        start module MMC-MAD-V2.5
+        supply InputSpeech, InputSpeechTime (OSD-STM-V1.5) -> module
+        supply Summary (MMC-SUM-V2.5) -> module
+        run
+        await module outputs MachineSpeech (OSD-BSO-V1.5),
+                             MachineFaceDescriptors (PAF-FDO-V1.6),
+                             EditedSummary (MMC-SUM-V2.5)
+        present MachineSpeech                                # avatar speaks the reply
+        set Summary = EditedSummary                          # memory-carry
+        stop module
+
+on Stop:
+    # the loop exits after the current turn; no module is running between turns

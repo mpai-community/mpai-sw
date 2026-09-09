@@ -1,0 +1,29 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/OSD/V1.5/data/Time.json",
+  "title":                "Time V1.5",
+  "description":          "The digital representation of a time value.",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "TimeID", "Data" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "OSD-TIM-V1.5", "description": "Time Header â€“ Standard OSD-TIM-Vx.y." },
+    "MInstanceID":        { "type": "string", "description": "ID of the relevant Virtual Space." },
+    "UEnvironmentID":     { "type": "string", "description": "Identifier of the U-Environment." },
+    "TimeID":             { "type": "string", "description": "Identifier of this Time instance." },
+
+    "Data":               { "type": "string", "description": "Time value encoded per the Qualifier's Format and Kind (point, interval, duration)." },
+    "Qualifier":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/TimeQualifier.json", "description": "Qualifier of this Time instance (see TimeQualifier V1.5)." },
+
+    "Accuracy":           { "type": "object", "additionalProperties": false, "required": [ "mode" ], "description": "Numeric accuracy information (optional).", "properties": {
+      "mode":             { "type": "string", "enum": [ "numeric" ] },
+      "single":           { "type": "object", "additionalProperties": false, "required": [ "plusMinus", "timeUnit" ], "properties": {
+        "plusMinus":      { "type": "number", "minimum": 0 },
+        "timeUnit":       { "type": "string", "enum": [ "00", "01", "10", "11" ] } } },
+      "separate":         { "type": "object", "additionalProperties": false, "required": [ "startPlusMinus", "endPlusMinus", "timeUnit" ], "properties": {
+        "startPlusMinus": { "type": "number", "minimum": 0 },
+        "endPlusMinus":   { "type": "number", "minimum": 0 },
+        "timeUnit":       { "type": "string", "enum": [ "00", "01", "10", "11" ] } } } } },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json", "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Text Object instance in a trusted data exchange context." },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Time instance (plain text, max 2048 characters)." } } }

@@ -1,0 +1,18 @@
+{ "$schema":          "https://json-schema.org/draft/2020-12/schema",
+  "$id":              "https://schemas.mpai.community/MMM4/V2.2/data/Value.json",
+  "title":            "Value V2.2",
+  "type":             "object",
+  "properties":       {
+
+    "Header":         { "type": "string", "const": "MMM-VAL-V2.2" },
+    "MInstanceID":    { "type": "string" },
+    "UEnvironmentID": { "type": "string" },
+    "ValueID":        { "type": "string" },
+    "ValueTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "Amount":         { "type": "number" },
+
+    "Currency":       { "$ref": "https://schemas.mpai.community/MMM4/V2.2/data/CurrencyObject.json" },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048 } } }

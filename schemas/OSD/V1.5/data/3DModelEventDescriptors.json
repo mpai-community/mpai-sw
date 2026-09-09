@@ -1,0 +1,23 @@
+{ "$id":                          "https://schemas.mpai.community/OSD/V1.5/data/3DModelEventDescriptors.json",
+  "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "title":                        "3D Model Event Descriptors V1.5",
+  "description":                  "3D Model Event descriptor set.",
+  "type":                         "object",
+  "required":                     [ "Header", "3DModelEventDescriptorsID", "3DModelEventDescriptorsSpaceTime" ],
+  "additionalProperties":         false,
+  "properties":                   {
+
+    "Header":                           { "type": "string", "const": "OSD-3EV-V1.5" },
+    "MInstanceID":                      { "type": "string" },
+    "UEnvironmentID":                   { "type": "string" },
+    "3DModelEventDescriptorsID":        { "type": "string" },
+    "3DModelEventDescriptorsSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "3DModelEventDescriptors":          { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+      "3SceneIDOr3Scene":         { "description": "Either an embedded SceneDescriptors object or a SceneDescriptors ID.",
+                                    "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelSceneDescriptors.json" },
+                                  { "type": "string" } ] } } } } },
+
+    "DataXMData":                       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                    { "type": "string", "maxLength": 2048 } } }

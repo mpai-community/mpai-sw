@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/VisualMetadataFormats.json",
+  "title":   "Visual Metadata Formats V1.5",
+  "type":    "string", "oneOf": [
+    { "const": "DublinCore",
+      "description": "Dublin Core Ã¢â‚¬â€ a general-purpose metadata standard providing descriptive fields such as title, creator, subject, and format, commonly used for cataloging visual resources." },
+    { "const": "IPTC",
+      "description": "IPTC (International Press Telecommunications Council) metadata Ã¢â‚¬â€ widely used in digital photography to embed structured information such as captions, keywords, usage rights, and authorship." },
+    { "const": "XMP",
+      "description": "XMP (Extensible Metadata Platform) Ã¢â‚¬â€ an Adobe framework for embedding standardized and custom metadata directly into image files using RDF/XML structures." } ] }

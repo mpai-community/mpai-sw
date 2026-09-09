@@ -1,0 +1,35 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/PAF/V1.6/data/FaceDescriptorsObject.json",
+  "title":                      "Face Descriptors Object V1.6",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "FaceDescriptorsObjectID", "FaceDescriptorsData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "pattern": "^PAF-FDO-V[0-9]{1,2}[.][0-9]{1,2}$",
+                                  "description": "Face Descriptors Object Header â€“ Standard PAF-FDO-Vx.y" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Face is or is intended to be located." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Face is or is intended to be located." },
+    "FaceDescriptorsObjectID":  { "type": "string", "description": "Unique identifier of this Face Descriptors Object instance." },
+    "FaceDescriptorsObjectTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Face Descriptors Object was produced." },
+
+    "FaceDescriptorsObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Face is located." },
+
+    "FaceDescriptorsData":      { "type": "array", "minItems": 0, "description": "Face Descriptors Data representing the facial features of an Entity. Each item optionally carries a Time, making the array an animation timeline: a sequence of face descriptors over time. The Time is format-independent - it applies whatever the content format of the descriptors (FACS Action Units, blendshape weights, landmarks) declared by the Qualifier. A single item without Time is a static (single-pose) face.", "items": { "anyOf": [
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Time":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time of this face-descriptors frame within the animation. Format-independent; present when the Face Descriptors Data is a timeline." },
+      "DataLength":             { "type": "integer", "description": "Length of the Face Descriptors Data." },
+      "DataURI":                { "type": "string", "format": "uri", "description": "URI reference to the Face Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Time":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time of this face-descriptors frame within the animation. Format-independent; present when the Face Descriptors Data is a timeline." },
+      "Data":                   { "type": "string", "description": "Inline Face Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Time":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time of this face-descriptors frame within the animation. Format-independent; present when the Face Descriptors Data is a timeline." },
+      "DataID":                 { "type": "string", "description": "Identifier referencing Face Descriptors Data stored elsewhere." } } } ] } },
+
+    "FaceDescriptorsQualifier": { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/FaceDescriptorsQualifier.json",
+                                  "description": "Qualifier providing information on Sub-Types, Formats, and Attributes of Face Descriptors Data." },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Face Descriptors Object in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Face Descriptors Object (plain text, max 2048 characters)." } } }

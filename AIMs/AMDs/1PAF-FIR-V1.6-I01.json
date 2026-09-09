@@ -1,0 +1,30 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-FIR-V1.6-I01", "AIMName": "PAF-FIR-V1.6"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Face Identity Recognition: receives a Basic Visual Object (a picture), its Face Time, and the Basic Visual Scene Descriptors as context. Detects the user's face, matches it against the Subject Gallery (the shared Repository written by User Enrollment and read here at run time), and returns the person identity as an Instance Identifier together with the Bounding Box locating that face.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "InputVisual",   "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceTime",      "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SceneContext",  "Direction": "Input",  "DataType": "OSD-BVS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceID",        "Direction": "Output", "DataType": "OSD-IID-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "BoundingBox",   "Direction": "Output", "DataType": "OSD-BBX-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/PAF-FIR-V1.6-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Fir",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "0.5 GB", "Request": "1 GB", "Maximum": "2 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/"}]}

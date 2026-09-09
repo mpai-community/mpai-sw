@@ -1,0 +1,26 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-TTS-V2.5-I01", "AIMName": "MMC-TTS-V2.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Text to Speech: converts a Text Object into a Speech Object. Optionally rendered with a Speech Personal Status so the Machine Speech carries emotion; when the Speech Personal Status is absent the speech is neutral. Input text accepts OSD-BTO and OSD-TXO; output carries OSD-BSO and OSD-SPO.",
+
+  "ExternalPorts":    [{"Name": "InputText",             "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechPersonalStatus",  "Direction": "Input",  "DataType": "MMC-SPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputSpeech",          "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-TTS-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Tts",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "0.2 GB", "Request": "0.5 GB", "Maximum": "1 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/tts/"}]}

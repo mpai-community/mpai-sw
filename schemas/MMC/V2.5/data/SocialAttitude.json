@@ -1,0 +1,130 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMC/V2.5/data/SocialAttitude.json",
+  "title":                    "Social Attitude V2.5",
+  "description":              "Social Attitude labels with general and specific adjectival labels, plus an optional Degree in [0,1].",
+  "type":                     "object",
+  "required":                 [ "Header", "SocialAttitudeCategory" ],
+  "additionalProperties":     false,
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMC-ESA-V2.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "SocialAttitudeID":       { "type": "string" },
+    "SocialAttitudeSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "SocialAttitudeCategory": { "type": "object", "additionalProperties": false, "properties": {
+
+      "ACCEPTANCE":           { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "accepting":        { "type": "string", "enum": ["friendly", "welcoming/inviting"] },
+          "exclusive/cliquish":{ "type": "string", "enum": ["unfriendly/hostile"] } } } } },
+
+      "AGREEMENT/DISAGREEMENT":{ "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "like-minded":      { "type": "string", "enum": ["like-minded"] },
+          "argumentative/disputatious": { "type": "string", "enum": ["sarcastic"] } } } } },
+
+      "AGGRESSION":           { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "aggressive":       { "type": "string", "enum": ["combative/belligerent", "passive-aggressive", "mocking"] },
+          "peaceful":         { "type": "string", "enum": ["peaceful"] },
+          "submissive":       { "type": "string", "enum": ["submissive"] } } } } },
+
+      "APPROVAL/DISAPPROVAL": { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "admiring/approving":{ "type": "string", "enum": ["awed", "flattering", "laudatory", "congratulatory"] },
+          "disapproving":     { "type": "string", "enum": ["contemptuous", "critical", "belittling"] },
+          "indifferent":      { "type": "string", "enum": ["indifferent"] } } } } },
+
+      "ACTIVITY/PASSIVITY":   { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "assertive":        { "type": "string", "enum": ["controlling"] },
+          "passive":          { "type": "string", "enum": ["permissive/lenient"] } } } } },
+
+      "COOPERATION":          { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "cooperative/agreeable": { "type": "string", "enum": ["flexible", "supportive", "reasonable", "communicative"] },
+          "uncooperative":    { "type": "string", "enum": ["stubborn", "disagreeable", "subversive/undermining", "uncommunicative"] } } } } },
+
+      "EMPATHY":              { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "empathetic/caring":{ "type": "string", "enum": ["kind", "sympathetic", "merciful", "selfless/altruistic", "generous", "supportive", "understanding"] },
+          "uncaring/callous": { "type": "string", "enum": ["self-absorbed", "selfish/self-serving", "merciless/ruthless"] } } } } },
+
+      "EXPECTATION":          { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "optimistic":       { "type": "string", "enum": ["positive", "sanguine"] },
+          "pessimistic":      { "type": "string", "enum": ["negative/defeatist", "cynical"] } } } } },
+
+      "EXTROVERSION/INTROVERSION": { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "outgoing/extroverted": { "type": "string", "enum": ["uninhibited/unreserved", "sociable", "approachable"] } } } } },
+
+      "DEPENDENCE":           { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "dependent":        { "type": "string", "enum": ["helpless", "obedient", "servile/obsequious"] },
+          "independent":      { "type": "string", "enum": ["confident", "responsible/trustworthy/dependable"] } } } } },
+
+      "MOTIVATION":           { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "motivated":        { "type": "string", "enum": ["inspired", "excited/stimulated"] },
+          "apathetic/indifferent": { "type": "string", "enum": ["dismissive", "discouraged/dejected"] } } } } },
+
+      "OPENNESS/TRUST":       { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "open":             { "type": "string", "enum": ["honest/sincere", "candid/frank", "reasonable", "trusting"] },
+          "trustworthy/responsible/dependable": { "type": "string", "enum": ["faithful/loyal"] },
+          "closed/distant":   { "type": "string", "enum": ["distrustful", "dishonest/deceitful"] } } } } },
+
+      "PRAISING/CRITICISM":   { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "laudatory":        { "type": "string", "enum": ["congratulatory", "flattering"] },
+          "critical":         { "type": "string", "enum": ["belittling/contemptuous"] } } } } },
+
+      "RESENTMENT/FORGIVENESS":{ "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "forgiving":        { "type": "string", "enum": ["understanding", "merciful"] },
+          "unforgiving/vindictive/spiteful/vengeful": { "type": "string", "enum": ["petty"] } } } } },
+
+      "RESPONSIVENESS":       { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "responsive/demonstrative": { "type": "string", "enum": ["enthusiastic", "emotional/passionate"] },
+          "unresponsive/undemonstrative": { "type": "string", "enum": ["unenthusiastic", "unemotional/detached", "dispassionate"] } } } } },
+
+      "SELF-PROMOTION":       { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "boastful":         { "type": "string", "enum": ["pompous/pretentious"] },
+          "modest/humble/unassuming": { "type": "string", "enum": ["self-deprecating/self-effacing"] } } } } },
+
+      "SELF-ESTEEM":          { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "conceited/vain":   { "type": "string", "enum": ["smug"] },
+          "self-deprecating/self-effacing": { "type": "string", "enum": ["self-deprecating/self-effacing"] } } } } },
+
+      "SEXUALITY":            { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "seductive":        { "type": "string", "enum": ["suggestive/risquÃ©/naughty"] },
+          "lewd/bawdy/indecent":{ "type": "string", "enum": ["lewd/bawdy/indecent"] },
+          "prudish/priggish": { "type": "string", "enum": ["prudish/priggish"] } } } } },
+
+      "SOCIAL DOMINANCE/CONFIDENCE": { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "arrogant":         { "type": "string", "enum": ["forward/presumptuous", "brazen", "commanding/domineering", "condescending/patronizing/snobbish", "pedantic", "pompous/pretentious"] },
+          "confident":        { "type": "string", "enum": ["cool"] },
+          "submissive":       { "type": "string", "enum": ["servile/obsequious"] },
+          "obedient":         { "type": "string", "enum": ["obedient"] },
+          "rebellious/defiant":{ "type": "string", "enum": ["rebellious/defiant"] } } } } },
+
+      "SOCIAL RANK":          { "type": "object", "additionalProperties": false, "properties": {
+        "GeneralAdjectival":  { "type": "object", "additionalProperties": false, "properties": {
+          "polite":           { "type": "string", "enum": ["unaffected"] },
+          "courteous":        { "type": "string", "enum": ["unaffected"] },
+          "respectful":       { "type": "string", "enum": ["unaffected"] },
+          "rude/disrespectful":{ "type": "string", "enum": ["rude/disrespectful"] } } } } } } },
+
+    "Degree":                 { "type": "number", "minimum": 0, "maximum": 1,
+                                "description": "Optional intensity/confidence of the chosen Social Attitude label, in [0,1]." },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

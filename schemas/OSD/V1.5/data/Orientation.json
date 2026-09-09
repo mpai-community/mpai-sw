@@ -1,0 +1,36 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/Orientation.json",
+  "title":                    "Object Orientation V1.5",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "OrientationID", "Orientation" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "OSD-OOR-V1.5", "description": "Orientation Header â€“ Standard OSD-OOR-Vx.y" },
+    "MInstanceID":            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Orientation refers to." },
+    "UEnvironmentID":         { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Orientation refers to." },
+    "OrientationID":          { "type": "string", "description": "Unique identifier of this Object Orientation instance." },
+    "OrientationTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Orientation instance was produced." },
+
+    "OrientationSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Orientation applies." },
+
+    "General":                { "type": "object", "additionalProperties": false, "description": "General classification data of the Object.", "properties": {
+      "ObjectType":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/ObjectTypes.json", "description": "Type of the Object: one of Digital Human, Generic." },
+      "MediaType":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MediaTypes.json", "description": "Media type of the Object: one of Speech, Audio, Visual, Audio-Visual, Haptic, Smell, RADAR, LiDAR, Ultrasound." } } },
+
+    "Orientation":            { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Euler angles (Î±, Î², Î³) representing the Object's orientation (degrees)." },
+    "OrientAccuracy":         { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Estimated accuracy of each Euler angle (Î±, Î², Î³) in Orientation (degrees)." },
+    "OrientVelocity":         { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Angular velocity of the Object's orientation (Î±, Î², Î³) (degrees/s)." },
+    "OrientVelocityAccuracy": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Estimated accuracy of each angular velocity component (Î±, Î², Î³) (degrees/s)." },
+    "OrientAccel":            { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Angular acceleration of the Object's orientation (Î±, Î², Î³) (degrees/sÂ²)." },
+    "OrientAccelAccuracy":    { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" },
+                                "description": "Estimated accuracy of each angular acceleration component (Î±, Î², Î³) (degrees/sÂ²)." },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Orientation instance in a trusted data exchange context." },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Orientation instance (plain text, max 2048 characters)." } } }

@@ -1,0 +1,98 @@
+{ "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "$id":                              "https://schemas.mpai.community/TFA/V1.5/data/SpeechQualifier.json",
+  "title":                            "Speech Qualifier V1.5",
+  "description":                      "Qualifier describing the characteristics, structure, and provenance of speech data.",
+  "type":                             "object",
+  "required":                         [ "Header", "SpeechQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":             false,
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "TFA-SPQ-V1.5" },
+    "MInstanceID":                    { "type": "string" },
+    "UEnvironmentID":                 { "type": "string" },
+    "SpeechQualifierID":              { "type": "string" },
+    "SpeechQualifierTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":                        { "type": "object", "additionalProperties": false },
+
+    "Formats":                         { "type": "object", "additionalProperties": false, "properties": {
+
+      "ContentFormats":               { "type": "object", "additionalProperties": false, "properties": {
+        "RawData":                    { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json" },
+        "OtherContentFormats":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/SpeechContentFormats.json" } } },
+
+      "TransportFormats":             { "type": "object", "additionalProperties": false, "properties": {
+        "FileFormat":                 { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/SpeechFileFormats.json" },
+        "StreamFormat":               { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/SpeechStreamFormats.json" } } } } },
+
+    "Attributes":                     { "type": "object", "additionalProperties": false, "properties": {
+
+      "Source":                       { "type": "string", "enum": [ "Real", "Synthetic" ] },
+
+      "Metadata":                     { "type": "object", "additionalProperties": false, "properties": {
+
+        "Language":                   { "type": "object", "additionalProperties": false, "properties": {
+          "LanguageFormat":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/LanguageFormats.json" },
+          "LanguageCode":             { "type": "string" } } },
+
+        "SpeakerIdentity":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" },
+
+        "SpeakerProperties":          { "type": "object", "additionalProperties": false, "properties": {
+          "SpeakerType":              { "type": "string", "enum": [ "Human", "Agent", "Unknown" ] },
+          "SpeakerCount":             { "type": "integer" } } },
+
+        "ContentDescription":         { "type": "object", "additionalProperties": false, "properties": {
+          "TextObject":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/TextObject.json" },
+          "EntityInternalStatus":     { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/PersonalStatus.json" } } } } },
+
+      "SpeechCharacteristics":        { "type": "object", "additionalProperties": false, "properties": {
+
+        "SpeakingRate":               { "type": "object", "additionalProperties": false, "properties": {
+          "Value":                    { "type": "number" },
+          "Unit":                     { "type": "string", "enum": [ "WordsPerSecond", "SyllablesPerSecond" ] } } },
+
+        "PitchRange":                 { "type": "object", "additionalProperties": false, "properties": {
+          "Value":                    { "type": "number" },
+          "Unit":                     { "type": "string", "enum": [ "Hertz", "Semitones" ] } } },
+
+        "Energy":                     { "type": "object", "additionalProperties": false, "properties": {
+          "Value":                    { "type": "number" },
+          "Type":                     { "type": "string", "enum": [ "RMS", "Peak", "LUFS" ] } } },
+
+        "Prosody":                    { "type": "string", "enum": [ "Neutral", "Expressive", "Emphatic", "Monotonic", "Other" ] },
+
+        "Disfluencies":               { "type": "boolean" } } },
+
+      "Structure":                    { "type": "object", "additionalProperties": false, "properties": {
+        "UtteranceCount":             { "type": "integer" },
+        "TurnBased":                  { "type": "boolean" } } },
+
+      "Device":                       { "type": "object", "additionalProperties": false, "properties": {
+
+        "DeviceID":                   { "type": "string" },
+
+        "DeviceRole":                 { "type": "string", "enum": [ "Capture", "Render", "Bidirectional" ] },
+
+        "DeviceType":                 { "type": "string", "enum": [ "Microphone", "MicrophoneArray", "Speaker", "Headphones", "WearableMic", "Other" ] },
+
+        "Manufacturer":               { "type": "string" },
+        "Model":                      { "type": "string" },
+
+        "DeviceLocation":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+        "DeviceGeometry":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/DeviceSceneGeometry.json" },
+        "MicrophoneDirectivityFormat":{ "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/MicrophoneDirectivityFormats.json" },
+
+        "CaptureConfiguration":       { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelCount":             { "type": "integer" },
+          "SamplingMode":             { "type": "string", "enum": [ "Mono", "Stereo", "MultiChannel", "Ambisonics" ] } } },
+
+        "RenderConfiguration":        { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelCount":             { "type": "integer" },
+          "RenderingMode":            { "type": "string", "enum": [ "Mono", "Stereo", "Multichannel", "Binaural" ] } } },
+
+        "Synchronisation":            { "type": "object", "additionalProperties": false, "properties": {
+          "ClockType":                { "type": "string", "enum": [ "Internal", "External", "NetworkSynchronised" ] },
+          "Reference":                { "type": "string" } } } } }  } },
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048 } } }

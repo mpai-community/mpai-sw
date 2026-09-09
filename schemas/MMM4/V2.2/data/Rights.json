@@ -1,0 +1,30 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMM4/V2.2/data/Rights.json",
+  "title":                    "Rights V2.2",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "Rights" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "^MMM-RGT-V2.2$" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "MEnvironmentID":         { "type": "string" },
+    "RightsID":               { "type": "string" },
+    "RightsTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "RightsData":             { "type": "array", "minItems": 1, "items": { 
+                                "type": "object", "additionalProperties": false, "required": [ "RightsID", "DeonticVerb", "PAIDOrPA", "Level" ], "properties": {
+
+      "DeonticVerb":          { "type": "string", "enum": [ "Must", "May", "May Not" ] },
+
+      "PAIDOrPA":             { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "oneOf": [
+                              { "type": "object", "additionalProperties": false, "required": [ "ProcessAction" ], "properties": {
+        "ProcessAction":      { "$ref": "https://schemas.mpai.community/MMM4/V2.2/data/ProcessAction.json" } } },
+                              { "type": "object", "additionalProperties": false,"required": [ "ProcessActionID" ], "properties": {
+        "ProcessActionID":    { "type": "string" },
+        "Status":             { "type": "string", "enum": [ "Model", "Final" ], "default": "Model" },
+        "Level":              { "type": "string", "enum": [ "Internal", "Acquired", "Granted" ] } } } ] } } } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

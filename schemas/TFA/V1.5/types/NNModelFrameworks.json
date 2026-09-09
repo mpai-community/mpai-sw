@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/types/NNModelFrameworks.json",
+  "title":   "NN Model Frameworks V1.5",
+  "type":    "string", "enum": [ "ai", "Caffe", "CNTK", "Keras", "MxNet", "PyTorch", "Scikit-Learn", "TensorFlow" ] }

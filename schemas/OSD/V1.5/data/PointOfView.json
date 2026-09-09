@@ -1,0 +1,38 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json",
+  "title":                "Object Point of View V1.5",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "PointOfViewID", "CartPosition", "Orientation" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "OSD-OPV-V1.5",
+                            "description": "Point of View Header â€“ Standard OSD-OPV-Vx.y" },
+    "MInstanceID":        { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Point of View is defined." },
+    "UEnvironmentID":     { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Point of View is defined." },
+    "PointOfViewID":      { "type": "string", "description": "Unique identifier of this Point of View instance." },
+    "PointOfViewTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Point of View was produced." },
+
+    "General":            { "type": "object", "additionalProperties": false, "required": [ "CoordType", "ObjectType", "MediaType" ],
+                            "description": "General classification data of the Object.", "properties": {
+      "CoordType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/CoordinateTypes.json", "description": "Coordinate type: one of Cartesian, Spherical, Geodesic, Toroidal." },
+      "ObjectType":       { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/ObjectTypes.json", "description": "Type of the Object: one of Digital Human, Generic." },
+      "MediaType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MediaTypes.json", "description": "Media type: one of Speech, Audio, Visual, Audio-Visual, Haptic, Smell, RADAR, LiDAR, Ultrasound." } } },
+
+    "CartPosition":       { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Cartesian position (X, Y, Z) in metres." },
+    "CartAccuracy":       { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each Cartesian position component (X, Y, Z) in metres." },
+    "SpherPosition":      { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Spherical position (r, Ï†, Î¸) in metres and degrees." },
+    "SpherAccuracy":      { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each spherical position component (r, Ï†, Î¸)." },
+    "Orientation":        { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Euler angles (Î±, Î², Î³) representing the Object's orientation in degrees." },
+    "OrientAccuracy":     { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" }, "description": "Accuracy of each Euler angle (Î±, Î², Î³) in Orientation (degrees)." },
+
+    "Aperture":           { "type": "array", "description": "Field of View expressed as Azimuth and Elevation.",
+                            "items": { "type": "object", "additionalProperties": false, "required": [ "Azimuth", "Elevation" ], "properties": {
+      "Azimuth":          { "type": "number", "description": "Azimuth angle (twice the half-angle in degrees)." },
+      "Elevation":        { "type": "number", "description": "Elevation angle (twice the half-angle in degrees)." } } } },
+
+    "FocalDistance":      { "type": "number", "description": "Focal distance of the Point of View (metres)." },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                            "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Point of View in a trusted data exchange context." },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Point of View (plain text, max 2048 characters)." } } }

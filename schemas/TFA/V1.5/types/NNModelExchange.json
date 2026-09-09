@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/types/NNModelExchange.json",
+  "title":   "NN Model Exchange V1.5",
+  "type":    "string", "enum": [ "NNEF", "ONNX" ] }

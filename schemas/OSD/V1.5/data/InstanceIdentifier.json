@@ -1,0 +1,38 @@
+{ "$schema":                       "https://json-schema.org/draft/2020-12/schema",
+  "$id":                           "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json",
+  "title":                         "Instance Identifier V1.5",
+  "type":                          "object",
+  "additionalProperties":          false,
+  "required":                      [ "Header", "MInstanceID", "InstanceIdentifier", "InstanceIdentifierData" ],
+  "properties":                    {
+
+    "Header":                      { "type": "string", "const": "OSD-IID-V1.5",
+                                     "description": "Instance Identifier Header â€“ Standard OSD-IID-Vx.y" },
+    "MInstanceID":                 { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Instance Identifier." },
+    "UEnvironmentID":              { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Instance Identifier." },
+    "InstanceIdentifier":          { "type": "string", "description": "Primary instance identifier, equivalent to the first element of InstanceIdentifierData." },
+    "InstanceTime":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Instance Identifier was produced." },
+
+    "InstanceSpaceTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space/Time where/when this Instance is located." },
+    "ObjectID":                    { "type": "string", "description": "The object to identified." },
+    
+    "InstanceIdentifierData":      { "type": "array", "minItems": 1,
+                                     "description": "Ordered set of candidate Instance Identifiers; the first element is the primary identifier.",
+                                     "items": { "type": "object", "additionalProperties": false, "required": [ "InstanceLabel", "LabelConfidenceLevel", "Taxonomy" ], "properties": {
+
+      "InstanceLabel":             { "type": "string", "description": "Candidate identifier label of the instance." },
+
+      "LabelConfidenceLevel":      { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence level [0..1] of this identifier hypothesis." },
+
+      "Taxonomy":                  { "type": "object", "additionalProperties": false, "required": [ "TaxonomyLevelIDs", "TaxonomyDataURI" ],
+                                     "description": "Taxonomy associated with this candidate identifier.", "properties": {
+
+        "TaxonomyLevelIDs":        { "type": "array", "items": { "type": "string" }, "description": "Hierarchical taxonomy path as an ordered list of level identifiers." },
+
+        "TaxonomyDataURI":         { "type": "string", "format": "uri", "description": "URI of the taxonomy definition." } } },
+
+      "TaxonomyConfidenceLevel":   { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence level [0..1] of the taxonomy association." } } } },
+
+    "DataXMData":                  { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                     "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Instance Identifier in a trusted data exchange context." },
+    "DescrMetadata":               { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Instance Identifier (plain text, max 2048 characters)." } } }

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/MMC/V2.5/data/EntityPersonalStatus.json",
+  "title": "Entity Personal Status V2.5",
+  "description": "The Personal Status of an Entity, assembled by Personal Status Multiplexing from the per-modality Personal Statuses (Text, Speech, Face, Body). It combines the modality Personal Statuses that are present; each is optional and at least one is expected.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "Header",
+    "EntityPersonalStatusID"
+  ],
+  "properties": {
+    "Header": {
+      "type": "string",
+      "const": "MMC-EPS-V2.5"
+    },
+    "MInstanceID": {
+      "type": "string",
+      "description": "M-Instance (Virtual Space) identifier."
+    },
+    "UEnvironmentID": {
+      "type": "string",
+      "description": "U-Environment (Real Space) identifier."
+    },
+    "EntityPersonalStatusID": {
+      "type": "string",
+      "description": "Unique Entity Personal Status identifier."
+    },
+    "EntityPersonalStatusTime": {
+      "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+      "description": "Time this Entity Personal Status was produced."
+    },
+    "TextPersonalStatus": {
+      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/TextPersonalStatus.json",
+      "description": "Personal Status of the Text modality (optional)."
+    },
+    "SpeechPersonalStatus": {
+      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/SpeechPersonalStatus.json",
+      "description": "Personal Status of the Speech modality (optional)."
+    },
+    "FacePersonalStatus": {
+      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/FacePersonalStatus.json",
+      "description": "Personal Status of the Face modality (optional)."
+    },
+    "DataXMData": {
+      "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json"
+    },
+    "DescrMetadata": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "GesturePersonalStatus": {
+      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/GesturePersonalStatus.json",
+      "description": "Personal Status of the Gesture modality (optional)."
+    }
+  }
+}

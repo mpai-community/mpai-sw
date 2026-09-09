@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/types/NNModelExtensions.json",
+  "title":   "NN Mode lExtensions V1.5",
+  "type":    "string", "enum": [ "engine", "h5", "keras", "mlmodel", "onnx", "pd", "pkl", "pt", "tflite" ] }

@@ -1,0 +1,6 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/ColourFormats.json",
+  "title":   "Colour Formats V1.5",
+  "type":    "string", "enum": [ "ACES2065-1", "ACEScg", "BT.601", "BT.709", "BT.2020", "BT.2100-PQ", "BT.2100-HLG", "DCI-P3",
+                                 "SMPTE 170M", "SMPTE 240M", "SMPTE 2036-1", "SMPTE 2084", "SMPTE 2086" ] }
+

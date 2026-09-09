@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/TFA/V1.5/formats/LanguageFormats.json",
+  "title": "Language Formats V1.5",
+  "description": "Language identification formats beyond ISO 639-1/2/3.",
+  "type": "string", "oneOf": [
+    { "const": "ISO 639-1",
+      "description": "Two-letter language codes (Set 1) for major individual languages; widely used in web and UI contexts." },
+    { "const": "ISO 639-2",
+      "description": "Three-letter language codes (Set 2) covering widely known languages and some language groups; maintained by the Library of Congress." },
+    { "const": "ISO 639-3",
+      "description": "Three-letter language codes (Set 3) intended to cover all known individual languages (living, extinct, ancient); maintained by SIL International." },
+    { "const": "ISO 639-5",
+      "description": "Three-letter language identifiers for language families/groups (Set 5); maintained by the Library of Congress." },
+    { "const": "BCP 47",
+      "description": "IETF Best Current Practice 47 language tags combining ISO 639 language codes with script (ISO 15924) and region (ISO 3166), e.g., 'en-US', 'zh-Hant-TW'." },
+    { "const": "Glottocode",
+      "description": "GlottologÃ¢â‚¬â„¢s stable identifiers for languages, dialects, and families (e.g., 'stan1293'); complementary to ISO 639-3." } ] }

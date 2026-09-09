@@ -1,0 +1,17 @@
+{
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/OSD/V1.5/data/InteractionPotential.json",
+  "title":                  "Interaction Potential V1.5",
+  "type":                   "object",
+  "required":               ["Header", "PotentialScore"],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "OSD-IAP-V1.5" },
+
+    "PotentialScore":       { "description": "Likelihood or strength of interaction", "type": "number", "minimum": 0, "maximum": 1 },
+
+    "InteractionType":      { "description": "Type of interaction supported or invited", "type": "string",
+                              "enum": ["Physical", "Visual", "Semantic", "None"] },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

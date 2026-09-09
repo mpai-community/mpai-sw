@@ -1,0 +1,24 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMC/V2.5/data/PersonalStatus.json",
+  "title":                    "Personal Status V2.5",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMC-EPS-V2.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "PersonalStatusID":       { "type": "string" },
+    "PersonalStatusTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "PersonalStatusSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "CognitiveState":         { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/CognitiveState.json" },
+
+    "Emotion":                { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/Emotion.json" }, 
+
+    "SocialAttitude":         { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/SocialAttitude.json" },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

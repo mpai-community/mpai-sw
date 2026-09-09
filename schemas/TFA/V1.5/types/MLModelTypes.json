@@ -1,0 +1,5 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/types/MLModelTypes.json",
+  "title":   "ML Model Types V1.5",
+  "type":    "string", "enum": [ "Bayesian-Classifier", "Neural-Network", "Random-Forest", "Support-Vector-Machine",
+                                 "XG-Boost", "Format" ] }

@@ -1,0 +1,18 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/Visual3DDynamicFormats.json",
+  "title":   "Visual 3 DDynamic Formats V1.5",
+  "type":    "string", "oneOf": [
+    { "const": "FBX",
+      "description": "Filmbox (FBX) Ã¢â‚¬â€ a widely used Autodesk 3D scene format supporting complex animation, skeletal rigs, deformers, cameras, lighting, and full scene hierarchies."  },
+    { "const": "G-PCC",
+      "description": "Geometry-based Point Cloud Compression Ã¢â‚¬â€ an ISO/MPEG standard for compressing static and dynamic point cloud geometry." },
+    { "const": "V-PCC",
+      "description": "Video-based Point Cloud Compression Ã¢â‚¬â€ an ISO/MPEG standard that encodes dynamic point clouds using video blocks for efficient animated 3D content delivery." },
+    { "const": "USD",
+      "description": "Universal Scene Description Ã¢â‚¬â€ PixarÃ¢â‚¬â„¢s extensible 3D scene format supporting time-sampled animated geometry, transforms, rigging, and layered scene composition." },
+    { "const": "USDZ",
+      "description": "USDZ Ã¢â‚¬â€ a packaged, compressed delivery format based on USD, supporting textured and animated 3D objects for AR and mobile experiences."  },
+    { "const": "GLTF",
+      "description": "glTF Ã¢â‚¬â€ an open standard by the Khronos Group supporting keyframe and skeletal animation, PBR materials, and efficient runtime delivery of 3D scenes."  },
+    { "const": "GLB",
+      "description": "Binary glTF (GLB) Ã¢â‚¬â€ a compact, single-file version of glTF containing geometry, animation, materials, and textures optimized for real-time engines and web delivery." } ] }

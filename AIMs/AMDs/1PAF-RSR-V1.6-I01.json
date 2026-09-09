@@ -1,0 +1,41 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-RSR-V1.6-I01", "AIMName": "PAF-RSR-V1.6"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Response and Scene Rendering: renders the machine's response as a Speaking Avatar. When a Personal Status is supplied, Personal Status De-multiplexing splits it into a Speech Personal Status and a Face Personal Status that make the speech and face expressive; when the Personal Status is absent the avatar renders neutrally. Text-To-Speech renders the Machine Speech from the Text Object; Generative Face Description produces the Machine Face Descriptors from the Text Object and the Machine Speech. A composite AIM assembled by the Modules that speak; it is a component AIM, not itself a Module.",
+
+  "InternalTypes":    [{"Name": "SpeechPersonalStatus",  "DataType": "MMC-SPS-V2.5"},
+                       {"Name": "FacePersonalStatus",    "DataType": "MMC-FPS-V2.5"},
+                       {"Name": "MachineSpeech",         "DataType": "OSD-BSO-V1.5"}],
+
+  "ExternalPorts":    [{"Name": "TextObject",              "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextObject",              "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatus",          "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineSpeech",           "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineFaceDescriptors",  "Direction": "Output", "DataType": "PAF-FDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-PSD-V1.6-I01", "AIMName": "PAF-PSD-V1.6" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-TTS-V2.5-I01", "AIMName": "MMC-TTS-V2.5" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-GFD-V1.6-I01", "AIMName": "PAF-GFD-V1.6" } }],
+
+  "Topology":         [{ "Output": { "AIMName": "",              "PortName": "TextObject", "PortNumber": 1 }, "Input": { "AIMName": "MMC-TTS-V2.5",  "PortName": "InputText" } },
+                       { "Output": { "AIMName": "",              "PortName": "TextObject" }                 , "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "TextObject" } },
+                       { "Output": { "AIMName": "",              "PortName": "PersonalStatus" }             , "Input": { "AIMName": "PAF-PSD-V1.6",  "PortName": "PersonalStatus" } },
+                       { "Output": { "AIMName": "PAF-PSD-V1.6",  "PortName": "SpeechPersonalStatus" }       , "Input": { "AIMName": "MMC-TTS-V2.5",  "PortName": "SpeechPersonalStatus" } },
+                       { "Output": { "AIMName": "PAF-PSD-V1.6",  "PortName": "FacePersonalStatus" }         , "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "FacePersonalStatus" } },
+                       { "Output": { "AIMName": "MMC-TTS-V2.5",  "PortName": "OutputSpeech" }               , "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "MachineSpeech" } },
+                       { "Output": { "AIMName": "MMC-TTS-V2.5",  "PortName": "OutputSpeech" }               , "Input": { "AIMName": "",              "PortName": "MachineSpeech" } },
+                       { "Output": { "AIMName": "PAF-GFD-V1.6",  "PortName": "MachineFaceDescriptors" }     , "Input": { "AIMName": "",              "PortName": "MachineFaceDescriptors" } }],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/PAF-RSR-V1.6-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Rsr",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

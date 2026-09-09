@@ -1,0 +1,73 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/PTF/V1.0/data/Security.json",
+  "title":                    "Security V1.0",
+  "type":                     "object",
+  "required":                 [ "Header", "Identity", "Transmission", "Integrity" ],
+  "additionalProperties":     false,
+  "properties":               {
+
+    "Header":                 { "type": "string", "pattern": "^PTF-SECV[0-9],{1,2},[.][0-9],{1,2}$" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "SecurityID":             { "type": "string" },
+    "SecurityTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "Identity":               { "type": "object", "required": [ "Issuer" ], "additionalProperties": false, "properties": {
+      "Source":               { "type": "array", "items": { "oneOf": [
+                              { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/ProcessInstance.json" },
+                              { "type": "string", "format": "uri" } ] } },
+      "Issuer":               { "type": "string", "format": "uri" },
+      "CredentialType":       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/Identity" },
+      "CredentialRef":        { "type": "string", "format": "uri" } } },
+
+    "Transmission":           { "type": "object", "required": [ "Protocol" ], "additionalProperties": false, "properties": {
+      "Protocol":             { "type": "string", "enum": [ "HTTPS", "MQTT", "CoAP", "WebSocket", "Custom" ] },
+      "Version":              { "type": "string", "pattern": "^[A-Za-z0-9._-],{1,32}$" },
+      "ChannelId":            { "type": "string", "format": "uuid" } } },
+
+    "Integrity":              { "type": "object", "required": [ "Hash" ], "additionalProperties": false, "properties": {
+      "Hash":                 { "type": "object", "required": [ "Algorithm", "Value" ], "additionalProperties": false, "properties": {
+        "Algorithm":          { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityAlgorithmTaxonomy.json#/properties/Hash" },
+        "Value":              { "type": "string", "pattern": "^[A-Fa-f0-9],{64}$" } } },
+
+      "Signature":            { "type": "object", "required": [ "Algorithm", "Value" ], "additionalProperties": false, "properties": {
+        "Algorithm":          { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityAlgorithmTaxonomy.json#/properties/Signature" },
+        "Value":              { "type": "string", "contentEncoding": "base64" },
+        "PublicKeyId":        { "type": "string", "format": "uri" } } } } },
+
+    "Encryption":             { "type": "object", "additionalProperties": false, "properties": {
+      "Algorithm":            { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/Confidentiality" },
+      "KeyId":                { "type": "string", "format": "uri" },
+      "IV":                   { "type": "string", "pattern": "^[A-Fa-f0-9],{24}$" },
+      "AAD":                  { "type": "string", "contentEncoding": "base64" },
+      "CiphertextRef":        { "type": "string", "format": "uri" } } },
+
+    "Authentication":         { "type": "object", "additionalProperties": false, "properties": {
+      "Token":                { "type": "string", "contentEncoding": "base64" },
+      "Format":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/Authentication" },
+      "Trace":                { "$ref": "https://schemas.mpai.community/AIF/V3.0/data/Trace.json" } } },
+
+    "Authorization":          { "type": "object", "additionalProperties": false, "properties": {
+      "SignedDecision":       { "type": "string", "contentEncoding": "base64" },
+      "Format":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/Authorization" },
+      "Trace":                { "$ref": "https://schemas.mpai.community/AIF/V3.0/data/Trace.json" } } },
+
+    "Freshness":              { "type": "object", "additionalProperties": false, "properties": {
+      "Nonce":                { "type": "string" },
+      "Sequence":             { "type": "integer" },
+      "Timestamp":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Time.json" },
+      "Format":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/FreshnessReplayProtection" },
+      "Trace":                { "$ref": "https://schemas.mpai.community/AIF/V3.0/data/Trace.json" } } },
+
+    "Attestation":            { "type": "object", "additionalProperties": false, "properties": {
+      "Evidence":             { "type": "string", "contentEncoding": "base64" },
+      "Format":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/SecurityTechnologyTaxonomy.json#/properties/Attestation" },
+      "Trace":                { "$ref": "https://schemas.mpai.community/AIF/V3.0/data/Trace.json" } } },
+
+    "AuditChainHash":         { "type": "string", "pattern": "^[A-Fa-f0-9],{64}$" },
+    "Timestamps":             { "type": "object", "additionalProperties": false, "properties": {
+      "SignedAt":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+      "EncryptedAt":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" } } },
+
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }
+

@@ -1,0 +1,38 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+  "title":                      "Simple Time V1.5",
+  "description":                "Time segments with flags and absolute accuracy.",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "SimpleTimeID", "SimpleTimeData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "OSD-STM-V1.5", "description": "Identifier and version (e.g., OSD-STM-1.5)." },
+    "MInstanceID":              { "type": "string", "description": "Identifier of M-Instance." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of UEnvironment." },
+    "SimpleTimeID":             { "type": "string", "description": "Identifier of Simple Time object." },
+
+    "SimpleTimeData":           { "type": "array", "description": "Time segments w/ flags & absolute Ãƒâ€šÃ‚Â± TimeUnit accuracy.", "items": {
+                                  "description":  "Time segment w/ accuracy parameters & decoded flag fields.",
+                                  "type": "object", "additionalProperties": false, "required": [ "FlagsByte", "StartTime", "EndTime" ], "properties": {
+
+      "FlagsByte":              { "type": "integer", "minimum": 0, "maximum": 255, "description": "[bits7..3=Reserved][bits2..1=TimeUnit][bit0=TimeType]." },
+      "StartTime":              { "type": "number", "description": "Start of Time as offset in TimeUnit from the epoch implied by TimeType." },
+      "EndTime":                { "type": "number", "description": "End of Time as offset in TimeUnit from the epoch implied by TimeType." },
+      "AccuracyMode":           { "type": "string", "enum": ["single", "separate"], "default": "single", "description": "single: one Ãƒâ€šÃ‚Â± applies to both Start/End; separate: distinct Ãƒâ€šÃ‚Â± for Start/End." },
+      "AccuracyPlusMinus":      { "type": "number", "minimum": 0,
+                                  "description": "If AccuracyMode=single: absolute Ãƒâ€šÃ‚Â± tolerance (in TimeUnit) applying to both StartTime and EndTime." },
+      "AccuracyStartPlusMinus": { "type": "number", "minimum": 0,
+                                  "description": "If AccuracyMode=separate: absolute Ãƒâ€šÃ‚Â± tolerance (in TimeUnit) for StartTime only." },
+      "AccuracyEndPlusMinus":   { "type": "number", "minimum": 0,
+                                  "description": "If AccuracyMode=separate: absolute Ãƒâ€šÃ‚Â± tolerance (in TimeUnit) for EndTime only." },
+      "TimeType":               { "type": "boolean", "description": "From FlagsByte bit0 (0=Relative: epoch 0000/00/00T00:00; 1=Absolute: epoch 1970/01/01T00:00)." },
+      "TimeUnit":               { "type": "string", "enum": ["00", "01", "10", "11"], "description": "From FlagsByte bits1..2: 00=sec, 01=ms, 10=us, 11=ns." },
+      "Reserved":               { "type": "integer", "minimum": 0, "maximum": 31, "description": "From FlagsByte bits3..7 (5 bits)." } },
+
+      "allOf":                  [ { "if": { "properties": { "AccuracyMode": { "const": "single" } } },
+                                    "then": { "required": [ "AccuracyPlusMinus" ] } },
+                                  { "if": { "properties": { "AccuracyMode": { "const": "separate" } } },
+                                    "then": { "required": [ "AccuracyStartPlusMinus", "AccuracyEndPlusMinus" ] } } ] } },
+
+    "DescrMetadata":            { "type": "string", "maxLength": 2048 } } }

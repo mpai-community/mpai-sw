@@ -1,0 +1,28 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/PTF/V1.0/data/ProcessInstance.json",
+  "title":                  "Process Instance V1.0",
+  "type":                   "object",
+  "required":               [ "Header", "ProcessInstanceID" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "pattern": "^AIF-PRI-V[0-9],{1,2},[.][0-9],{1,2}$" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "ProcessInstanceID":    { "type": "string" },
+    "ProcessInstanceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "ProcessAttributes":    { "type": "array", "items": { "oneOf": [
+                            { "type": "object", "required": [ "AIMType" ],          "additionalProperties": false, "properties": { "AIMType":          {
+                              "type": "string", "pattern": "^[A-Z],{3}-[A-Z],{3}-V[0-9],{1,2},[.][0-9],{1,2}$" } } },
+                            { "type": "object", "required": [ "AIMID" ],            "additionalProperties": false, "properties": { "AIMID":            { "type": "string" } } },
+                            { "type": "object", "required": [ "ImplementerAIMID" ], "additionalProperties": false, "properties": { "ImplementerAIMID": { "type": "string" } } },
+                            { "type": "object", "required": [ "ProcessType" ],      "additionalProperties": false, "properties": { "ProcessType":      { "type": "string" } } },
+                            { "type": "object", "required": [ "ProcessID" ],        "additionalProperties": false, "properties": { "ProcessID":        { "type": "string" } } } ] } },
+
+    "MLModelQualifier":     { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/MLModelQualifier.json" },
+
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } },
+
+  "$defs": {
+    "IdPattern":            { "type": "string", "pattern": "^[A-Z],{3}-[A-Z],{3}-V[0-9],{1,2},[.][0-9],{1,2}$" } } }

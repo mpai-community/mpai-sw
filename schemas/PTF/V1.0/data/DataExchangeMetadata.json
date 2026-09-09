@@ -1,0 +1,61 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+  "title":                      "Data Exchange Metadata V1.0",
+  "type":                       "object",
+  "required":                   [ "DataID", "Source" ],
+  "additionalProperties":       false,
+  "properties":                 {
+
+    "Header":                   { "type": "string", "pattern": "^PTF-DEM-V[0-9],{1,2},[.][0-9],{1,2}$" },
+    "MInstanceID":              { "type": "string" },
+    "DataExchangeMetadataID":   { "type": "string" },
+    "DataExchangeMetadataTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "DataID":                   { "type": "string" },
+
+    "DataType":                 { "$ref": "#/$defs/Pattern" },
+
+    "Source":                   { "$ref": "#/$defs/ProcessInstance" },
+
+    "Authorisations":           { "type": "array", "items": { "oneOf": [
+
+                                { "type": "object", "required": [ "AIMInstance", "Data" ], "additionalProperties": false, "properties": {
+        "AIMInstance":          { "$ref": "#/$defs/AIMInstance" },
+        "Data":                 { "$ref": "#/$defs/Data" } } },
+
+                                { "type": "object", "required": [ "ProcessInstance", "Data" ], "additionalProperties": false, "properties": {
+        "ProcessInstance":      { "$ref": "#/$defs/ProcessInstance" },
+        "Data":                 { "$ref": "#/$defs/Data" } } } ] } },
+
+    "Legality":                 { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/MLModelQualifier.json#/$defs/Attributes" },
+
+    "Security":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/Security.json" },
+
+    "Confidence":               { "type": "number", "minimum": 0, "maximum": 1 },
+
+    "Annotations":              { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": [ "Annotation" ], "properties": {
+      "Annotation":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Annotation.json" },
+      "AnnotationSpace":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" },
+      "AnnotationTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+      "AnnotationRights":       { "$ref": "https://schemas.mpai.community/MMM4/V2.2/data/Rights.json" } } } } ,
+
+    "DescrMetadata":            { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                      {
+
+    "Pattern":                  { "type": "string", "pattern": "^[A-Z],{3}-[A-Z],{3}-V[0-9],{1,2}\\.[0-9],{1,2}$" },
+
+    "Data":                     { "type": "array", "minItems": 1, "items": { "oneOf": [
+                                { "type": "object", "required": [ "DataType" ], "additionalProperties": false, "properties": {
+          "DataType":           { "$ref": "#/$defs/Pattern" } } },
+                                { "type": "object", "required": [ "DataID" ], "additionalProperties": false, "properties": {
+          "DataID":             { "type": "string" } } } ] } },
+
+    "AIMInstance":              { "type": "array", "minItems": 1, "items": { "oneOf": [
+                                { "type": "object", "required": [ "AIMType" ],          "additionalProperties": false, "properties": { "AIMType":          { "$ref": "#/$defs/Pattern" } } },
+                                { "type": "object", "required": [ "AIMID" ],            "additionalProperties": false, "properties": { "AIMID":            { "type": "string" } } },
+                                { "type": "object", "required": [ "ImplementerAIMID" ], "additionalProperties": false, "properties": { "ImplementerAIMID": { "type": "string" } } } ] } },
+
+    "ProcessInstance":          { "type": "array", "minItems": 1, "items": { "oneOf": [
+                                { "type": "object", "required": [ "AIMID" ],            "additionalProperties": false, "properties": { "AIMID":            { "type": "string" } } },
+                                { "type": "object", "required": [ "ImplementerAIMID" ], "additionalProperties": false, "properties": { "ImplementerAIMID": { "type": "string" } } } ] } } } }

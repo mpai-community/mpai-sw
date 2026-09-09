@@ -1,0 +1,28 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-SIR-V2.5-I01", "AIMName": "MMC-SIR-V2.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Speaker Identity Recognition: receives a Basic Speech Object and its Speech Time, matches the speaker against the Subject Gallery (the shared Repository written by User Enrollment and read here at run time), and returns the speaker identity as an Instance Identifier.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "InputSpeech",      "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "InputSpeechTime",  "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputSpeakerID",  "Direction": "Output", "DataType": "OSD-IID-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-SIR-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Sir",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "0.5 GB", "Request": "1 GB", "Maximum": "2 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

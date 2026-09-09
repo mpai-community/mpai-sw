@@ -1,0 +1,5 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/MicrophoneDirectivityFormats.json",
+  "title":   "Microphone Directivity Formats V1.5",
+  "type":    "string", "enum": [ "Omnidirectional", "Subcardioid", "Cardioid", "Supercardioid", "Hypercardioid",
+                                 "Bidirectional", "Figure-8", "Shotgun", "Hemispherical" ] } 

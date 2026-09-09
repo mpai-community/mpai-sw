@@ -1,0 +1,40 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "MMC-EDP-V2.5-I01", "AIMName": "MMC-EDP-V2.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Entity Dialogue Processing: produces the Machine's Text and Personal Status from the human's Text, its Text Descriptors, the human's Personal Status and identity, the identifiers of the scene's objects, and the Basic Audio-Visual Scene, using the running Summary as dialogue memory.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "Summary",                "Direction": "Input",  "DataType": "MMC-SUM-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "TextObject",             "Direction": "Input",  "DataType": "OSD-BTO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "TextDescriptors",        "Direction": "Input",  "DataType": "MMC-TDO-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "PersonalStatus",         "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "UserID",                 "Direction": "Input",  "DataType": "OSD-IID-V1.5", "PortNumber": 1, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "VisualObjectIDs",        "Direction": "Input",  "DataType": "OSD-IID-V1.5", "PortNumber": 2, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AudioObjectIDs",         "Direction": "Input",  "DataType": "OSD-IID-V1.5", "PortNumber": 3, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "VisualSceneGeometry",    "Direction": "Input",  "DataType": "OSD-BVG-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AudioSceneGeometry",     "Direction": "Input",  "DataType": "OSD-BAG-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BMS",                    "Direction": "Input",  "DataType": "OSD-BMS-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "MachineTextObject",      "Direction": "Output", "DataType": "OSD-BTO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "MachinePersonalStatus",  "Direction": "Output", "DataType": "MMC-EPS-V2.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "EditedSummary",          "Direction": "Output", "DataType": "MMC-SUM-V2.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-EDP-V2.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Mmc.Edp",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "2.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "4 GB", "Request": "8 GB", "Maximum": "16 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Medium", "Request": "High", "Maximum": "High"},
+                           {"Name": "GPU:Number",            "Minimum": "1", "Request": "1", "Maximum": "1"},
+                           {"Name": "GPU:CUDA:FrameBuffer",  "Minimum": "4 GB", "Request": "8 GB", "Maximum": "24 GB"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

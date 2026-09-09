@@ -1,0 +1,33 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/AIP/V1.0/data/MLModelManifest.json",
+  "title":                    "ML Model Manifest V1.0",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "MLModelManifestID" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "AIP-MLM-V1.0" },
+    "MInstanceID":            { "type": "string" },
+    "MLModelManifestID":      { "type": "string" },
+    "MLModelManifestTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "MLModelName":            { "type": "string" },
+    "ModelVersion":           { "type": "string" },
+    "MLModelFunction":        { "type": "string" },
+    "TrainingDataSetIDs":     { "type": "array", "items": { "type": "string" } },
+
+    "ApplicationProfile":     { "type": "object", "required": [ "ProfileType" ], "additionalProperties": true, "properties": {
+      "ProfileType":          { "type": "string" } } },
+
+    "MLModelInputDataTypes":  { "type": "object", "additionalProperties": false, "required": [ "DataType" ], "properties": {
+      "DataType":             { "type": "object", "additionalProperties": false, "required": [ "Acronym", "Name" ], "properties": {
+        "Acronym":            { "type": "string", "pattern": "^[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}$" },
+        "Name":               { "type": "string" } } } } },
+
+    "MLModelOutputDataTypes": { "type": "object", "additionalProperties": false, "required": [ "DataType" ], "properties": {
+      "DataType":             { "type": "object", "additionalProperties": false, "required": [ "Acronym", "Name" ], "properties": {
+        "Acronym":            { "type": "string", "pattern": "^[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}$" },
+        "Name":               { "type": "string" } } } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

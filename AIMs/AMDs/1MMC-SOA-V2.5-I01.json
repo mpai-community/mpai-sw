@@ -1,0 +1,25 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-SOA-V2.5-I01", "AIMName": "MMC-SOA-V2.5" },
+
+  "APIProfile":       "Basic",
+  "Description":      "Speech Object Acquisition: acquires a Basic Speech Object from a device (microphone, network, disk).",
+
+  "ExternalPorts":    [{"Name": "InputSpeech",  "Direction": "Input",  "DataType": "OSD-SPO-V1.5", "Technology": "Hardware", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputSpeech", "Direction": "Output", "DataType": "OSD-SPO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-SOA-V2.5-I01",
+"MASPort":          443,
+                        "BinaryName":        "Mpai.Mmc.Soa",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.0",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.1 GB", "Request": "0.2 GB", "Maximum": "0.5 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Low",    "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

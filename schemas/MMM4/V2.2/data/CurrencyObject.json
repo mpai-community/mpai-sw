@@ -1,0 +1,18 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMM4/V2.2/data/CurrencyObject.json",
+  "title":                    "Currency Object V2.2",
+  "type":                     "object",
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMM-CUO-V2.2" },
+    "MInstanceID":            { "type": "string" },
+    "MEnvironmentID":         { "type": "string" },
+    "CurrencyObjectID":       { "type": "string" },
+    "CurrencyObjectTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "CurrencyData":           { "type": "string" },
+
+    "CurrencyQualifier":      { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/CurrencyQualifier.json" },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

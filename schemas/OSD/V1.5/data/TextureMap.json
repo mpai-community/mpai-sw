@@ -1,0 +1,65 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/TextureMap.json",
+  "title":                    "Texture Map V1.5",
+  "type":                     "object",
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "OSD-TEM-V1.5" },
+    "MInstanceID":            { "type": "string" },
+    "EnvironmentID":          { "type": "string" },
+    "TextureMapID":           { "type": "string" },
+    "TextureMapSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "TextureMap":             { "type": "object", "properties": {
+
+      "BumpMap":              { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "number" } } } },
+
+      "DisplacementMap":      { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "number" } } } },
+
+      "AmbientOcclusionMap":  { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "number" } } } },
+
+      "RoughnessMap":         { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "number" } } } },
+
+      "DiffuseMap":           { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "object", "properties": {
+        "R":                  { "type": "number" },
+        "G":                  { "type": "number" },
+        "B":                  { "type": "number" } } } } } },
+
+      "ColourMap":            { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "object", "properties": {
+        "R":                  { "type": "number" },
+        "G":                  { "type": "number" },
+        "B":                  { "type": "number" } } } } } },
+
+      "ReflectionMap":        { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "object", "properties": {
+        "R":                  { "type": "number" },
+        "G":                  { "type": "number" },
+        "B":                  { "type": "number" } } } } } },
+
+      "SpecularMap":          { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "array", "items": { "oneOf": [
+                              { "type": "object", "properties": {
+        "R":                  { "type": "number" },
+        "G":                  { "type": "number" },
+        "B":                  { "type": "number" } } },
+                              { "type": "object", "properties": { "Intensity": { "type": "number" } } } ] } } } } },
+
+      "NormalMap":            { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
+                                "type": "array", "items": { "oneOf": [
+                              { "type": "object", "properties": {
+        "alpha":              { "type": "number" },
+        "beta":               { "type": "number" },
+        "gamma":              { "type": "number" } } },
+                              { "type": "object", "properties": {
+        "R":                  { "type": "number" },
+        "G":                  { "type": "number" },
+        "B":                  { "type": "number" } } } ] } } } } } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

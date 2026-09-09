@@ -1,0 +1,19 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "PAF-PSD-V1.6-I01", "AIMName": "PAF-PSD-V1.6" },
+
+  "APIProfile":       "Basic",
+  "Description":      "Personal Status De-multiplexing: the inverse of Personal Status Multiplexing. Splits one Entity Personal Status (the machine's) into the per-modality Personal Statuses - Speech, Face, and Gesture - for the Response and Scene Rendering composite. It de-multiplexes; it does not compute.",
+
+  "ExternalPorts":    [{"Name": "PersonalStatus",        "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechPersonalStatus",  "Direction": "Output", "DataType": "MMC-SPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FacePersonalStatus",    "Direction": "Output", "DataType": "MMC-FPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "GesturePersonalStatus", "Direction": "Output", "DataType": "MMC-GPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/PAF-PSD-V1.6-I01", "MASPort": 443, "BinaryName": "Mpai.Paf.Psd", "Architecture": "x86-64", "OperatingSystem": "Windows", "Version": "1.6", "Source": "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory", "Minimum": "0.25 GB", "Request": "0.5 GB", "Maximum": "1 GB"}, {"Name": "CPU:Class", "Minimum": "Low", "Request": "Low", "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

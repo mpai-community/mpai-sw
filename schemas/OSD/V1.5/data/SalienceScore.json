@@ -1,0 +1,20 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/OSD/V1.5/data/SalienceScore.json",
+  "title":                "Salience Score V1.5",
+  "type":                 "object",
+  "required":             [ "Header", "SalienceScore" ],
+  "additionalProperties": false,
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "OSD-SAL-V1.5" },
+    "MInstanceID":        { "type": "string" },
+    "SalienceScoreID":    { "type": "string" },
+
+    "SalienceScore":      { "type": "number", "minimum": 0, "maximum": 1 },
+    "SalienceLevel":      { "type": "string", "enum": [ "none", "very_low", "low", "medium", "high", "very_high", "unknown" ] },
+    "SalienceType":       { "type": "string", "enum": [ "Visual", "Audio", "Haptic", "Multimodal", "Unknown" ] },
+    "ComputationMethod":  { "type": "string", "enum": [ "size_center_contrast", "motion_magnitude", "edge_density", "model_specific", "unspecified" ] },
+    "Confidence":         { "type": "number", "minimum": 0, "maximum": 1 },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }

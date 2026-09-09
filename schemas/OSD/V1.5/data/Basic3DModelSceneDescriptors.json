@@ -1,0 +1,42 @@
+{ "$id":                                    "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelSceneDescriptors.json",
+  "$schema":                                "https://json-schema.org/draft/2020-12/schema",
+  "title":                                  "Basic 3D Model Scene Descriptors V1.5",
+  "type":                                   "object",
+  "required":                               [ "Header", "MInstanceID", "Basic3DModelSceneDescriptorsID", "Basic3DModelSceneDescriptorsSpaceTime",
+                                              "3DModelObjectCount", "Basic3DModelSceneDescriptors" ],
+  "additionalProperties":                   false,
+  "properties":                             {
+    "Header":                               { "type": "string", "const": "OSD-B3D-V1.5" },
+    "MInstanceID":                          { "type": "string" },
+    "UEnvironmentID":                       { "type": "string" },
+    "Basic3DModelSceneDescriptorsID":       { "type": "string" },
+    "Basic3DModelSceneDescriptorsTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "GravityValue":                         { "type": "number" },
+    "Basic3DModelSceneDescriptorsSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "3DModelObjectCount":                   { "type": "integer", "minimum": 0 },
+
+    "Basic3DModelSceneDescriptors":         { "type": "array", "items": { "$anchor": "Basic3DModelSceneItem", "type": "object",
+                                              "additionalProperties": false, "required": [ "ObjectIDOrObject", "PointOfView" ],
+                                              "properties": {
+      "3DModelObjectSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "3ObjectIDOr3Object":                 { "$ref": "#/$defs/ObjectIDOrObject" },
+      "3DModelSceneEnrichment":             { "type": "array", "items": { "$ref": "#/$defs/3DModelSceneEnrichment" } },
+      "PointOfView":                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" } } } },
+
+    "DataExchangeMetadata":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                        { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                                  {
+
+    "ObjectIDOrObject":                     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelObject.json" },
+                                            { "type": "string" } ] } },
+
+    "3DModelSceneEnrichment":               { "type": "object", "additionalProperties": false, "properties": {
+      "EnrichmentTrace":                    { "$ref": "https://schemas.mpai.community/AIF/V3.0/data/Trace.json" },
+      "Depth":                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Depth.json" },
+      "OcclusionFlag":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/OcclusionFlag.json" },
+      "InteractionPotential":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InteractionPotential.json" },
+      "SalienceScore":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SalienceScore.json" } } } } }
