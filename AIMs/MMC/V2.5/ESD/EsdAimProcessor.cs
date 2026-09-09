@@ -27,10 +27,13 @@ public sealed class EsdAimProcessor : IAimProcessor
     private readonly string _inPort;
     private readonly string _outPort;
     private readonly string _timePort;
+    private readonly string _namePort;
+    private readonly AIF.SharedStorage.ISharedStorage _store;
 
     public EsdAimProcessor(
         string instanceId,
         SpeakerEmbedder embedder,
+        AIF.SharedStorage.ISharedStorage store,
         AimPortReader ports)
     {
         _instanceId = instanceId;
@@ -38,6 +41,8 @@ public sealed class EsdAimProcessor : IAimProcessor
         _inPort     = ports.Input("OSD-BSO-V1.5");
         _outPort    = ports.Output("MMC-SDO-V2.5");
         _timePort   = ports.Input("OSD-STM-V1.5");      // acquisition time (OSD-STM)
+        _namePort   = ports.InputOrDefault("OSD-BTO-V1.5", 1, string.Empty);   // subject name (UA-originated key), optional
+        _store      = store;
     }
 
     public string InstanceId => _instanceId;
@@ -71,6 +76,19 @@ public sealed class EsdAimProcessor : IAimProcessor
                 SpeechDescriptorsData       = sdo.SpeechDescriptorsData,
                 SpeechDescriptorsQualifier  = sdo.SpeechDescriptorsQualifier
             };
+
+        // Persist the VOICE half to the gallery (Shared Storage, via the Controller API).
+        if (message.Ports.TryGetValue(_namePort, out var nmJson) && !string.IsNullOrWhiteSpace(nmJson))
+        {
+            var name = MpaiJson.FromJson<BasicTextObject>(nmJson)?.GetText();
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var stJson = sdo.SpeechDescriptorsObjectTime is null ? null : MpaiJson.ToJson(sdo.SpeechDescriptorsObjectTime);
+                var g = Mpai.Core.SubjectGallery.Load(_store);
+                g.EnrolEmbeddings(name!, voice: embedding, speechTime: stJson);
+                g.Save(_store);
+            }
+        }
 
         return System.Threading.Tasks.Task.FromResult(new Message
         {

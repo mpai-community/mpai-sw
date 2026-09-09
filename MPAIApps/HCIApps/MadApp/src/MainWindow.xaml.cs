@@ -36,7 +36,7 @@ public partial class MainWindow : Window
     private AvatarUaHost? _avatar;
 
     private volatile bool _running = false;   // set by Start/Stop; the loop watches it
-    private string _summary = "";             // running dialogue memory (MMC-SUM text)
+    private int _madId = -1;                   // MAD module instance, alive Start..Stop
 
     private const string Welcome = "Welcome to the HCI Multimodal Dialogue Service.";
     private const string Closing = "Thank you for using the HCI Multimodal Dialogue Service.";
@@ -89,10 +89,11 @@ public partial class MainWindow : Window
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
         if (_ua is null || _avatar is null || _running) return;
+        if (_ua.MPAI_AIFU_MODULE_Start(MadModule, _provider!, _settings!, out _madId) != AifError.OK)
+        { SetStatus("could not start " + MadModule); return; }
         _running = true;
         StartButton.IsEnabled = false;
         StopButton.IsEnabled = true;
-        _summary = "";
         InstructionText.Text = "Listening... speak, then pause. Press Stop to end.";
         _ = Task.Run(LoopAsync);   // run the conversation loop off the UI thread
     }
@@ -104,6 +105,8 @@ public partial class MainWindow : Window
         InstructionText.Text = "Conversation closed. Press Start to begin again.";
         SetStatus("stopped");
         StartButton.IsEnabled = true;
+        var mid = _madId; _madId = -1;
+        if (mid >= 0) _ua!.MPAI_AIFU_MODULE_Stop(mid);   // module lived Start..Stop; EDP kept memory
         _ = Task.Run(async () => { await RenderPromptAsync(Closing); });   // closing on Stop
     }
 
@@ -131,7 +134,6 @@ public partial class MainWindow : Window
 
                 await _avatar!.PresentAsync(new SpeakingAvatar(reply.Value.wav, reply.Value.fdo));
                 await Task.Delay(TimeSpan.FromSeconds(AvatarUaHost.WavDurationSeconds(reply.Value.wav) + 0.3));
-                _summary = reply.Value.summary;   // memory-carry
                 SetTurn("your turn...");
             }
         }
@@ -140,37 +142,28 @@ public partial class MainWindow : Window
 
     // One dialogue turn: Start MMC-MAD -> RunAsync{InputSpeech,InputSpeechTime,Summary}
     // -> read MachineSpeech + MachineFaceDescriptors + EditedSummary -> Stop.
-    private (byte[] wav, FaceDescriptorsObject? fdo, string summary)? RunTurn(BasicSpeechObject speech)
+    private (byte[] wav, FaceDescriptorsObject? fdo)? RunTurn(BasicSpeechObject speech)
     {
-        if (_ua is null) return null;
-        if (_ua.MPAI_AIFU_MODULE_Start(MadModule, _provider!, _settings!, out var id) != AifError.OK)
-        { Diag("MAD start failed"); return null; }
-        try
+        if (_ua is null || _madId < 0) return null;
+        var boundary = new Dictionary<string, string>
         {
-            var boundary = new Dictionary<string, string>
-            {
-                ["InputSpeech"]     = MpaiJson.ToJson(speech),
-                ["InputSpeechTime"] = MpaiJson.ToJson(NowSimpleTime()),
-                ["Summary"]         = MpaiJson.ToJson(Summary.Of(_summary))
-            };
-            var (err, outcome) = _ua.RunAsync(id, boundary).GetAwaiter().GetResult();
-            if (err != AifError.OK || outcome?.Completed is null || outcome.Completed.IsError)
-            { Diag("MAD run err=" + err); return null; }
+            ["InputSpeech"]     = MpaiJson.ToJson(speech),
+            ["InputSpeechTime"] = MpaiJson.ToJson(NowSimpleTime())
+            // no Summary: the Module (EDP) keeps the running memory internally
+        };
+        var (err, outcome) = _ua.RunAsync(_madId, boundary).GetAwaiter().GetResult();
+        if (err != AifError.OK || outcome?.Completed is null || outcome.Completed.IsError)
+        { Diag("MAD run err=" + err); return null; }
 
-            var c = outcome.Completed;
-            byte[] wav = Array.Empty<byte>();
-            FaceDescriptorsObject? fdo = null;
-            string summary = _summary;
-            if (c.Ports.TryGetValue("MachineSpeech", out var sj) && !string.IsNullOrWhiteSpace(sj))
-                wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
-            if (c.Ports.TryGetValue("MachineFaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-                fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
-            if (c.Ports.TryGetValue("EditedSummary", out var suj) && !string.IsNullOrWhiteSpace(suj))
-                summary = MpaiJson.FromJson<Summary>(suj)?.Text() ?? summary;
-            Diag("turn: wavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
-            return (wav, fdo, summary);
-        }
-        finally { _ua.MPAI_AIFU_MODULE_Stop(id); }
+        var c = outcome.Completed;
+        byte[] wav = Array.Empty<byte>();
+        FaceDescriptorsObject? fdo = null;
+        if (c.Ports.TryGetValue("MachineSpeech", out var sj) && !string.IsNullOrWhiteSpace(sj))
+            wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
+        if (c.Ports.TryGetValue("MachineFaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
+            fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+        Diag("turn: wavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
+        return (wav, fdo);
     }
 
     // ---- UA I/O limbs -------------------------------------------------------

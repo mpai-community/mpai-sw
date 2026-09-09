@@ -1,248 +1,48 @@
-{
-  "Identifier": {
-    "ImplementerID": "1",
-    "ImplementationID": "MMC-MAC-V2.5-I01",
-    "AIMName": "MMC-MAC-V2.5"
-  },
-  "APIProfile": "Basic",
-  "Description": "MMC Multimodal Access Control (MAC) Module. Recognises a User from face and speech and issues a UserID plus a spoken/rendered verdict. Face Recognition and Speaker Recognition each read the User IDs (the enrolled gallery) and the Scene Descriptors from Shared Storage - these are NOT ports. Time (OSD-STM) accompanies each captured object and is supplied by the User Agent's clock. ID Reconciliation reconciles the two candidate Instance Identifiers; Response and Scene Rendering produces the Vocal Response and Face Descriptors. The User Agent drives this Module through the Controller (start, write boundary inputs, read boundary outputs); it never acts on the AIMs. The Controller runs the sub-AIMs and routes data among them by data type per this L3.",
-  "InternalTypes": [
-    {
-      "Name": "FaceID",
-      "DataType": "OSD-IID-V1.5"
-    },
-    {
-      "Name": "SpeakerID",
-      "DataType": "OSD-IID-V1.5"
-    },
-    {
-      "Name": "PersonalStatus",
-      "DataType": "MMC-EPS-V2.5"
-    },
-    {
-      "Name": "Response",
-      "DataType": "OSD-BTO-V1.5"
-    }
-  ],
-  "ExternalPorts": [
-    {
-      "Name": "FaceObject",
-      "Direction": "Input",
-      "DataType": "OSD-BVO-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "FaceTime",
-      "Direction": "Input",
-      "DataType": "OSD-STM-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "SpeechObject",
-      "Direction": "Input",
-      "DataType": "OSD-BSO-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "SpeechTime",
-      "Direction": "Input",
-      "DataType": "OSD-STM-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "UserID",
-      "Direction": "Output",
-      "DataType": "OSD-IID-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "VocalResponse",
-      "Direction": "Output",
-      "DataType": "OSD-BSO-V1.5",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    },
-    {
-      "Name": "FaceDescriptors",
-      "Direction": "Output",
-      "DataType": "PAF-FDO-V1.6",
-      "Technology": "Software",
-      "Protocol": "",
-      "IsRemote": false
-    }
-  ],
-  "SubAIMs": [
-    {
-      "Identifier": {
-        "ImplementerID": "1",
-        "ImplementationID": "PAF-FIR-V1.6-I01",
-        "AIMName": "PAF-FIR-V1.6"
-      }
-    },
-    {
-      "Identifier": {
-        "ImplementerID": "1",
-        "ImplementationID": "MMC-SIR-V2.5-I01",
-        "AIMName": "MMC-SIR-V2.5"
-      }
-    },
-    {
-      "Identifier": {
-        "ImplementerID": "1",
-        "ImplementationID": "OSD-IDR-V1.5-I01",
-        "AIMName": "OSD-IDR-V1.5"
-      }
-    },
-    {
-      "Identifier": {
-        "ImplementerID": "1",
-        "ImplementationID": "PAF-RSR-V1.6-I01",
-        "AIMName": "PAF-RSR-V1.6"
-      }
-    }
-  ],
-  "Topology": [
-    {
-      "Output": {
-        "AIMName": "",
-        "PortName": "FaceObject"
-      },
-      "Input": {
-        "AIMName": "PAF-FIR-V1.6",
-        "PortName": "InputVisual"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "",
-        "PortName": "FaceTime"
-      },
-      "Input": {
-        "AIMName": "PAF-FIR-V1.6",
-        "PortName": "FaceTime"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "",
-        "PortName": "SpeechObject"
-      },
-      "Input": {
-        "AIMName": "MMC-SIR-V2.5",
-        "PortName": "InputSpeech"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "",
-        "PortName": "SpeechTime"
-      },
-      "Input": {
-        "AIMName": "MMC-SIR-V2.5",
-        "PortName": "InputSpeechTime"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "PAF-FIR-V1.6",
-        "PortName": "FaceID"
-      },
-      "Input": {
-        "AIMName": "OSD-IDR-V1.5",
-        "PortName": "FaceID",
-        "PortNumber": 1
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "MMC-SIR-V2.5",
-        "PortName": "OutputSpeakerID"
-      },
-      "Input": {
-        "AIMName": "OSD-IDR-V1.5",
-        "PortName": "SpeakerID",
-        "PortNumber": 2
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "OSD-IDR-V1.5",
-        "PortName": "UserID"
-      },
-      "Input": {
-        "AIMName": "",
-        "PortName": "UserID"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "OSD-IDR-V1.5",
-        "PortName": "PersonalStatus"
-      },
-      "Input": {
-        "AIMName": "PAF-RSR-V1.6",
-        "PortName": "PersonalStatus"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "OSD-IDR-V1.5",
-        "PortName": "Response"
-      },
-      "Input": {
-        "AIMName": "PAF-RSR-V1.6",
-        "PortName": "TextObject",
-        "PortNumber": 1
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "PAF-RSR-V1.6",
-        "PortName": "MachineSpeech"
-      },
-      "Input": {
-        "AIMName": "",
-        "PortName": "VocalResponse"
-      }
-    },
-    {
-      "Output": {
-        "AIMName": "PAF-RSR-V1.6",
-        "PortName": "MachineFaceDescriptors"
-      },
-      "Input": {
-        "AIMName": "",
-        "PortName": "FaceDescriptors"
-      }
-    }
-  ],
-  "Implementations": [
-    {
-      "ImplementationURI": "",
-      "MASPort": 0,
-      "BinaryName": "",
-      "Architecture": "",
-      "OperatingSystem": "",
-      "Version": "V2.5",
-      "Source": ""
-    }
-  ],
-  "ResourcePolicies": [],
-  "Documentation": [
-    {
-      "Type": "Specification",
-      "URI": ""
-    }
-  ]
-}
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-MAC-V2.5-I01", "AIMName": "MMC-MAC-V2.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Multimodal Access Control: recognises a User from face and speech and issues a spoken/rendered verdict. Face Recognition and Speaker Recognition read the enrolled gallery (the User IDs) and the Scene Descriptors from Shared Storage - these are NOT ports. Time (OSD-STM) accompanies each captured object and is supplied by the User Agent's clock. ID Reconciliation reconciles the two candidate Instance Identifiers and issues the Response (the verdict words) and its Personal Status; Response and Scene Rendering speaks the Response and produces the lip-synced Machine Face Descriptors. The reconciled UserID stays internal; the User consumes the Response and the avatar. Acquisition and delivery are the User Agent, not sub-AIMs.",
+
+  "InternalTypes":    [{"Name": "FaceID",          "DataType": "OSD-IID-V1.5"},
+                       {"Name": "SpeakerID",       "DataType": "OSD-IID-V1.5"},
+                       {"Name": "UserID",          "DataType": "OSD-IID-V1.5"},
+                       {"Name": "PersonalStatus",  "DataType": "MMC-EPS-V2.5"}],
+
+  "ExternalPorts":    [{"Name": "FaceObject",              "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceTime",                "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechObject",            "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechTime",              "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "Response",                "Direction": "Output", "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "VocalResponse",           "Direction": "Output", "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceDescriptors",         "Direction": "Output", "DataType": "PAF-FDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-FIR-V1.6-I01", "AIMName": "PAF-FIR-V1.6" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-SIR-V2.5-I01", "AIMName": "MMC-SIR-V2.5" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "OSD-IDR-V1.5-I01", "AIMName": "OSD-IDR-V1.5" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-RSR-V1.6-I01", "AIMName": "PAF-RSR-V1.6" } }],
+
+  "Topology":         [{ "Output": { "AIMName": "",              "PortName": "FaceObject" }                 , "Input": { "AIMName": "PAF-FIR-V1.6",  "PortName": "InputVisual" } },
+                       { "Output": { "AIMName": "",              "PortName": "FaceTime" }                   , "Input": { "AIMName": "PAF-FIR-V1.6",  "PortName": "FaceTime" } },
+                       { "Output": { "AIMName": "",              "PortName": "SpeechObject" }               , "Input": { "AIMName": "MMC-SIR-V2.5",  "PortName": "InputSpeech" } },
+                       { "Output": { "AIMName": "",              "PortName": "SpeechTime" }                 , "Input": { "AIMName": "MMC-SIR-V2.5",  "PortName": "InputSpeechTime" } },
+                       { "Output": { "AIMName": "PAF-FIR-V1.6",  "PortName": "FaceID" }                     , "Input": { "AIMName": "OSD-IDR-V1.5",  "PortName": "FaceID",    "PortNumber": 1 } },
+                       { "Output": { "AIMName": "MMC-SIR-V2.5",  "PortName": "OutputSpeakerID" }            , "Input": { "AIMName": "OSD-IDR-V1.5",  "PortName": "SpeakerID", "PortNumber": 2 } },
+                       { "Output": { "AIMName": "OSD-IDR-V1.5",  "PortName": "PersonalStatus" }             , "Input": { "AIMName": "PAF-RSR-V1.6",  "PortName": "PersonalStatus" } },
+                       { "Output": { "AIMName": "OSD-IDR-V1.5",  "PortName": "Response" }                   , "Input": { "AIMName": "PAF-RSR-V1.6",  "PortName": "TextObject", "PortNumber": 1 } },
+                       { "Output": { "AIMName": "OSD-IDR-V1.5",  "PortName": "Response" }                   , "Input": { "AIMName": "",              "PortName": "Response" } },
+                       { "Output": { "AIMName": "PAF-RSR-V1.6",  "PortName": "MachineSpeech" }              , "Input": { "AIMName": "",              "PortName": "VocalResponse" } },
+                       { "Output": { "AIMName": "PAF-RSR-V1.6",  "PortName": "MachineFaceDescriptors" }     , "Input": { "AIMName": "",              "PortName": "FaceDescriptors" } }],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/BI/AIMs/MMC-MAC-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Mac",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "2 GB", "Request": "4 GB", "Maximum": "10 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Medium", "Request": "High", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

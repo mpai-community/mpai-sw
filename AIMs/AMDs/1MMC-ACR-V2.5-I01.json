@@ -12,8 +12,8 @@
     { "Name": "SpeechTime",       "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false },
     { "Name": "PersonalStatus",   "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false },
     { "Name": "Response",         "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false },
-    { "Name": "FaceDescriptors",   "Direction": "Output", "DataType": "PAF-FDO-V1.6", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false },
-    { "Name": "SpeechDescriptors", "Direction": "Output", "DataType": "MMC-SDO-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "UserName",         "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "UserName",         "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false },
     { "Name": "VocalResponse",     "Direction": "Output", "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false },
     { "Name": "MachineFaceDescriptors", "Direction": "Output", "DataType": "PAF-FDO-V1.6", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false }
   ],
@@ -29,11 +29,13 @@
     { "Output": { "AIMName": "",             "PortName": "FaceTime"     }, "Input": { "AIMName": "PAF-EFD-V1.6", "PortName": "FaceTime"     } },
     { "Output": { "AIMName": "",             "PortName": "SpeechObject" }, "Input": { "AIMName": "MMC-ESD-V2.5", "PortName": "SpeechObject" } },
     { "Output": { "AIMName": "",             "PortName": "SpeechTime"   }, "Input": { "AIMName": "MMC-ESD-V2.5", "PortName": "SpeechTime"   } },
+    { "Output": { "AIMName": "",             "PortName": "UserName"     }, "Input": { "AIMName": "PAF-EFD-V1.6", "PortName": "UserName" } },
+    { "Output": { "AIMName": "",             "PortName": "UserName"     }, "Input": { "AIMName": "MMC-ESD-V2.5", "PortName": "UserName" } },
+    { "Output": { "AIMName": "",             "PortName": "UserName"     }, "Input": { "AIMName": "PAF-EFD-V1.6", "PortName": "UserName" } },
+    { "Output": { "AIMName": "",             "PortName": "UserName"     }, "Input": { "AIMName": "MMC-ESD-V2.5", "PortName": "UserName" } },
     { "Output": { "AIMName": "",             "PortName": "Response"       }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 1 } },
     { "Output": { "AIMName": "",             "PortName": "PersonalStatus" }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "PersonalStatus" } },
 
-    { "Output": { "AIMName": "PAF-EFD-V1.6", "PortName": "FaceDescriptors"   }, "Input": { "AIMName": "", "PortName": "FaceDescriptors"   } },
-    { "Output": { "AIMName": "MMC-ESD-V2.5", "PortName": "SpeechDescriptors" }, "Input": { "AIMName": "", "PortName": "SpeechDescriptors" } },
     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineSpeech"          }, "Input": { "AIMName": "", "PortName": "VocalResponse" } },
     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineFaceDescriptors" }, "Input": { "AIMName": "", "PortName": "MachineFaceDescriptors" } }
   ],

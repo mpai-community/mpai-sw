@@ -159,7 +159,11 @@ public partial class MainWindow : Window
             Diag("completed? " + (completed != null));
             if (completed is null) { SetStatus("the Module did not complete"); return; }
 
-            string? userId = completed.Ports.TryGetValue("UserID", out var uj) ? uj : null;
+            // The Module (IDR) decided the verdict and produced the Response words;
+            // the UA renders them - it does not read UserID or re-decide identity.
+            string? responseText = completed.Ports.TryGetValue("Response", out var rj) && !string.IsNullOrWhiteSpace(rj)
+                ? MpaiJson.FromJson<BasicTextObject>(rj)?.GetText()
+                : null;
             byte[]  wav    = Array.Empty<byte>();
             FaceDescriptorsObject? fdo = null;
             if (completed.Ports.TryGetValue("VocalResponse", out var vj) && !string.IsNullOrWhiteSpace(vj))
@@ -171,21 +175,15 @@ public partial class MainWindow : Window
             await _avatar!.PresentAsync(new SpeakingAvatar(wav, fdo));
             await Task.Delay(TimeSpan.FromSeconds(AvatarUaHost.WavDurationSeconds(wav) + 0.4));
 
-            Diag("outputs: UserID=" + (userId ?? "nil") + " vocalWavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
-            bool granted = !string.IsNullOrWhiteSpace(userId) && !IsCoarse(userId);
-            if (granted)
-            {
-                var name = LabelOf(userId!);
-                ShowResult(name is null ? "Access granted" : name + ", welcome", true);
-                Diag("verdict: GRANTED " + (name ?? "(no label)"));
-                SetStatus("identified");
-            }
-            else
-            {
-                ShowResult("Not identified", false);
-                Diag("verdict: DENIED");
-                SetStatus("not identified");
-            }
+            // Banner: show the Module's Response text; colour green/red from its words.
+            bool granted = responseText is not null &&
+                           responseText.IndexOf("granted", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            string banner = string.IsNullOrWhiteSpace(responseText)
+                ? (granted ? "Access granted" : "Not identified")
+                : responseText;
+            ShowResult(banner, granted);
+            Diag("outputs: response=" + (responseText ?? "nil") + " vocalWavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
+            SetStatus(granted ? "identified" : "not identified");
         }
         finally
         {

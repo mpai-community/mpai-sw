@@ -25,6 +25,7 @@ public sealed class EdpAimProcessor : IAimProcessor
 {
     private readonly string _instanceId;
     private readonly OllamaClient _llm;
+    private string _sessionSummary = String.Empty;   // running dialogue memory, kept INSIDE the AIM (session lifetime)
 
     private readonly string _summaryPort;    // MMC-SUM
     private readonly string _textPort;       // OSD-BTO
@@ -70,7 +71,7 @@ public sealed class EdpAimProcessor : IAimProcessor
         string userStatus = affect ? VerbalisePersonalStatus(psIn) : "";
         string userId     = ReadInstanceLabel(message, _userIdPort);
         string sceneClause = VerbaliseScene(message);
-        string summaryIn   = Read<Summary>(message, _summaryPort)?.Text() ?? "";
+        string summaryIn   = _sessionSummary;   // memory is internal; UA does not supply Summary
 
         // System prompt. EDP INPUT->OUTPUT RULE: the machine produces a Personal
         // Status ONLY when a Personal Status was provided as input. With no EPS in
@@ -131,6 +132,7 @@ public sealed class EdpAimProcessor : IAimProcessor
             ? $"User: {userText}\nCAV: {responseText}"
             : $"{summaryIn}\nUser: {userText}\nCAV: {responseText}";
         var editedSummary = Summary.Of(transcript);
+        _sessionSummary = transcript;   // keep memory inside the AIM for the next turn
 
         var ports = new Dictionary<string, string>
         {

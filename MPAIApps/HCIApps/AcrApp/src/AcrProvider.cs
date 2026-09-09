@@ -32,14 +32,15 @@ internal sealed class AcrProvider : IAimProvider, IDisposable
     private ArcFaceRecogniser? _arcFace;
     private SpeakerEmbedder?   _ecapa;
     private ScrfdFaceDetector? _scrfd;
+    private AIF.SharedStorage.ISharedStorage? _gallery;
 
     public AcrProvider(AmdStore store) => _store = store;
 
     public IAimProcessor Create(string aimName, IReadOnlyDictionary<string, string> settings)
         => aimName switch
         {
-            "PAF-EFD-V1.6" => new EfdAimProcessor(aimName, Scrfd(settings), ArcFace(settings), AimPortReader.Load(_store, aimName)),
-            "MMC-ESD-V2.5" => new EsdAimProcessor(aimName, Ecapa(settings), AimPortReader.Load(_store, aimName)),
+            "PAF-EFD-V1.6" => new EfdAimProcessor(aimName, Scrfd(settings), ArcFace(settings), Gallery(), AimPortReader.Load(_store, aimName)),
+            "MMC-ESD-V2.5" => new EsdAimProcessor(aimName, Ecapa(settings), Gallery(), AimPortReader.Load(_store, aimName)),
             "PAF-PSD-V1.6" => new PsdAimProcessor(aimName, AimPortReader.Load(_store, aimName)),
             "MMC-TTS-V2.5" => new TtsAimProcessor(aimName, TtsFactory.Create(settings), AimPortReader.Load(_store, aimName)),
             "PAF-GFD-V1.6" => new GfdAimProcessor(aimName, AimPortReader.Load(_store, aimName)),
@@ -50,6 +51,9 @@ internal sealed class AcrProvider : IAimProvider, IDisposable
         _arcFace ??= new ArcFaceRecogniser(Setting(s, "ArcFaceModel", Mpai.Core.MpaiPaths.Model("glintr100.onnx")));
     private SpeakerEmbedder Ecapa(IReadOnlyDictionary<string, string> s) =>
         _ecapa ??= new SpeakerEmbedder(Setting(s, "EcapaModel", Mpai.Core.MpaiPaths.Model("ecapa-tdnn.onnx")));
+    private AIF.SharedStorage.ISharedStorage Gallery() =>
+        _gallery ??= new AIF.SharedStorage.FileSharedStorage(Mpai.Core.MpaiPaths.SharedStorage, "MMC-MAC-V2.5", "local");
+
     private ScrfdFaceDetector Scrfd(IReadOnlyDictionary<string, string> s) =>
         _scrfd ??= new ScrfdFaceDetector(Setting(s, "ScrfdModel", Mpai.Core.MpaiPaths.Model("scrfd_10g_bnkps.onnx")));
 

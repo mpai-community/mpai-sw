@@ -116,6 +116,7 @@ public partial class MainWindow : Window
             var faceBoundary = new Dictionary<string, string>();
             if (face is not null) faceBoundary["FaceObject"] = MpaiJson.ToJson(face);
             faceBoundary["FaceTime"] = MpaiJson.ToJson(NowSimpleTime());
+            faceBoundary["UserName"] = MpaiJson.ToJson(BasicTextObject.FromText(userName));
 
             var (e1, out1) = await Task.Run(() => _ua!.RunAsync(_acrId, faceBoundary).GetAwaiter().GetResult());
             if (e1 != AifError.OK || out1 is null) { SetStatus("run error"); return; }
@@ -135,6 +136,7 @@ public partial class MainWindow : Window
                 resume["SpeechTime"]     = MpaiJson.ToJson(NowSimpleTime());
                 resume["Response"]       = MpaiJson.ToJson(BasicTextObject.FromText(thankYou));
                 resume["PersonalStatus"] = MpaiJson.ToJson(LightSmileStatus());
+                resume["UserName"]       = MpaiJson.ToJson(BasicTextObject.FromText(userName));
 
                 var (e2, out2) = await Task.Run(() => _ua!.ResumeAsync(_acrId, resume).GetAwaiter().GetResult());
                 if (e2 != AifError.OK || out2 is null) { SetStatus("resume error"); return; }
@@ -144,30 +146,9 @@ public partial class MainWindow : Window
             var completed = outcome.Completed;
             if (completed is null) { SetStatus("the Module did not complete"); return; }
 
-            // 4) Read the Face/Speech Descriptors (they carry their stamped times).
-            FaceDescriptorsObject?   fdo = null;
-            SpeechDescriptorsObject? sdo = null;
-            if (completed.Ports.TryGetValue("FaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-                fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
-            if (completed.Ports.TryGetValue("SpeechDescriptors", out var sj2) && !string.IsNullOrWhiteSpace(sj2))
-                sdo = MpaiJson.FromJson<SpeechDescriptorsObject>(sj2);
-
-            // 5) UA limb: write {name -> descriptors, times} to Shared Storage - the
-            //    SAME gallery scope MMC-MAC reads. Content is the descriptors' data;
-            //    times come from the descriptor objects (their stamped Object Time).
+            // The Module (EFD/ESD) wrote the enrolment to Shared Storage itself,
+            // via the Controller Shared-Storage API. The UA does not touch the gallery.
             InstructionText.Text = "Registering...";
-            var faceVec  = fdo?.Embedding();
-            var voiceVec = sdo?.Embedding();
-            string? faceTimeJson   = fdo?.FaceDescriptorsObjectTime   is null ? null : MpaiJson.ToJson(fdo.FaceDescriptorsObjectTime);
-            string? speechTimeJson = sdo?.SpeechDescriptorsObjectTime is null ? null : MpaiJson.ToJson(sdo.SpeechDescriptorsObjectTime);
-
-            await Task.Run(() =>
-            {
-                var shared = new AIF.SharedStorage.FileSharedStorage(Mpai.Core.MpaiPaths.SharedStorage, GalleryScope, "local");
-                var gallery = SubjectGallery.Load(shared);
-                gallery.EnrolEmbeddings(userName, faceVec, voiceVec, faceTimeJson, speechTimeJson);
-                gallery.Save(shared);
-            });
 
             // 6) Present the confirmation (the Module's RSR spoke it, light smile).
             byte[] wav = Array.Empty<byte>(); FaceDescriptorsObject? avatarFace = null;
