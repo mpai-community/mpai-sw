@@ -5,12 +5,20 @@ with a Speaking Avatar. There is **no identity and no affect input**: the user i
 anonymous and the machine renders neutrally. This document is for developers.
 
 ## 1. MPAI-AIF in brief
-- **AIM** - typed processing unit; **only data types matter at a port**.
-- **Module (AIW)** - composite AIM defined by an **L3** JSON (`AIMs/AMDs/`).
-- **Controller** - builds the Module from its L3 via a *provider*; runs it;
-  exposes `MODULE_Start/RunAsync/Stop`.
+- **AIM** - typed processing unit. **A port is addressed by its data type** (and
+  a *Port Number* only where a type repeats); the port's *name* is a human
+  label, never an address.
+- **Module (AIW)** - composite AIM defined by an **L3** JSON (`AIMs/AMDs/`);
+  `Direction` is **`Input`** or **`Output`**.
+- **Controller** - builds the Module from its L3 via a *provider* and runs it,
+  routing **by data type**: a Topology edge's endpoints are resolved once, from
+  `ExternalPorts`/`InternalTypes`, to `(DataType, PortNumber)`; no port names
+  are read at runtime. Renaming a port's `Name` changes nothing.
+- **North API** (`MW/HciApi`, `NorthApi`) - the UA-facing interface: the UA
+  supplies/reads `Datum(DataType, PortNumber, json)`; the wire key is
+  `DataType#PortNumber`.
 - **User Agent (UA)** - acquires speech (VAD-gated) and delivers the avatar;
-  **orchestrates** the Controller; described by a **WDL** `.orch` guidebook.
+  **orchestrates**; described by a **WDL** `.orch` guidebook.
 - **Local LLM** - the dialogue is produced by a local model served by **Ollama**.
 
 ## 2. The MAD Module - `MMC-MAD-V2.5`
@@ -22,13 +30,15 @@ L3: `AIMs/AMDs/1MMC-MAD-V2.5-I01.json`. Sub-AIMs (provider leaves):
 | `MMC-EDP-V2.5` | Dialogue | local LLM via **Ollama** (`llama3.2:3b`) |
 | `PAF-RSR-V1.6` (+ `PAF-PSD`, `MMC-TTS`, `PAF-GFD`) | Response & Scene Rendering | text -> speech + avatar |
 
-**Boundary in:** `InputSpeech` (OSD-BSO) + `InputSpeechTime` (OSD-STM) *or*
-`TextObject`, and `Summary` (MMC-SUM). **Boundary out:** `MachineSpeech`
-(OSD-BSO), `MachineFaceDescriptors` (PAF-FDO), `EditedSummary` (MMC-SUM).
+**Boundary in (by data type):** `InputSpeech` (OSD-BSO) + `InputSpeechTime`
+(OSD-STM). **Boundary out:** `MachineSpeech` (OSD-BSO),
+`MachineFaceDescriptors` (PAF-FDO).
 
-**Conversation memory** is the running **Summary**: each turn the UA supplies the
-current `Summary` and receives an `EditedSummary`, which it carries into the next
-turn. This is how MAD "remembers" without any per-session server state.
+**Conversation memory** is the running **Summary**, kept **inside the Module**
+(EDP) for the life of the session. The Module lives from **Start** to **Stop**,
+so EDP accumulates context across turns; the Summary is **not** carried at the
+boundary. This is memory owned by the part that owns it - the UA holds no
+Module-internal state.
 
 **EDP input->output rule (affect gating):** EDP produces a machine **Personal
 Status only if a Personal Status was provided as input**. MAD provides none, so
@@ -39,15 +49,16 @@ avatar renders neutrally. (Absent inputs are not referenced in the LLM prompt.)
 `MPAIApps/HCIApps/MadApp/src/` - namespace `HciMad`; provider `MadProvider.cs`;
 UA `MainWindow.xaml.cs`, realising `UAs/Orchestration/HCI-MAD.orch`.
 
-Flow (turn-taking loop, bounded by the **Start** and **Stop** buttons):
-- **on Start:** speak a fixed **welcome** (*"Welcome to the HCI Multimodal
-  Dialogue Service."*) via a one-shot RSR render, then enter the loop.
-- **each turn:** wait for the user to speak; **VAD** detects end-of-utterance;
-  `MODULE_Start("MMC-MAD-V2.5")` -> `RunAsync{InputSpeech, InputSpeechTime,
-  Summary}` -> read `MachineSpeech`/`MachineFaceDescriptors`/`EditedSummary` ->
-  the avatar speaks the reply -> `Summary = EditedSummary` -> `Stop`.
-- **on Stop:** speak a fixed **closing** (*"Thank you for using the HCI
-  Multimodal Dialogue Service."*) and end the loop.
+Flow (turn-taking loop, bounded by the **Start** and **Stop** buttons), driven
+through the **North API** by data type:
+- **on Start:** `StartFlow("MMC-MAD-V2.5")` (the Module stays alive for the
+  session), then speak a fixed **welcome** via a one-shot RSR render and enter
+  the loop.
+- **each turn:** **VAD** detects end-of-utterance; `Advance` with `(OSD-BSO)` +
+  `(OSD-STM)` -> read `(OSD-BSO)` reply + `(PAF-FDO)` avatar -> the avatar speaks.
+  EDP carries the memory internally between turns.
+- **on Stop:** speak a fixed **closing**, then `StopFlow` (ends the Module and
+  its memory).
 
 Microphone capture (VAD) and avatar rendering come from `UAs/Lib/UaKit`
 (`AvatarUaHost`). Any visual acquisition uses **native Windows Media Capture**.
@@ -55,14 +66,14 @@ Microphone capture (VAD) and avatar rendering come from `UAs/Lib/UaKit`
 ## 4. Files this app needs (build closure)
 - **App:** `MPAIApps/HCIApps/MadApp/*`
 - **AIF:** `AIF/V3.0/src/{Controller, Store, SharedStorage, GlobalStorage}`
-- **UA library / MW:** `UAs/Lib/UaKit`, `MW/HciApi`
+- **UA library / North API:** `UAs/Lib/UaKit`, `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`; leaves `MMC/V2.5/ASR`, `MMC/V2.5/EDP`, `PAF/V1.6/PSD`,
   `MMC/V2.5/TTS`, `PAF/V1.6/GFD`; audio devices `CAE3/V1.0/AOA(.Windows)`,
   `MMC/V2.5/SOD(.Windows)`
 - **L3s:** `1MMC-MAD-V2.5-I01.json` + `1MMC-ASR-V2.5-I01.json` +
   `1MMC-EDP-V2.5-I01.json` + the RSR-leaf AMDs
 - **Orchestration:** `UAs/Orchestration/HCI-MAD.orch`
-- **Schemas:** the JSON schemas reachable from MAD's data types (incl. MMC-SUM)
+- **Schemas:** the JSON schemas reachable from MAD's data types
 - **Settings:** `AIMs/aim-settings.json` - `MMC-ASR-V2.5`
   (`ExecutablePath` = whisper-cli, `ModelPath` = ggml-small.bin), `MMC-EDP-V2.5`
   (`OllamaModel` = llama3.2:3b), `MMC-TTS-V2.5` (Piper voice).

@@ -8,15 +8,22 @@ describes how it is built, for software developers.
 
 An **AIF** application is organised around a small number of standard notions:
 
-- **AIM (AI Module):** a unit of processing with typed input and output ports.
-  What matters at a port is the **data type**, not the port name.
+- **AIM (AI Module):** a unit of processing with typed ports. **A port is
+  addressed by its data type** (and a *Port Number* only where a type occurs
+  more than once on that AIM); the port's *name* is a human label, never an
+  address.
 - **Module (AIW):** a *composite* AIM - a graph of sub-AIMs wired together by
   data type. A Module is defined by an **L3** descriptor (a JSON file, here in
   `AIMs/AMDs/`) that lists its sub-AIMs, its boundary input/output ports and the
   internal topology.
-- **Controller:** the runtime. Given a Module's L3, it instantiates each sub-AIM
-  (through a *provider*), wires them, and executes the graph. It exposes
-  `MPAI_AIFU_MODULE_Start / RunAsync / ResumeAsync / Stop` to the User Agent.
+- **Controller:** the runtime. Given a Module's L3 it instantiates each sub-AIM
+  (through a *provider*), wires them, and executes the graph. It routes **by
+  data type**: a Topology edge's endpoints are resolved once, from each AIM's
+  `ExternalPorts` (and the composite's `InternalTypes`), to `(DataType,
+  PortNumber)` - nothing downstream reads a port name.
+- **North API** (`MW/HciApi`, `NorthApi`): the UA-facing interface. The UA
+  supplies/reads data as `Datum(DataType, PortNumber, json)`; the wire key is
+  `DataType#PortNumber`. No port names, no application verbs.
 - **User Agent (UA):** the application "brain with I/O limbs". It acquires and
   delivers real-world data (camera, microphone, the avatar), and it
   **orchestrates** - it tells the Controller what to do and in which order. The
@@ -24,7 +31,9 @@ An **AIF** application is organised around a small number of standard notions:
 - **Shared Storage:** a governed key/value area (here `SharedStorage/`) used, for
   MAC, as the enrolment **gallery** of subjects.
 - **Data types & qualifiers:** every port carries a typed object with a
-  *qualifier* (format, attributes...). Only data types matter across a port.
+  *qualifier* (format, attributes...). **Only data types matter across a port.**
+  Renaming a port's `Name` in an L3 changes nothing at runtime - the loader
+  resolves it to `(DataType, PortNumber)` and the software routes by that.
 
 ## 2. The pattern used here
 
@@ -34,8 +43,8 @@ User Agent  --drives-->  Controller  --builds & runs-->  Module (sub-AIMs)
    \------------ boundary inputs / outputs --------------------/
 ```
 
-- The UA drives the Module **only** through the Controller (`MODULE_Start`,
-  `RunAsync`, `Stop`, boundary read/write).
+- The UA drives the Module **only** through the North API by data type
+  (`StartFlow`, `Advance` with typed inputs, read typed outputs, `StopFlow`).
 - A **provider** (a small switch class) constructs each sub-AIM the L3 names.
 - The UA's behaviour is described by a **WDL** guidebook, the `.orch` file
   (`UAs/Orchestration/HCI-MAC.orch`), which the UA code realises.
@@ -52,10 +61,14 @@ L3: `AIMs/AMDs/1MMC-MAC-V2.5-I01.json`. Sub-AIMs (leaves the provider builds):
 | `PAF-RSR-V1.6` | Response & Scene Rendering (composite) | drives the avatar |
 | - `PAF-PSD`, `MMC-TTS`, `PAF-GFD` | RSR leaves | personal-status->face, text->speech, gesture/face descriptors |
 
-**Boundary in:** `FaceObject` (OSD-BVO) + `FaceTime` (OSD-STM), then
-`SpeechObject` (OSD-BSO) + `SpeechTime` (OSD-STM).
-**Boundary out:** `UserID` (OSD-IID), `VocalResponse` (OSD-BSO),
-`FaceDescriptors` (PAF-FDO).
+**Boundary in (by data type):** `FaceObject` (OSD-BVO), then `SpeechObject`
+(OSD-BSO). (Acquisition time travels inside each captured object.)
+**Boundary out:** `Response` (OSD-BTO, the verdict words), `VocalResponse`
+(OSD-BSO, spoken), `FaceDescriptors` (PAF-FDO, avatar).
+
+The **verdict and the identity decision stay inside the Module** (OSD-IDR): the
+UA renders the Response text and the spoken/avatar output and does **not** read a
+UserID or re-decide identity.
 
 **Reconciliation rule (OSD-IDR):** access is granted only when the **face and
 voice legs agree** on the same subject; one modality alone, or disagreement,
@@ -68,12 +81,12 @@ compare a live probe embedding against enrolled subjects by cosine similarity.
 
 `MPAIApps/HCIApps/MacApp/src/` - namespace `HciMac`.
 
-- `MainWindow.xaml.cs` - realises `HCI-MAC.orch`: `MODULE_Start("MMC-MAC-V2.5")`
-  -> speak *"...Look at the camera."* (a one-shot **RSR** render) -> capture a webcam
-  frame -> write `FaceObject/FaceTime` -> `RunAsync` -> the Module **suspends** for
-  speech -> speak *"Speak your passphrase."* -> capture microphone ->
-  `ResumeAsync` with `SpeechObject/SpeechTime` -> read `UserID` -> present verdict
-  -> `Stop`.
+- `MainWindow.xaml.cs` - realises `HCI-MAC.orch` via the **North API**:
+  `StartFlow("MMC-MAC-V2.5")` -> speak *"...Look at the camera."* (a one-shot **RSR**
+  render) -> capture a webcam frame -> `Advance` with `(OSD-BVO)` -> the Module
+  **suspends** for speech -> speak *"Speak your passphrase."* -> capture microphone
+  -> `Advance` with `(OSD-BSO)` -> read outputs by type (`OSD-BTO` verdict,
+  `OSD-BSO` spoken, `PAF-FDO` avatar) -> present verdict -> `StopFlow`.
 - `MacProvider.cs` - the switch: builds FIR/SIR/IDR/PSD/TTS/GFD.
 - Real-world limbs come from `UAs/Lib/UaKit` (`AvatarUaHost`): the WebView 3-D
   avatar, microphone capture, and `PresentAsync` (speak + animate).
@@ -87,7 +100,7 @@ Visual acquisition uses **native Windows Media Capture** (no OpenCV).
 
 - **App:** `MPAIApps/HCIApps/MacApp/*`
 - **Framework (AIF):** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
-- **UA library:** `UAs/Lib/UaKit`; middleware `MW/HciApi` (SpeakingAvatar)
+- **UA library / North API:** `UAs/Lib/UaKit`; `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`, and the leaves `PAF/V1.6/FIR`, `MMC/V2.5/SIR`,
   `OSD/V1.5/IDR`, `PAF/V1.6/PSD`, `MMC/V2.5/TTS`, `PAF/V1.6/GFD`; audio devices
   `CAE3/V1.0/AOA(.Windows)`, `MMC/V2.5/SOD(.Windows)`, visual `CVE/V1.0/VOA.Windows`
