@@ -1,0 +1,27 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "OSD-UOA-V1.5-I01",     "AIMName": "OSD-UOA-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Ultrasound Object Acquisition: receives a Basic Ultrasound Object and provides a Basic Ultrasound Object.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "BasicUltrasoundObject",              "Direction": "Input",    "DataType": "OSD-BUO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicUltrasoundObject",              "Direction": "Output",   "DataType": "OSD-BUO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-UOA-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Uoa",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "0.5 GB",   "Request": "1.5 GB",   "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

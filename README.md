@@ -1,6 +1,6 @@
 # MPAI HCI Applications - MAC, ACR, MAD
 
-Reference **Human-Companion Interaction (HCI)** applications built on the
+Reference **Human-CAV Interaction (HCI)** applications built on the
 **MPAI-AIF** AI Framework. Each application is a genuine AIF **Module** (a graph
 of AI Modules) executed by the AIF **Controller** and driven by a **User Agent**.
 The applications share a common runtime, a common set of AI Modules (AIMs), and a

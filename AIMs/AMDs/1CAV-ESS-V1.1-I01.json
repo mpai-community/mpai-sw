@@ -1,0 +1,45 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "CAV-ESS-V1.1-I01",     "AIMName": "CAV-ESS-V1.1"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Environment Sensing Subsystem, Stage 1: one Environment Sensing Technology end to end. Acquisition is the User Agent's. CAV-SAG produces the ego Spatial Attitude; OSD-BVS describes the acquired Basic Visual Object against it and raises the Alert, which leaves the Subsystem directly for Traffic Obstacle Avoidance without waiting for integration; CAV-BED integrates the single contribution and returns the scene as the prior for the next cycle. The Module is started once and run continuously; there is no per-cycle start.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "SpaceTime",                          "Direction": "Input",    "DataType": "OSD-SPT-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicVisualObject",                  "Direction": "Input",    "DataType": "OSD-BVO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpatialAttitude",                    "Direction": "Input",    "DataType": "OSD-OSA-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "GNSSObject",                         "Direction": "Input",    "DataType": "CAV-GNO-V1.1",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "WeatherData",                        "Direction": "Input",    "DataType": "CAV-WDT-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FullEnvironmentDescriptors",         "Direction": "Input",    "DataType": "CAV-FED-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicEnvironmentDescriptors",        "Direction": "Output",   "DataType": "CAV-BED-V1.1",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "Alert",                              "Direction": "Output",   "DataType": "CAV-ALT-V1.1",                                      "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [{"Identifier": {"ImplementerID": "1", "ImplementationID": "CAV-SAG-V1.1-I01", "AIMName": "CAV-SAG-V1.1"}},
+                           {"Identifier": {"ImplementerID": "1", "ImplementationID": "OSD-BVS-V1.5-I01", "AIMName": "OSD-BVS-V1.5"}},
+                           {"Identifier": {"ImplementerID": "1", "ImplementationID": "CAV-BED-V1.1-I01", "AIMName": "CAV-BED-V1.1"}}],
+
+  "Topology":             [{"Output": {"AIMName": "",               "PortName": "SpatialAttitude"},                     "Input": {"AIMName": "CAV-SAG-V1.1",  "PortName": "SpatialAttitude"}},
+                           {"Output": {"AIMName": "",               "PortName": "GNSSObject"},                          "Input": {"AIMName": "CAV-SAG-V1.1",  "PortName": "GNSSObject"}},
+                           {"Output": {"AIMName": "",               "PortName": "SpaceTime"},                           "Input": {"AIMName": "OSD-BVS-V1.5",  "PortName": "SpaceTime"}},
+                           {"Output": {"AIMName": "",               "PortName": "BasicVisualObject"},                   "Input": {"AIMName": "OSD-BVS-V1.5",  "PortName": "BasicVisualObject"}},
+                           {"Output": {"AIMName": "CAV-SAG-V1.1",   "PortName": "SpatialAttitude"},                     "Input": {"AIMName": "OSD-BVS-V1.5",  "PortName": "SpatialAttitude"}},
+                           {"Output": {"AIMName": "CAV-BED-V1.1",   "PortName": "BasicEnvironmentDescriptorsPrior"},    "Input": {"AIMName": "OSD-BVS-V1.5",  "PortName": "BasicEnvironmentDescriptors"}},
+                           {"Output": {"AIMName": "OSD-BVS-V1.5",   "PortName": "BasicVisualSceneDescriptors"},         "Input": {"AIMName": "CAV-BED-V1.1",  "PortName": "BasicVisualSceneDescriptors"}},
+                           {"Output": {"AIMName": "",               "PortName": "WeatherData"},                         "Input": {"AIMName": "CAV-BED-V1.1",  "PortName": "WeatherData"}},
+                           {"Output": {"AIMName": "",               "PortName": "FullEnvironmentDescriptors"},          "Input": {"AIMName": "CAV-BED-V1.1",  "PortName": "FullEnvironmentDescriptors"}},
+                           {"Output": {"AIMName": "OSD-BVS-V1.5",   "PortName": "Alert"},                               "Input": {"AIMName": "",              "PortName": "Alert"}},
+                           {"Output": {"AIMName": "CAV-BED-V1.1",   "PortName": "BasicEnvironmentDescriptors"},         "Input": {"AIMName": "",              "PortName": "BasicEnvironmentDescriptors"}}],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAV-ESS-V1.1-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cav.Ess",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.1",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "1 GB",     "Request": "2 GB",     "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-cav/tec/v1-1/"}]}

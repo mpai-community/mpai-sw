@@ -1,0 +1,28 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "CAV-SAG-V1.1-I01",     "AIMName": "CAV-SAG-V1.1"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Spatial Attitude Generation: produces the ego Spatial Attitude that the vehicle's Basic Scene Description AIMs anchor to. At Stage 1 one technology consumes it, so the output port occurs once and PortNumber may be omitted; at full scope six do, and the ports are distinguished by PortNumber alone.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "GNSSObject",                         "Direction": "Input",    "DataType": "CAV-GNO-V1.1",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpatialAttitude",                    "Direction": "Input",    "DataType": "OSD-OSA-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpatialAttitude",                    "Direction": "Output",   "DataType": "OSD-OSA-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAV-SAG-V1.1-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cav.Sag",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.1",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "1 GB",     "Request": "2 GB",     "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-cav/tec/v1-1/"}]}

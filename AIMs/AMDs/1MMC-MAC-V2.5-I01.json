@@ -9,9 +9,7 @@
                        {"Name": "PersonalStatus",  "DataType": "MMC-EPS-V2.5"}],
 
   "ExternalPorts":    [{"Name": "FaceObject",              "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "FaceTime",                "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "SpeechObject",            "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "SpeechTime",              "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "Response",                "Direction": "Output", "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "VocalResponse",           "Direction": "Output", "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "FaceDescriptors",         "Direction": "Output", "DataType": "PAF-FDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
@@ -22,9 +20,7 @@
                        { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-RSR-V1.6-I01", "AIMName": "PAF-RSR-V1.6" } }],
 
   "Topology":         [{ "Output": { "AIMName": "",              "PortName": "FaceObject" }                 , "Input": { "AIMName": "PAF-FIR-V1.6",  "PortName": "InputVisual" } },
-                       { "Output": { "AIMName": "",              "PortName": "FaceTime" }                   , "Input": { "AIMName": "PAF-FIR-V1.6",  "PortName": "FaceTime" } },
                        { "Output": { "AIMName": "",              "PortName": "SpeechObject" }               , "Input": { "AIMName": "MMC-SIR-V2.5",  "PortName": "InputSpeech" } },
-                       { "Output": { "AIMName": "",              "PortName": "SpeechTime" }                 , "Input": { "AIMName": "MMC-SIR-V2.5",  "PortName": "InputSpeechTime" } },
                        { "Output": { "AIMName": "PAF-FIR-V1.6",  "PortName": "FaceID" }                     , "Input": { "AIMName": "OSD-IDR-V1.5",  "PortName": "FaceID",    "PortNumber": 1 } },
                        { "Output": { "AIMName": "MMC-SIR-V2.5",  "PortName": "OutputSpeakerID" }            , "Input": { "AIMName": "OSD-IDR-V1.5",  "PortName": "SpeakerID", "PortNumber": 2 } },
                        { "Output": { "AIMName": "OSD-IDR-V1.5",  "PortName": "PersonalStatus" }             , "Input": { "AIMName": "PAF-RSR-V1.6",  "PortName": "PersonalStatus" } },

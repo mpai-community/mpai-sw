@@ -1,0 +1,31 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "OSD-BRS-V1.5-I01",     "AIMName": "OSD-BRS-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Basic RADAR Scene Description: describes the acquired BasicRADARObject as BasicRADARSceneDescriptors. It raises an Alert when what it describes warrants one, without waiting for integration. Two of its inputs are optional, so that the same AIM serves applications that have something to connect to them and applications that do not: an application holding an ego Spatial Attitude receives descriptors already expressed in that frame, and one that maintains a running environment description returns it as a prior. Both are wired in EnvironmentSensingSubsystem.json and neither is wired in MMC-HCI.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "SpaceTime",                          "Direction": "Input",    "DataType": "OSD-SPT-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicRADARObject",                   "Direction": "Input",    "DataType": "OSD-BRO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpatialAttitude",                    "Direction": "Input",    "DataType": "OSD-OSA-V1.5",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicEnvironmentDescriptors",        "Direction": "Input",    "DataType": "CAV-BED-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicRADARSceneDescriptors",         "Direction": "Output",   "DataType": "OSD-BRS-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "Alert",                              "Direction": "Output",   "DataType": "CAV-ALT-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-BRS-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Brs",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "1 GB",     "Request": "2 GB",     "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

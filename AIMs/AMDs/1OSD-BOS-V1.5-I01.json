@@ -1,0 +1,29 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "OSD-BOS-V1.5-I01",     "AIMName": "OSD-BOS-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Basic Offline Map Scene Description: describes the acquired BasicOfflineMapObject as BasicOfflineMapSceneDescriptors. Two of its inputs are optional, so that the same AIM serves applications that have something to connect to them and applications that do not: an application holding an ego Spatial Attitude receives descriptors already expressed in that frame, and one that maintains a running environment description returns it as a prior. Both are wired in EnvironmentSensingSubsystem.json and neither is wired in MMC-HCI. It neither raises an Alert nor takes a prior: EnvironmentSensingSubsystem.json wires neither to the offline map, a stored map having nothing to react to and nothing to gain from the previous cycle.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "SpaceTime",                          "Direction": "Input",    "DataType": "OSD-SPT-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicOfflineMapObject",              "Direction": "Input",    "DataType": "OSD-BOO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpatialAttitude",                    "Direction": "Input",    "DataType": "OSD-OSA-V1.5",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicOfflineMapSceneDescriptors",    "Direction": "Output",   "DataType": "OSD-BOS-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-BOS-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Bos",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "1 GB",     "Request": "2 GB",     "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

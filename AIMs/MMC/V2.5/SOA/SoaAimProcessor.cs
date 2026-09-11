@@ -61,7 +61,7 @@ public sealed class SoaAimProcessor : IAimProcessor
     {
         const double speakThreshold   = 0.02;   // RMS 0..1: above this = speaking
         const double silenceThreshold = 0.015;  // below this (held) = silence
-        var  silenceHangover = System.TimeSpan.FromMilliseconds(1200);
+        var  silenceHangover = System.TimeSpan.FromMilliseconds(1900);
         var  startTimeout    = System.TimeSpan.FromSeconds(8);
         var  runawayGuard    = System.TimeSpan.FromSeconds(30);
 

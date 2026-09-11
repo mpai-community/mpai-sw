@@ -25,4 +25,8 @@ Models/
 # OS
 Thumbs.db
 .DS_Store
-MPAIApps/HCIApps/*/*.exe
+MPAIApps/HCIApps/MatApp/MatApp.exe
+MPAIApps/HCIApps/MatApp/src/*.bak*
+MPAIApps/HCIApps/MatApp/src/*.allbak
+MPAIApps/HCIApps/MatApp/src/*.flowbak
+MPAIApps/HCIApps/MatApp/src/*.langbak

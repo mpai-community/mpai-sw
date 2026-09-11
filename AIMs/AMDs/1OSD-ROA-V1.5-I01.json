@@ -1,0 +1,27 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "OSD-ROA-V1.5-I01",     "AIMName": "OSD-ROA-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "RADAR Object Acquisition: receives a Basic RADAR Object and provides a Basic RADAR Object.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "BasicRADARObject",                   "Direction": "Input",    "DataType": "OSD-BRO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicRADARObject",                   "Direction": "Output",   "DataType": "OSD-BRO-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-ROA-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Roa",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "0.5 GB",   "Request": "1.5 GB",   "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

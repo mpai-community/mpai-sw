@@ -1,0 +1,30 @@
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "CAV-BED-V1.1-I01",     "AIMName": "CAV-BED-V1.1"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Basic Environment Description: integrates the Basic Scene Descriptors of the Environment Sensing Technologies and the ego Spatial Attitude into one Basic Environment Descriptors. At Stage 1 there is a single contributor, so integration is degenerate and the fusion outcome is single-EST. It also returns the scene as a prior to each describer; the prior leaves as generic Basic Scene Descriptors, because the describer that consumes it is a technology and must not be made to depend on a CAV Data Type.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "BasicVisualSceneDescriptors",        "Direction": "Input",    "DataType": "OSD-BVS-V1.5",                                      "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "WeatherData",                        "Direction": "Input",    "DataType": "CAV-WDT-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FullEnvironmentDescriptors",         "Direction": "Input",    "DataType": "CAV-FED-V1.1",                  "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicEnvironmentDescriptors",        "Direction": "Output",   "DataType": "CAV-BED-V1.1", "PortNumber": 1,                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicEnvironmentDescriptorsPrior",   "Direction": "Output",   "DataType": "CAV-BED-V1.1", "PortNumber": 2,                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAV-BED-V1.1-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cav.Bed",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.1",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",                "Minimum": "1 GB",     "Request": "2 GB",     "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",             "Minimum": "Low",      "Request": "Medium",   "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial",                           "URI": "https://mpai.community/standards/mpai-cav/tec/v1-1/"}]}
