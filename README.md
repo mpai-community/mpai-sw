@@ -47,13 +47,14 @@ User Agent  --North API-->  Controller  --builds & runs-->  Module (sub-AIMs)
    \----------------- typed boundary data -----------------------/
 ```
 
-## The application in this release
+## The applications in this release
 
 | App | Name | Purpose | Guides |
 | --- | --- | --- | --- |
 | **MAC** | Multimodal Access Control | Recognise a person from **face and voice** and issue a spoken verdict; access is granted only when both modalities agree. | [User](MPAIApps/HCIApps/MacApp/docs/MAC-User.md) / [Developer](MPAIApps/HCIApps/MacApp/docs/MAC-Developer.md) |
+| **MAD** | Multimodal Anonymous Dialogue | Hold a spoken **conversation** with a Speaking Avatar; no identity, a local LLM composes the replies. | [User](MPAIApps/HCIApps/MadApp/docs/MAD-User.md) / [Developer](MPAIApps/HCIApps/MadApp/docs/MAD-Developer.md) |
 
-MAC presents a 3-D **Speaking Avatar** that guides the user by voice.
+Each application presents a 3-D **Speaking Avatar** that guides the user by voice.
 
 ---
 
@@ -70,7 +71,7 @@ UAs/
   Lib/UaKit/      shared User-Agent toolkit: capture + Speaking-Avatar renderer
   Orchestration/  the WDL .orch guidebook (HCI-MAC)
   Assets/         avatar assets (glb, viewer HTML)
-MPAIApps/HCIApps/MacApp/   the application (src + docs + build)
+MPAIApps/HCIApps/{MacApp,MadApp}/   the applications (src + docs + build)
 schemas/          JSON schemas of the AIF data types
 ```
 
@@ -94,7 +95,11 @@ the North API; `UAs/` the User-Agent side; `MPAIApps/` the application.
 
 ```
 MPAIApps\HCIApps\MacApp\MacAppBuild.bat     ->  MacApp.exe
+MPAIApps\HCIApps\MadApp\MadAppBuild.bat     ->  MadApp.exe
 ```
+
+**MAD** additionally requires a running local **LLM via Ollama** and the
+**Whisper** speech-to-text CLI + model (see the MAD Developer guide).
 
 An application resolves its root (to find `AIMs/`, `Models/`, `UAs/`,
 `SharedStorage/`) from the executable's location — the first ancestor folder that
