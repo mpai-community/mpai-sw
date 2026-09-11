@@ -102,7 +102,7 @@ public sealed class EfdAimProcessor : IAimProcessor
                 var ftJson = fdo.FaceDescriptorsObjectTime is null ? null : MpaiJson.ToJson(fdo.FaceDescriptorsObjectTime);
                 var g = Mpai.Core.SubjectGallery.Load(_store);
                 g.EnrolEmbeddings(name!, face: embedding, faceTime: ftJson);
-                g.Save(_store);
+                g.SaveSubject(_store, name!);
             }
         }
 

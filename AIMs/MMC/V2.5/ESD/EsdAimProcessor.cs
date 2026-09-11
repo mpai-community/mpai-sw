@@ -86,7 +86,7 @@ public sealed class EsdAimProcessor : IAimProcessor
                 var stJson = sdo.SpeechDescriptorsObjectTime is null ? null : MpaiJson.ToJson(sdo.SpeechDescriptorsObjectTime);
                 var g = Mpai.Core.SubjectGallery.Load(_store);
                 g.EnrolEmbeddings(name!, voice: embedding, speechTime: stJson);
-                g.Save(_store);
+                g.SaveSubject(_store, name!);
             }
         }
 

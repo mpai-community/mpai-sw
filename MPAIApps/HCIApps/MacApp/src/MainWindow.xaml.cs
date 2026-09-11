@@ -1,53 +1,44 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-using AIF.Controller;
-using AIF.Store;
+using AIF.Controller;   // AifError
+using AIF.Store;        // AmdStore (provider factory)
 
 using Mpai.Core;
 using Mpai.Core.OSD;
 using Mpai.Aims.Visual;   // WebcamVisualAcquisition, VisualAcquisitionRequest
 using Mpai.UaKit;         // AvatarUaHost
-using Mpai.Hci.Api;       // SpeakingAvatar
+using Mpai.Hci.Api;       // NorthApi, SpeakingAvatar
 
 namespace HciMac;
 
-// HCI-MAC User Agent.  Realises UAs/Orchestration/HCI-MAC.orch step-for-step
-// (see M3167 - HCI-MAC step-by-step operation). The UA has two roles only:
-//   * real-world I/O limbs: render the avatar, capture the webcam frame, capture
-//     the microphone - and it stamps the acquired Face Object's qualifier
-//     (VisualObjectType = Face) at acquisition, because MAC has no CVE-VSI stage;
-//   * orchestration: it tells the Controller what to do, in the order the
-//     guidebook (.orch) prescribes, and reads back the boundary outputs.
-// It drives the MMC-MAC-V2.5 Module through the Controller ONLY:
-//   Start -> write boundary inputs (FaceObject/FaceTime, then, on the Module's
-//   request, SpeechObject/SpeechTime) -> read boundary outputs
-//   (UserID, VocalResponse, FaceDescriptors) -> Stop.
-// It never names a sub-AIM, never orders their execution, never wires them.
+// HCI-MAC User Agent - drives MMC-MAC through the type-addressed North API.
+// The UA identifies data ONLY by data type: supply OSD-BVO (face) -> the flow
+// suspends -> supply OSD-BSO (speech) -> read OSD-BTO (Response, banner),
+// OSD-BSO (VocalResponse, speak), PAF-FDO (FaceDescriptors, avatar). No names.
 public partial class MainWindow : Window
 {
     private const string MacModule = "MMC-MAC-V2.5";
-    private const string RsrModule = "PAF-RSR-V1.6";   // renders the fixed spoken prompts
+    private const string RsrModule = "PAF-RSR-V1.6";
+
+    private const string BVO = "OSD-BVO-V1.5";
+    private const string BSO = "OSD-BSO-V1.5";
+    private const string BTO = "OSD-BTO-V1.5";
+    private const string EPS = "MMC-EPS-V2.5";
+    private const string FDO = "PAF-FDO-V1.6";
 
     private static readonly string AmdDir       = Mpai.Core.MpaiPaths.Amds;
     private static readonly string SettingsPath = Mpai.Core.MpaiPaths.Settings;
     private static readonly string AssetsDir    = Mpai.Core.MpaiPaths.Assets;
     private static readonly string GalleryJson  = Mpai.Core.MpaiPaths.Gallery;
 
-    private UserAgent?    _ua;
-    private MacProvider?  _provider;
-    private AimSettings?  _settings;
+    private NorthApi?     _north;
     private AvatarUaHost? _avatar;
-    private int _macId = -1;
 
-    // ---- Diagnostics: FOLLOW THE CONTENT. Toggle with DiagOn. -------------
-    private static bool DiagOn = true;   // set false to silence
     private static void Diag(string s)
     {
-        if (!DiagOn) return;
         try { System.IO.File.AppendAllText(@"C:\Users\Leonardo\Downloads\mac-diag.log",
               DateTime.Now.ToString("HH:mm:ss.fff") + "  " + s + System.Environment.NewLine); } catch { }
     }
@@ -67,13 +58,7 @@ public partial class MainWindow : Window
             await _avatar.InitAsync();
 
             await Task.Run(() =>
-            {
-                var store = new AmdStore(AmdDir); store.Scan();
-                _settings = AimSettings.Load(SettingsPath);
-                _provider = new MacProvider(store, GalleryJson);
-                _ua       = new UserAgent(store);
-                _ua.MPAI_AIFU_Controller_Initialize();
-            });
+                _north = new NorthApi(AmdDir, SettingsPath, store => new MacProvider(store, GalleryJson)));
 
             InstructionText.Text = "Press Start to begin.";
             SetStatus("Ready.");
@@ -88,7 +73,7 @@ public partial class MainWindow : Window
 
     private async void StartButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_ua is null || _avatar is null) return;
+        if (_north is null || _avatar is null) return;
         StartButton.IsEnabled = false;
         HideResult();
         try { await RunFlowAsync(); }
@@ -100,102 +85,75 @@ public partial class MainWindow : Window
         }
     }
 
-    // The M3167 sequence, realised as UA -> Controller calls.
     private async Task RunFlowAsync()
     {
-        // Start the Module (Controller builds MMC-MAC-V2.5 from its L3).
-        var started = await Task.Run(() =>
-            _ua!.MPAI_AIFU_MODULE_Start(MacModule, _provider!, _settings!, out _macId));
-        Diag("MODULE_Start " + MacModule + " -> err=" + started + " id=" + _macId);
+        var started = await Task.Run(() => _north!.StartFlow(MacModule));
+        Diag("StartFlow " + MacModule + " -> " + started);
         if (started != AifError.OK) { SetStatus("could not start " + MacModule); return; }
 
         try
         {
-            // 1) Welcome + look-at-camera prompt (a separate RSR render), then
-            //    give the human ~1 s to turn, then capture the face.
             InstructionText.Text = "Welcome to the HCI Multimodal Access Control Service. Look at the camera.";
             SetFace("acquiring face...");
             var speakLook = RenderPromptAsync("Welcome to the HCI Multimodal Access Control Service. Look at the camera.");
-            await Task.Delay(TimeSpan.FromSeconds(1));       // .orch: wait 1s
-            var face = await CaptureFaceAsync();             // VOA stamps VisualObjectType = Face
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            var face = await CaptureFaceAsync();
             await speakLook;
-            Diag("face content: bytes=" + (face?.Data?.Length ?? 0) + " type=" + (face?.VisualQualifier?.Attributes?.VisualObjectType ?? "nil"));
+            Diag("face bytes=" + (face?.Data?.Length ?? 0));
 
-            // 2) Write the face boundary ports and let the Module run. FIR runs;
-            //    the Module then SUSPENDS waiting for the speech boundary port.
-            var faceBoundary = new Dictionary<string, string>();
-            if (face is not null) faceBoundary["FaceObject"] = MpaiJson.ToJson(face);
-            faceBoundary["FaceTime"] = MpaiJson.ToJson(NowSimpleTime());
+            var faceIn = new List<NorthApi.Datum>();
+            if (face is not null) faceIn.Add(new NorthApi.Datum(BVO, MpaiJson.ToJson(face)));
+            var r1 = await Task.Run(() => _north!.Advance(MacModule, faceIn));
+            Diag("Advance(face) -> err=" + r1.Error + (r1.Suspended ? " suspended" : " completed"));
+            if (!r1.Ok) { SetStatus("run error"); return; }
 
-            Diag("write boundary: FaceObject=" + faceBoundary.ContainsKey("FaceObject") + " FaceTime=" + faceBoundary.ContainsKey("FaceTime"));
-            var (e1, out1) = await Task.Run(() => _ua!.RunAsync(_macId, faceBoundary).GetAwaiter().GetResult());
-            if (e1 != AifError.OK || out1 is null) { SetStatus("run error"); return; }
-            Diag("RunAsync -> err=" + e1 + " " + (out1.Suspended ? ("suspended waiting=" + out1.WaitingPort) : "completed"));
+            var result = r1;
 
-            var outcome = out1;
-
-            // 3) On the Module's request for speech, prompt and capture it, then
-            //    Resume with the speech boundary ports. SIR -> IDR -> RSR complete.
-            if (outcome.Suspended)
+            if (r1.Suspended)
             {
                 InstructionText.Text = "Speak your passphrase.";
                 SetVoice("acquiring speech...");
                 await RenderPromptAsync("Speak your passphrase.");
                 var speech = await CaptureSpeechAsync();
 
-                var speechBoundary = new Dictionary<string, string>();
-                if (speech is not null) speechBoundary["SpeechObject"] = MpaiJson.ToJson(speech);
-                speechBoundary["SpeechTime"] = MpaiJson.ToJson(NowSimpleTime());
-
-                Diag("write boundary: SpeechObject=" + speechBoundary.ContainsKey("SpeechObject") + " SpeechTime=" + speechBoundary.ContainsKey("SpeechTime"));
-                var (e2, out2) = await Task.Run(() => _ua!.ResumeAsync(_macId, speechBoundary).GetAwaiter().GetResult());
-                if (e2 != AifError.OK || out2 is null) { SetStatus("resume error"); return; }
-                outcome = out2;
-                Diag("ResumeAsync -> err=" + e2 + " " + (out2.Suspended ? ("suspended waiting=" + out2.WaitingPort) : "completed"));
+                var speechIn = new List<NorthApi.Datum>();
+                if (speech is not null) speechIn.Add(new NorthApi.Datum(BSO, MpaiJson.ToJson(speech)));
+                var r2 = await Task.Run(() => _north!.Advance(MacModule, speechIn));
+                Diag("Advance(speech) -> err=" + r2.Error + (r2.Suspended ? " suspended" : " completed"));
+                if (!r2.Ok) { SetStatus("resume error"); return; }
+                result = r2;
             }
 
-            // 4) Read the boundary outputs.
-            var completed = outcome.Completed;
-            Diag("completed? " + (completed != null));
-            if (completed is null) { SetStatus("the Module did not complete"); return; }
+            string? responseText = null;
+            var rj = result.ByType(BTO);
+            if (!string.IsNullOrWhiteSpace(rj)) responseText = MpaiJson.FromJson<BasicTextObject>(rj)?.GetText();
 
-            // The Module (IDR) decided the verdict and produced the Response words;
-            // the UA renders them - it does not read UserID or re-decide identity.
-            string? responseText = completed.Ports.TryGetValue("Response", out var rj) && !string.IsNullOrWhiteSpace(rj)
-                ? MpaiJson.FromJson<BasicTextObject>(rj)?.GetText()
-                : null;
-            byte[]  wav    = Array.Empty<byte>();
+            byte[] wav = Array.Empty<byte>();
+            var vj = result.ByType(BSO);
+            if (!string.IsNullOrWhiteSpace(vj)) wav = MpaiJson.FromJson<BasicSpeechObject>(vj)?.Data ?? Array.Empty<byte>();
+
             FaceDescriptorsObject? fdo = null;
-            if (completed.Ports.TryGetValue("VocalResponse", out var vj) && !string.IsNullOrWhiteSpace(vj))
-                wav = MpaiJson.FromJson<BasicSpeechObject>(vj)?.Data ?? Array.Empty<byte>();
-            if (completed.Ports.TryGetValue("FaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-                fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+            var fj = result.ByType(FDO);
+            if (!string.IsNullOrWhiteSpace(fj)) fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
 
-            // 5) Present the verdict: the avatar (rendered by the Module's RSR) speaks it.
             await _avatar!.PresentAsync(new SpeakingAvatar(wav, fdo));
             await Task.Delay(TimeSpan.FromSeconds(AvatarUaHost.WavDurationSeconds(wav) + 0.4));
 
-            // Banner: show the Module's Response text; colour green/red from its words.
             bool granted = responseText is not null &&
                            responseText.IndexOf("granted", System.StringComparison.OrdinalIgnoreCase) >= 0;
             string banner = string.IsNullOrWhiteSpace(responseText)
                 ? (granted ? "Access granted" : "Not identified")
                 : responseText;
             ShowResult(banner, granted);
-            Diag("outputs: response=" + (responseText ?? "nil") + " vocalWavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
+            Diag("outputs: response=" + (responseText ?? "nil") + " wav=" + wav.Length + " fdo=" + (fdo == null ? "nil" : "present"));
             SetStatus(granted ? "identified" : "not identified");
         }
         finally
         {
-            var id = _macId; _macId = -1;
-            await Task.Run(() => _ua!.MPAI_AIFU_MODULE_Stop(id));
+            await Task.Run(() => _north!.StopFlow(MacModule));
         }
     }
 
-    // ---- UA real-world I/O limbs -------------------------------------------
-
-    // Capture a webcam frame as a Basic Visual Object, qualified as a Face
-    // (VisualObjectType = Face) at acquisition, since MAC has no CVE-VSI stage.
     private async Task<BasicVisualObject?> CaptureFaceAsync()
     {
         try
@@ -205,9 +163,7 @@ public partial class MainWindow : Window
                     .AcquireAsync(new VisualAcquisitionRequest { VisualObjectType = "Face" })
                     .GetAwaiter().GetResult().Data);
             if (frame is { Length: > 0 }) { try { System.IO.File.WriteAllBytes(@"C:\Users\Leonardo\Downloads\last-face.jpg", frame); } catch { } }
-            return (frame is { Length: > 0 })
-                ? BasicVisualObject.FromFile("webcam.jpg", frame, "Face")
-                : null;
+            return (frame is { Length: > 0 }) ? BasicVisualObject.FromFile("webcam.jpg", frame, "Face") : null;
         }
         catch { return null; }
     }
@@ -222,57 +178,26 @@ public partial class MainWindow : Window
         catch { return null; }
     }
 
-    // OSD-STM at the current instant (Absolute epoch), from MAC's own clock.
-    private static SimpleTime NowSimpleTime()
-    {
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
-        return new SimpleTime
-        {
-            SimpleTimeID = Guid.NewGuid().ToString("N"),
-            SimpleTimeData = new List<TimeSegment>
-            {
-                new TimeSegment
-                {
-                    FlagsByte = 0, StartTime = now, EndTime = now,
-                    AccuracyMode = "single", AccuracyPlusMinus = 0.0, TimeType = true
-                }
-            }
-        };
-    }
-
-    // Render a fixed spoken prompt via a separate PAF-RSR Module run (M3167:
-    // "a separate RSR render"), with a serious Personal Status.
     private async Task RenderPromptAsync(string words)
     {
-        var done = await Task.Run(() => RunRsr(words));
-        if (done is null) return;
+        if (_north is null) return;
+        var inputs = new List<NorthApi.Datum>
+        {
+            new NorthApi.Datum(BTO, MpaiJson.ToJson(BasicTextObject.FromText(words))),
+            new NorthApi.Datum(EPS, MpaiJson.ToJson(SeriousStatus()))
+        };
+        var r = await Task.Run(() => _north!.Advance(RsrModule, inputs));
+        if (!r.Ok) return;
+
         byte[] wav = Array.Empty<byte>();
+        var sj = r.ByType(BSO);
+        if (!string.IsNullOrWhiteSpace(sj)) wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
         FaceDescriptorsObject? fdo = null;
-        if (done.Ports.TryGetValue("MachineSpeech", out var sj) && !string.IsNullOrWhiteSpace(sj))
-            wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
-        if (done.Ports.TryGetValue("MachineFaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-            fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+        var fj = r.ByType(FDO);
+        if (!string.IsNullOrWhiteSpace(fj)) fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+
         await _avatar!.PresentAsync(new SpeakingAvatar(wav, fdo));
         await Task.Delay(TimeSpan.FromSeconds(AvatarUaHost.WavDurationSeconds(wav) + 0.3));
-    }
-
-    // One PAF-RSR run: Start -> write TextObject + PersonalStatus -> read outputs -> Stop.
-    private AIF.Controller.Message? RunRsr(string words)
-    {
-        if (_ua is null) return null;
-        if (_ua.MPAI_AIFU_MODULE_Start(RsrModule, _provider!, _settings!, out var rid) != AifError.OK) return null;
-        try
-        {
-            var boundary = new Dictionary<string, string>
-            {
-                ["TextObject"]     = MpaiJson.ToJson(BasicTextObject.FromText(words)),
-                ["PersonalStatus"] = MpaiJson.ToJson(SeriousStatus())
-            };
-            var (error, outcome) = _ua.RunAsync(rid, boundary).GetAwaiter().GetResult();
-            if (error != AifError.OK || outcome?.Completed is null || outcome.Completed.IsError) return null;
-            return outcome.Completed;
-        }
-        finally { _ua.MPAI_AIFU_MODULE_Stop(rid); }
     }
 
     private static EntityPersonalStatus SeriousStatus() => new()
@@ -283,26 +208,6 @@ public partial class MainWindow : Window
             TextSocialAttitude = SocialAttitude.Of(FactorLabel.Of("SOCIAL RANK", "serious", null, 0.7))
         }
     };
-
-    // ---- identity helpers ---------------------------------------------------
-
-    private static bool IsCoarse(string userIdJson)
-    {
-        var label = LabelOf(userIdJson);
-        return label is null or "person" or "face" or "speech";
-    }
-
-    private static string? LabelOf(string userIdJson)
-    {
-        try
-        {
-            var iid = MpaiJson.FromJson<InstanceIdentifier>(userIdJson);
-            return iid?.InstanceIdentifierData?.FirstOrDefault()?.InstanceLabel;
-        }
-        catch { return null; }
-    }
-
-    // ---- UI helpers ---------------------------------------------------------
 
     private void SetStatus(string s) => Dispatcher.Invoke(() => StatusText.Text = s);
     private void SetFace(string s)   => Dispatcher.Invoke(() => FaceStatus.Text = s);

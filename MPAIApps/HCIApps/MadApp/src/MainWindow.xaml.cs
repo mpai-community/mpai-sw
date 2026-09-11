@@ -3,45 +3,42 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 
-using AIF.Controller;
-using AIF.Store;
+using AIF.Controller;   // AifError
+using AIF.Store;        // AmdStore (provider factory)
 
 using Mpai.Core;
 using Mpai.Core.OSD;
 using Mpai.UaKit;         // AvatarUaHost
-using Mpai.Hci.Api;       // SpeakingAvatar
-using Mpai.Mmc.Edp;       // Summary (MMC-SUM)
+using Mpai.Hci.Api;       // NorthApi, SpeakingAvatar
 
 namespace HciMad;
 
-// HCI-MAD User Agent. Realises UAs/Orchestration/HCI-MAD.orch.
-// Roles: (1) real-world I/O limbs - render the avatar, capture the microphone
-// (VAD-gated, via AvatarUaHost); (2) orchestration - drive the MMC-MAD-V2.5
-// Module through the Controller, one dialogue turn per Start..Stop loop pass.
-// No identity, no affect input: EDP therefore emits no machine Personal Status
-// and the avatar renders neutrally. Conversation memory is the running Summary,
-// which the UA carries from each turn's EditedSummary into the next turn's input.
+// HCI-MAD User Agent - drives MMC-MAD through the type-addressed North API.
+// The UA identifies data ONLY by data type. One dialogue turn per loop pass:
+// supply OSD-BSO (speech) + OSD-STM (time); read OSD-BSO (reply, spoken) and
+// PAF-FDO (avatar). The Module lives Start..Stop so EDP keeps the running
+// Summary as memory across turns. No identity, no affect: neutral avatar.
 public partial class MainWindow : Window
 {
     private const string MadModule = "MMC-MAD-V2.5";
-    private const string RsrModule = "PAF-RSR-V1.6";   // one-shot spoken welcome (not dialogue)
+    private const string RsrModule = "PAF-RSR-V1.6";
+
+    private const string BSO = "OSD-BSO-V1.5";   // speech object
+    private const string STM = "OSD-STM-V1.5";   // acquisition time
+    private const string BTO = "OSD-BTO-V1.5";   // text object (welcome/closing)
+    private const string FDO = "PAF-FDO-V1.6";   // face descriptors
 
     private static readonly string AmdDir       = Mpai.Core.MpaiPaths.Amds;
     private static readonly string SettingsPath = Mpai.Core.MpaiPaths.Settings;
     private static readonly string AssetsDir    = Mpai.Core.MpaiPaths.Assets;
 
-    private UserAgent?    _ua;
-    private MadProvider?  _provider;
-    private AimSettings?  _settings;
+    private NorthApi?     _north;
     private AvatarUaHost? _avatar;
-
-    private volatile bool _running = false;   // set by Start/Stop; the loop watches it
-    private int _madId = -1;                   // MAD module instance, alive Start..Stop
+    private volatile bool _running = false;
 
     private const string Welcome = "Welcome to the HCI Multimodal Dialogue Service.";
     private const string Closing = "Thank you for using the HCI Multimodal Dialogue Service.";
 
-    // ---- Diagnostics: FOLLOW THE CONTENT. Toggle with DiagOn. -------------
     private static bool DiagOn = true;
     private static void Diag(string s)
     {
@@ -66,16 +63,9 @@ public partial class MainWindow : Window
             await Task.Delay(TimeSpan.FromSeconds(2.0));   // scene settle
 
             await Task.Run(() =>
-            {
-                var store = new AmdStore(AmdDir); store.Scan();
-                _settings = AimSettings.Load(SettingsPath);
-                _provider = new MadProvider(store);
-                _ua       = new UserAgent(store);
-                _ua.MPAI_AIFU_Controller_Initialize();
-            });
+                _north = new NorthApi(AmdDir, SettingsPath, store => new MadProvider(store)));
 
             InstructionText.Text = "Press Start to begin.";
-
             SetStatus("Ready.");
             StartButton.IsEnabled = true;
         }
@@ -88,36 +78,35 @@ public partial class MainWindow : Window
 
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_ua is null || _avatar is null || _running) return;
-        if (_ua.MPAI_AIFU_MODULE_Start(MadModule, _provider!, _settings!, out _madId) != AifError.OK)
+        if (_north is null || _avatar is null || _running) return;
+        if (_north.StartFlow(MadModule) != AifError.OK)
         { SetStatus("could not start " + MadModule); return; }
         _running = true;
         StartButton.IsEnabled = false;
         StopButton.IsEnabled = true;
         InstructionText.Text = "Listening... speak, then pause. Press Stop to end.";
-        _ = Task.Run(LoopAsync);   // run the conversation loop off the UI thread
+        _ = Task.Run(LoopAsync);
     }
 
     private void StopButton_Click(object sender, RoutedEventArgs e)
     {
-        _running = false;          // the loop exits after the current turn
+        _running = false;
         StopButton.IsEnabled = false;
         InstructionText.Text = "Conversation closed. Press Start to begin again.";
         SetStatus("stopped");
         StartButton.IsEnabled = true;
-        var mid = _madId; _madId = -1;
-        if (mid >= 0) _ua!.MPAI_AIFU_MODULE_Stop(mid);   // module lived Start..Stop; EDP kept memory
-        _ = Task.Run(async () => { await RenderPromptAsync(Closing); });   // closing on Stop
+        _ = Task.Run(async () =>
+        {
+            await RenderPromptAsync(Closing);
+            _north?.StopFlow(MadModule);   // module lived Start..Stop; EDP kept memory
+        });
     }
 
-    // The HCI-MAD.orch loop: each pass is one dialogue turn - capture the user's
-    // speech (VAD end-of-utterance), run the Module (ASR -> EDP -> RSR), speak the
-    // reply, and carry the EditedSummary forward as the next turn's Summary.
     private async Task LoopAsync()
     {
         try
         {
-            await RenderPromptAsync(Welcome);   // spoken once on Start
+            await RenderPromptAsync(Welcome);
             while (_running)
             {
                 SetTurn("listening...");
@@ -140,33 +129,28 @@ public partial class MainWindow : Window
         catch (Exception ex) { Program.Record("loop", ex); Diag("loop error: " + ex.Message); }
     }
 
-    // One dialogue turn: Start MMC-MAD -> RunAsync{InputSpeech,InputSpeechTime,Summary}
-    // -> read MachineSpeech + MachineFaceDescriptors + EditedSummary -> Stop.
+    // One dialogue turn: supply OSD-BSO (speech) + OSD-STM (time); read OSD-BSO
+    // (reply) + PAF-FDO (avatar). The Module stays alive; EDP carries the memory.
     private (byte[] wav, FaceDescriptorsObject? fdo)? RunTurn(BasicSpeechObject speech)
     {
-        if (_ua is null || _madId < 0) return null;
-        var boundary = new Dictionary<string, string>
+        if (_north is null) return null;
+        var inputs = new List<NorthApi.Datum>
         {
-            ["InputSpeech"]     = MpaiJson.ToJson(speech),
-            ["InputSpeechTime"] = MpaiJson.ToJson(NowSimpleTime())
-            // no Summary: the Module (EDP) keeps the running memory internally
+            new NorthApi.Datum(BSO, MpaiJson.ToJson(speech)),
+            new NorthApi.Datum(STM, MpaiJson.ToJson(NowSimpleTime()))
         };
-        var (err, outcome) = _ua.RunAsync(_madId, boundary).GetAwaiter().GetResult();
-        if (err != AifError.OK || outcome?.Completed is null || outcome.Completed.IsError)
-        { Diag("MAD run err=" + err); return null; }
+        var r = _north.Advance(MadModule, inputs);
+        if (!r.Ok) { Diag("MAD turn err=" + r.Error); return null; }
 
-        var c = outcome.Completed;
         byte[] wav = Array.Empty<byte>();
+        var sj = r.ByType(BSO);
+        if (!string.IsNullOrWhiteSpace(sj)) wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
         FaceDescriptorsObject? fdo = null;
-        if (c.Ports.TryGetValue("MachineSpeech", out var sj) && !string.IsNullOrWhiteSpace(sj))
-            wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
-        if (c.Ports.TryGetValue("MachineFaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-            fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+        var fj = r.ByType(FDO);
+        if (!string.IsNullOrWhiteSpace(fj)) fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
         Diag("turn: wavBytes=" + wav.Length + " faceDesc=" + (fdo == null ? "nil" : "present"));
         return (wav, fdo);
     }
-
-    // ---- UA I/O limbs -------------------------------------------------------
 
     private async Task<BasicSpeechObject?> CaptureSpeechAsync()
     {
@@ -192,41 +176,26 @@ public partial class MainWindow : Window
         };
     }
 
-    // One-shot spoken prompt via PAF-RSR (NEUTRAL - MAD is affect-free): the welcome.
+    // One-shot neutral spoken prompt via PAF-RSR (no PersonalStatus).
     private async Task RenderPromptAsync(string words)
     {
-        var done = await Task.Run(() => RunRsr(words));
-        if (done is null) return;
+        if (_north is null) return;
+        var inputs = new List<NorthApi.Datum>
+        {
+            new NorthApi.Datum(BTO, MpaiJson.ToJson(BasicTextObject.FromText(words)))
+        };
+        var r = await Task.Run(() => _north!.Advance(RsrModule, inputs));
+        if (!r.Ok) return;
         byte[] wav = Array.Empty<byte>();
+        var sj = r.ByType(BSO);
+        if (!string.IsNullOrWhiteSpace(sj)) wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
         FaceDescriptorsObject? fdo = null;
-        if (done.Ports.TryGetValue("MachineSpeech", out var sj) && !string.IsNullOrWhiteSpace(sj))
-            wav = MpaiJson.FromJson<BasicSpeechObject>(sj)?.Data ?? Array.Empty<byte>();
-        if (done.Ports.TryGetValue("MachineFaceDescriptors", out var fj) && !string.IsNullOrWhiteSpace(fj))
-            fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
+        var fj = r.ByType(FDO);
+        if (!string.IsNullOrWhiteSpace(fj)) fdo = MpaiJson.FromJson<FaceDescriptorsObject>(fj);
         await _avatar!.PresentAsync(new SpeakingAvatar(wav, fdo));
         await Task.Delay(TimeSpan.FromSeconds(AvatarUaHost.WavDurationSeconds(wav) + 0.3));
     }
 
-    // One PAF-RSR run: Start -> write TextObject (no PersonalStatus -> neutral) -> read outputs -> Stop.
-    private AIF.Controller.Message? RunRsr(string words)
-    {
-        if (_ua is null) return null;
-        if (_ua.MPAI_AIFU_MODULE_Start(RsrModule, _provider!, _settings!, out var rid) != AifError.OK) return null;
-        try
-        {
-            var boundary = new Dictionary<string, string>
-            {
-                ["TextObject"] = MpaiJson.ToJson(BasicTextObject.FromText(words))
-                // no PersonalStatus -> RSR renders neutrally (MAD is affect-free)
-            };
-            var (error, outcome) = _ua.RunAsync(rid, boundary).GetAwaiter().GetResult();
-            if (error != AifError.OK || outcome?.Completed is null || outcome.Completed.IsError) return null;
-            return outcome.Completed;
-        }
-        finally { _ua.MPAI_AIFU_MODULE_Stop(rid); }
-    }
-
-    // ---- UI helpers ---------------------------------------------------------
     private void SetStatus(string s) => Dispatcher.Invoke(() => StatusText.Text = s);
     private void SetTurn(string s)   => Dispatcher.Invoke(() => TurnStatus.Text = s);
 }

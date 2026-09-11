@@ -24,7 +24,7 @@ public sealed class Controller
         Identifier identifier,
         ISet<Identifier> expanding)
     {
-        // Look up by AIMName only 鈥?ImplementerID and ImplementationID may be
+        // Look up by AIMName only - ImplementerID and ImplementationID may be
         // placeholder strings in SubAIM references that differ from the actual
         // AMD file's Identifier. AIMName is always the stable, canonical key.
         var resolved = store.FindByAimName(identifier.AIMName);
@@ -130,15 +130,6 @@ public sealed class Controller
                 var name = it.GetProperty("Name").GetString() ?? string.Empty;
                 if (string.IsNullOrWhiteSpace(name)) continue;
 
-                // An InternalType names a Data Type, or a SET of them - it is
-                // the same kind of declaration as a Port's, so it takes the same
-                // form. This loop read it with GetString() and threw on the
-                // array: the schema was extended and this reader was not.
-                //
-                // InternalTypes maps a name to ONE Data Type, so the first of a
-                // set stands for it. That is enough for what the map is for -
-                // resolving an InternalType name in a Topology - and a set here
-                // says the flow may be of either kind, not that it is two flows.
                 var declared = DataTypesOf(it);
                 if (declared.Count > 0)
                     node.InternalTypes[name] = declared[0];
@@ -162,20 +153,21 @@ public sealed class Controller
         }
 
         // Topology
-        // Convention in the instance JSON:
         //   "Output" = the PRODUCING side (data leaves that AIM)
         //   "Input"  = the RECEIVING side (data enters that AIM)
+        // Each side names an AIM and a PORT NAME in the JSON; the PORT NAME is a
+        // human label. Here it is resolved ONCE to (DataType, PortNumber) via
+        // ExternalPorts (a boundary or sub-AIM port) or InternalTypes (a named
+        // internal flow), and the connection stored is purely typed. Nothing
+        // downstream ever sees the name.
         if (root.TryGetProperty("Topology", out var topology))
         {
             foreach (var connection in topology.EnumerateArray())
             {
-                var producer = connection.GetProperty("Output");  // producing AIM
-                var consumer = connection.GetProperty("Input");   // receiving AIM
-
                 node.Connections.Add(new TopologyConnection
                 {
-                    Source      = Endpoint(producer),  // who produces
-                    Destination = Endpoint(consumer)   // who consumes
+                    Output = ResolveEndpoint(node, connection.GetProperty("Output")),
+                    Input  = ResolveEndpoint(node, connection.GetProperty("Input"))
                 });
             }
         }
@@ -184,24 +176,39 @@ public sealed class Controller
         return node;
     }
 
-    private static string Endpoint(JsonElement port)
+    // Resolve a Topology endpoint's (AIMName, PortName[, PortNumber]) to a typed
+    // Endpoint (AIMName, DataType, PortNumber), using the single source of truth:
+    //   * boundary side  -> the composite's own ExternalPorts (by Name),
+    //   * sub-AIM side   -> that child's ExternalPorts (by Name),
+    //   * either, if the name is an internal flow -> the composite InternalTypes.
+    // Throws if the name resolves to nothing - a Topology that names a port no
+    // table declares is malformed, and routing on the raw name is exactly what
+    // this design forbids.
+    private static Endpoint ResolveEndpoint(DescriptorNode node, JsonElement side)
     {
-        var aimName  = port.GetProperty("AIMName").GetString()  ?? string.Empty;
-        var portName = port.GetProperty("PortName").GetString() ?? string.Empty;
+        var aim  = side.TryGetProperty("AIMName", out var a) ? (a.GetString() ?? string.Empty) : string.Empty;
+        var name = side.TryGetProperty("PortName", out var p) ? (p.GetString() ?? string.Empty) : string.Empty;
 
-        // A Topology PortID may carry a PortNumber, which selects WHICH port of
-        // that Direction and DataType is meant when the endpoint AIM declares
-        // more than one. It rides along in the endpoint string as "#n" and is
-        // read back by Endpoint.Parse. Omitted means 1.
-        var ordinal =
-            port.TryGetProperty("PortNumber", out var portNumber) &&
-            portNumber.TryGetInt32(out var parsedOrdinal)
-                ? $"#{parsedOrdinal}"
-                : string.Empty;
+        IEnumerable<RuntimePort> ports =
+            string.IsNullOrEmpty(aim)
+                ? node.Ports
+                : (node.Children.FirstOrDefault(c => c.AIMName == aim)?.Ports
+                   ?? Enumerable.Empty<RuntimePort>());
 
-        return string.IsNullOrWhiteSpace(aimName)
-            ? $"{portName}{ordinal}"
-            : $"{aimName}.{portName}{ordinal}";
+        var port = ports.FirstOrDefault(rp => rp.Name == name);
+        if (port is not null)
+            return new Endpoint(
+                string.IsNullOrEmpty(aim) ? null : aim,
+                port.DataType,
+                port.PortNumber ?? 1);
+
+        // Named internal flow declared on the composite.
+        if (node.InternalTypes.TryGetValue(name, out var dt))
+            return new Endpoint(string.IsNullOrEmpty(aim) ? null : aim, dt, 1);
+
+        throw new InvalidOperationException(
+            $"{node.AIMName}: Topology endpoint AIM='{aim}' Port='{name}' does not resolve " +
+            "to a DataType via ExternalPorts or InternalTypes.");
     }
 
     public IReadOnlyList<string> Instantiate(

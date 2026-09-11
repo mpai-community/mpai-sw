@@ -1,75 +1,28 @@
-﻿{
-    "Identifier":  {
-                       "ImplementerID":  "1",
-                       "ImplementationID":  "MMC-ESD-V2.5-I01",
-                       "AIMName":  "MMC-ESD-V2.5"
-                   },
-    "APIProfile":  "Basic",
-    "Description":  "Entity Speech Description: computes the Speech Descriptors of an Entity from its Speech Object. Produces a Speech Descriptors Object carrying the ECAPA-TDNN speaker embedding.",
-    "ExternalPorts":  [
-                          {
-                              "Name":  "SpeechObject",
-                              "Direction":  "Input",
-                              "DataType":  "OSD-BSO-V1.5",
-                              "Technology":  "Software",
-                              "Protocol":  "",
-                              "IsRemote":  false
-                          },
-                          {
-                              "Name":  "SpeechTime",
-                              "Direction":  "Input",
-                              "DataType":  "OSD-STM-V1.5",
-                              "Technology":  "Software",
-                              "Protocol":  "",
-                              "IsRemote":  false
-                          },
-                          {
-                              "Name":  "SpeechDescriptors",
-                              "Direction":  "Output",
-                              "DataType":  "MMC-SDO-V2.5",
-                              "Technology":  "Software",
-                              "Protocol":  "",
-                              "IsRemote":  false
-                          }
-                      ],
-    "SubAIMs":  [
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-ESD-V2.5-I01", "AIMName": "MMC-ESD-V2.5" },
 
-                ],
-    "Topology":  [
+  "APIProfile":       "Basic",
+  "Description":      "Entity Speech Description: computes the Speech Descriptors of an Entity from its Speech Object. Produces a Speech Descriptors Object carrying the ECAPA-TDNN speaker embedding. UserName (the User Agent's typed datum) keys the enrolment written to the Shared Storage gallery.",
 
-                 ],
-    "Implementations":  [
-                            {
-                                "ImplementationURI":  "file:///D:/AI/AIMs/MMC-ESD-V2.5-I01",
-                                "MASPort":  443,
-                                "BinaryName":  "Mpai.Mmc.Esd",
-                                "Architecture":  "x86-64",
-                                "OperatingSystem":  "Windows",
-                                "Version":  "2.5",
-                                "Source":  "AIMStorage"
-                            }
-                        ],
-    "ResourcePolicies":  [
-                             {
-                                 "Name":  "Memory",
-                                 "Minimum":  "0.5 GB",
-                                 "Request":  "1 GB",
-                                 "Maximum":  "2 GB"
-                             },
-                             {
-                                 "Name":  "CPU:Class",
-                                 "Minimum":  "Low",
-                                 "Request":  "Medium",
-                                 "Maximum":  "High"
-                             }
-                         ],
-    "DataXMData":  {
+  "ExternalPorts":    [{"Name": "SpeechObject",      "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechTime",        "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "UserName",          "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechDescriptors", "Direction": "Output", "DataType": "MMC-SDO-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
-                   },
-    "Documentation":  [
-                          {
-                              "Type":  "Tutorial",
-                              "URI":  "https://mpai.community/standards/mpai-mmc/v2-5/"
-                          }
-                      ]
-}
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-ESD-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Esd",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.5 GB", "Request": "1 GB",   "Maximum": "2 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

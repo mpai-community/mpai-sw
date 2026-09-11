@@ -46,9 +46,9 @@ public sealed class MachineInstantiator
                     ChannelId =
                         $"CH#{channelNumber}",
                     Source =
-                        connection.Source,
+                        Describe(connection.Output),
                     Destination =
-                        connection.Destination
+                        Describe(connection.Input)
                 });
 
             channelNumber++;
@@ -57,6 +57,11 @@ public sealed class MachineInstantiator
         return machine;
     }
 
+    // Render a typed Endpoint as a readable channel label (diagnostic only;
+    // routing is by DataType+PortNumber, not by this string). Boundary side has
+    // no AIM. Shows "AIM:DataType#n" or ":DataType#n" for the boundary.
+    private static string Describe(Endpoint e) =>
+        (string.IsNullOrEmpty(e.AimName) ? "" : e.AimName) + ":" + e.DataType + "#" + e.PortNumber;
     private static void AddAimInstances(
         DescriptorNode parent,
         MachineInstance machine)

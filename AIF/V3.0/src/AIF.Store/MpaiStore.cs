@@ -282,12 +282,12 @@ public sealed class MpaiStore
                         errors.Add($"Port {name} is declared twice.");
                     }
 
-                    if (direction != "InputOutput" &&
-                        direction != "OutputInput")
+                    if (direction != "Input" &&
+                        direction != "Output")
                     {
                         errors.Add(
                             $"Port {name} has Direction '{direction}'; " +
-                            "expected InputOutput or OutputInput.");
+                            "expected Input or Output.");
                     }
 
                     if (recordType.Length > 0 &&
@@ -345,13 +345,13 @@ public sealed class MpaiStore
                 {
                     CheckEndpoint(
                         connection,
-                        "OutputInput",
+                        "Output",
                         subAims,
                         errors);
 
                     CheckEndpoint(
                         connection,
-                        "InputOutput",
+                        "Input",
                         subAims,
                         errors);
                 }

@@ -168,6 +168,34 @@ public sealed class SubjectGallery
         }
     }
 
+    // Persist ONLY the named subject (one key), merging with what is already
+    // stored so a face-only write and a later voice-only write accumulate rather
+    // than overwrite. Never throws: a persistence hiccup must not abort enrolment
+    // inside the Module. Enrolment uses this - one Put per enrolment, not a full
+    // gallery rewrite.
+    public void SaveSubject(AIF.SharedStorage.ISharedStorage store, string subjectId)
+    {
+        if (!_subjects.TryGetValue(subjectId, out var s)) return;
+        var key = SubjectKeyPrefix + subjectId;
+
+        SubjectDto dto = new SubjectDto { SubjectId = subjectId };
+        try
+        {
+            if (store.Exists(key))
+            {
+                var existing = JsonSerializer.Deserialize<SubjectDto>(
+                    System.Text.Encoding.UTF8.GetString(store.Get(key)), JsonOpts);
+                if (existing is not null) dto = existing;
+            }
+        }
+        catch { dto = new SubjectDto { SubjectId = subjectId }; }
+
+        if (s.FaceEmbedding  is not null) { dto.FaceEmbedding  = s.FaceEmbedding;  dto.FaceTime   = s.FaceTime; }
+        if (s.VoiceEmbedding is not null) { dto.VoiceEmbedding = s.VoiceEmbedding; dto.SpeechTime = s.SpeechTime; }
+        dto.SubjectId = subjectId;
+
+        store.Put(key, System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto, JsonOpts)));
+    }
     public static SubjectGallery Load(AIF.SharedStorage.ISharedStorage store,
                                       float faceThreshold = 0.35f, float voiceThreshold = 0.45f)
     {

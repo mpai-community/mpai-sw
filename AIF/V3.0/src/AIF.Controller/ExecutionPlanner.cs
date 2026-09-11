@@ -1,11 +1,11 @@
 namespace AIF.Controller;
 
 // Derives the execution order of a composite AIM's SubAIMs from its Topology,
-// so the AIM Metadata — not hand-written code — decides what runs when.
+// so the AIM Metadata - not hand-written code - decides what runs when.
 //
-// A connection is "AIMName.PortName" at each end, or a bare "PortName" when the
-// end is the composite's own boundary. Only AIM-to-AIM connections constrain
-// the order; boundary connections are inputs and outputs of the composite.
+// A connection's endpoints are TYPED (Endpoint): each has an AimName (null for
+// the composite's own boundary). Only AIM-to-AIM connections constrain the
+// order; boundary connections are the composite's inputs and outputs.
 public sealed class ExecutionPlanner
 {
     public IReadOnlyList<string> BuildPlan(
@@ -39,11 +39,8 @@ public sealed class ExecutionPlanner
 
         foreach (var connection in node.Connections)
         {
-            var source =
-                AimOf(connection.Source);
-
-            var destination =
-                AimOf(connection.Destination);
+            var source      = connection.Output.AimName;
+            var destination = connection.Input.AimName;
 
             if (source is null ||
                 destination is null ||
@@ -100,21 +97,5 @@ public sealed class ExecutionPlanner
         }
 
         return plan;
-    }
-
-    private static string? AimOf(
-        string endpoint)
-    {
-        if (string.IsNullOrWhiteSpace(endpoint))
-        {
-            return null;
-        }
-
-        var separator =
-            endpoint.LastIndexOf('.');
-
-        return separator <= 0
-            ? null
-            : endpoint[..separator];
     }
 }
