@@ -1,132 +1,136 @@
-# MAC - Developer Guidelines (Software Architecture)
+# MAC — Multimodal Access Control · Developer Guide
 
-**MAC** (Multimodal Access Control) is an MPAI-AIF application that recognises a
-person from **face and voice** and grants or denies access. This document
-describes how it is built, for software developers.
+MAC is a genuine **MPAI-AIF V3.0 Module** (`MMC-MAC-V2.5`) executed by the
+Controller and driven by a thin **User Agent**. This guide covers how MAC is
+composed, how the UA drives it, the build closure, and the models and settings it
+needs.
 
-## 1. MPAI-AIF in brief
+---
 
-An **AIF** application is organised around a small number of standard notions:
+## 1. Composition (the Module)
 
-- **AIM (AI Module):** a unit of processing with typed input and output ports.
-  What matters at a port is the **data type**, not the port name.
-- **Module (AIW):** a *composite* AIM - a graph of sub-AIMs wired together by
-  data type. A Module is defined by an **L3** descriptor (a JSON file, here in
-  `AIMs/AMDs/`) that lists its sub-AIMs, its boundary input/output ports and the
-  internal topology.
-- **Controller:** the runtime. Given a Module's L3, it instantiates each sub-AIM
-  (through a *provider*), wires them, and executes the graph. It exposes
-  `MPAI_AIFU_MODULE_Start / RunAsync / ResumeAsync / Stop` to the User Agent.
-- **User Agent (UA):** the application "brain with I/O limbs". It acquires and
-  delivers real-world data (camera, microphone, the avatar), and it
-  **orchestrates** - it tells the Controller what to do and in which order. The
-  UA is *not* part of the Module.
-- **Shared Storage:** a governed key/value area (here `SharedStorage/`) used, for
-  MAC, as the enrolment **gallery** of subjects.
-- **Data types & qualifiers:** every port carries a typed object with a
-  *qualifier* (format, attributes...). Only data types matter across a port.
+The Controller builds `MMC-MAC-V2.5` from its L3 descriptor
+(`AIMs/AMDs/1MMC-MAC-V2.5-I01.json`). The application's **provider**
+(`MacProvider`) supplies the leaf AIMs the L3 names:
 
-## 2. The pattern used here
+| Sub-AIM | Role | Technology |
+| --- | --- | --- |
+| `PAF-FIR` | Face recognition | SCRFD detector + ArcFace embeddings, via ONNX Runtime |
+| `MMC-SIR` | Speaker recognition | ECAPA-TDNN embeddings, via ONNX Runtime |
+| `OSD-IDR` | Identity reconciliation | Reconciles the face and speaker identities; issues the verdict (Response) and its Personal Status |
+| `PAF-RSR` | Response & Scene Rendering | Composite: `PAF-PSD` + `MMC-TTS` (Piper) + `PAF-GFD` — the lip-synced Speaking Avatar |
 
-```
-User Agent  --drives-->  Controller  --builds & runs-->  Module (sub-AIMs)
-   |  (acquire face/voice, present avatar)                     |
-   \------------ boundary inputs / outputs --------------------/
-```
+`PAF-FIR` and `MMC-SIR` read the enrolment gallery from **Shared Storage**
+(reached through the Controller API, not through ports). The reconciled identity
+stays inside the Module; the User Agent consumes only the Response, the spoken
+verdict and the avatar's face descriptors.
 
-- The UA drives the Module **only** through the Controller (`MODULE_Start`,
-  `RunAsync`, `Stop`, boundary read/write).
-- A **provider** (a small switch class) constructs each sub-AIM the L3 names.
-- The UA's behaviour is described by a **WDL** guidebook, the `.orch` file
-  (`UAs/Orchestration/HCI-MAC.orch`), which the UA code realises.
+## 2. Boundary (addressed by data type)
 
-## 3. The MAC Module - `MMC-MAC-V2.5`
+The Module's boundary ports (from its L3 `ExternalPorts`):
 
-L3: `AIMs/AMDs/1MMC-MAC-V2.5-I01.json`. Sub-AIMs (leaves the provider builds):
+- **Inputs:** `FaceObject` (`OSD-BVO-V1.5`), `SpeechObject` (`OSD-BSO-V1.5`).
+- **Outputs:** `Response` (`OSD-BTO-V1.5`), `VocalResponse` (`OSD-BSO-V1.5`),
+  `FaceDescriptors` (`PAF-FDO-V1.6`).
 
-| Sub-AIM | Role | Engine |
-|---|---|---|
-| `PAF-FIR-V1.6` | Face Recognition | SCRFD (detect) + ArcFace (embed) |
-| `MMC-SIR-V2.5` | Speaker Recognition | ECAPA-TDNN |
-| `OSD-IDR-V1.5` | ID Reconciliation | reconciles Face ID + Speaker ID |
-| `PAF-RSR-V1.6` | Response & Scene Rendering (composite) | drives the avatar |
-| - `PAF-PSD`, `MMC-TTS`, `PAF-GFD` | RSR leaves | personal-status->face, text->speech, gesture/face descriptors |
+Acquisition time accompanies each captured object as its own standard member
+(`VisualObjectTime` / `SpeechObjectTime`); it is not a separate boundary port.
 
-**Boundary in:** `FaceObject` (OSD-BVO) + `FaceTime` (OSD-STM), then
-`SpeechObject` (OSD-BSO) + `SpeechTime` (OSD-STM).
-**Boundary out:** `UserID` (OSD-IID), `VocalResponse` (OSD-BSO),
-`FaceDescriptors` (PAF-FDO).
+## 3. How the User Agent drives it
 
-**Reconciliation rule (OSD-IDR):** access is granted only when the **face and
-voice legs agree** on the same subject; one modality alone, or disagreement,
-yields the coarse "person" identity -> *not identified*.
+The UA holds two roles only — real-world I/O and orchestration — and drives the
+Module through the **North API** (`MW/HciApi`, `NorthApi`), addressing data by
+**data type**, never by port name:
 
-The **gallery** is read from Shared Storage scope `"MMC-MAC-V2.5"`. FIR/SIR
-compare a live probe embedding against enrolled subjects by cosine similarity.
+1. `StartFlow("MMC-MAC-V2.5")`.
+2. Supply the face: `Advance` with `OSD-BVO-V1.5`. The Module runs face
+   recognition and **suspends**, needing speech.
+3. Supply the speech: `Advance` with `OSD-BSO-V1.5`. Speaker recognition,
+   reconciliation and rendering complete.
+4. Read outputs **by type**: `OSD-BTO-V1.5` (verdict text → banner),
+   `OSD-BSO-V1.5` (spoken verdict → play), `PAF-FDO-V1.6` (avatar).
+5. `StopFlow`.
 
-## 4. The User Agent
+The UA realises the WDL guidebook `UAs/Orchestration/HCI-MAC.orch`. Device
+acquisition (webcam via Windows Media Capture, microphone) and delivery (the
+WebView2 avatar) live in the UA / `UAs/Lib/UaKit`.
 
-`MPAIApps/HCIApps/MacApp/src/` - namespace `HciMac`.
+## 4. Build closure
 
-- `MainWindow.xaml.cs` - realises `HCI-MAC.orch`: `MODULE_Start("MMC-MAC-V2.5")`
-  -> speak *"...Look at the camera."* (a one-shot **RSR** render) -> capture a webcam
-  frame -> write `FaceObject/FaceTime` -> `RunAsync` -> the Module **suspends** for
-  speech -> speak *"Speak your passphrase."* -> capture microphone ->
-  `ResumeAsync` with `SpeechObject/SpeechTime` -> read `UserID` -> present verdict
-  -> `Stop`.
-- `MacProvider.cs` - the switch: builds FIR/SIR/IDR/PSD/TTS/GFD.
-- Real-world limbs come from `UAs/Lib/UaKit` (`AvatarUaHost`): the WebView 3-D
-  avatar, microphone capture, and `PresentAsync` (speak + animate).
+`MacApp` references, transitively:
 
-**Face capture is tagged `VisualObjectType = "Face"`** at acquisition (the app
-knows it is acquiring a face); FIR acts on face-typed visual objects.
+- **Runtime:** `AIF.Controller`, `AIF.Store`, `AIF.SharedStorage`,
+  `AIF.GlobalStorage`.
+- **Shared:** `AIMs/Core`, `MW/HciApi`, `UAs/Lib/UaKit`, `AIMs/Gallery`.
+- **AIMs:** `PAF-FIR`, `MMC-SIR`, `OSD-IDR` (+ `HCI/IDR`), `OSD/VisualScene`,
+  `PAF-PSD`, `MMC-TTS`, `PAF-GFD`, and the device AIMs
+  `CAE3/AOA(+.Windows)`, `MMC/SOA`, `MMC/SOD(+.Windows)`, `CVE/VOA(.Windows)`,
+  `OSD/TOD`.
 
-Visual acquisition uses **native Windows Media Capture** (no OpenCV).
-
-## 5. Files this app needs (build closure)
-
-- **App:** `MPAIApps/HCIApps/MacApp/*`
-- **Framework (AIF):** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
-- **UA library:** `UAs/Lib/UaKit`; middleware `MW/HciApi` (SpeakingAvatar)
-- **AIMs:** `AIMs/Core`, and the leaves `PAF/V1.6/FIR`, `MMC/V2.5/SIR`,
-  `OSD/V1.5/IDR`, `PAF/V1.6/PSD`, `MMC/V2.5/TTS`, `PAF/V1.6/GFD`; audio devices
-  `CAE3/V1.0/AOA(.Windows)`, `MMC/V2.5/SOD(.Windows)`, visual `CVE/V1.0/VOA.Windows`
-- **L3s:** `AIMs/AMDs/1MMC-MAC-V2.5-I01.json` + the sub-AIM AMDs
-- **Orchestration:** `UAs/Orchestration/HCI-MAC.orch`
-- **Schemas:** the JSON schemas under `schemas/` reachable from MAC's data types
-- **Settings:** `AIMs/aim-settings.json` - `MMC-TTS-V2.5` (Piper voice),
-  `MMC-SOA-V2.5` (capture duration), and the FIR/SIR model settings.
-- **Models (fetched separately):** SCRFD `scrfd_10g_bnkps.onnx`, ArcFace
-  `glintr100.onnx`, ECAPA `ecapa-tdnn.onnx`, Piper voice `en_US-amy-medium`.
-
-## 6. Build & run
+Build a single-file executable:
 
 ```
-D:\BI\MPAIApps\HCIApps\MacApp\MacAppBuild.bat   # produces MacApp.exe
-D:\BI\MPAIApps\HCIApps\MacApp\MacApp.exe
+MPAIApps\HCIApps\MacApp\MacAppBuild.bat     ->  MacApp.exe
 ```
 
-The application root is resolved at runtime from the executable location
-(`MpaiPaths.FindRoot`), so a single-file build finds its `AIMs/`, `Models/`,
-`UAs/` and `SharedStorage/` alongside the deployment.
+Target: **.NET 10**, `win-x64`, WPF + WebView2. The app resolves its root from the
+executable's location — the first ancestor containing both `AIMs` and `UAs`
+(`MpaiPaths`), so a clone runs in place without configuration.
 
-## Models & Prerequisites
+## 5. Models & prerequisites
 
-The application code is in this package; the model files are **not** (they are large
-and separately licensed). Obtain each model below, place it at the indicated relative
-path under `Models\`, or set the corresponding key in `AIMs\aim-settings.json`.
+Model binaries are distributed **separately**. Place them under `Models/` (the
+fallback the code uses) or set explicit paths in `AIMs/aim-settings.json` under
+the relevant AIM keys.
 
-> **Verification:** the SHA-256 values below identify the exact model files used.
-> After downloading, verify each file with `Get-FileHash <file> -Algorithm SHA256`.
-> For the InsightFace and SpeechBrain models the exact download URL/version was not
-> recorded; the SHA-256 is the authoritative identity - confirm your copy matches.
+| Model | File | Approx. size | Source | Settings key |
+| --- | --- | --- | --- | --- |
+| SCRFD (face detect) | `scrfd_10g_bnkps.onnx` | 16 MB | InsightFace | `ScrfdModel` |
+| ArcFace (face embed) | `glintr100.onnx` | 249 MB | InsightFace | `ArcFaceModel` |
+| ECAPA-TDNN (speaker) | `ecapa-tdnn.onnx` | 79 MB | SpeechBrain | `EcapaModel` |
+| Piper voice (verdict) | `en_US-amy-medium.onnx` (+ `.json`) | 60 MB | rhasspy/piper-voices (Hugging Face) | `MMC-TTS-V2.5 : Voice:en` |
 
-| Model | Settings key (fallback) | File | Size | SHA-256 | Source |
-|---|---|---|---|---|---|
-| SCRFD face detector (InsightFace SCRFD-10G-BNKPS) | `ScrfdModel` -> `Models\scrfd_10g_bnkps.onnx` | `scrfd_10g_bnkps.onnx` | 16.14 MB | `5838F7FE053675B1C7A08B633DF49E7AF5495CEE0493C7DCF6697200B85B5B91` | InsightFace model zoo (verify by SHA-256) |
-| ArcFace recogniser (InsightFace glintr100 / buffalo_l R100) | `ArcFaceModel` -> `Models\glintr100.onnx` | `glintr100.onnx` | 248.62 MB | `A7933EA5330113B01C9B60351D8F4C33003F145D8470AC5F0E52EE2EFFE25C60` | InsightFace model zoo (verify by SHA-256) |
-| ECAPA-TDNN speaker (SpeechBrain spkrec-ecapa-voxceleb, ONNX export) | `EcapaModel` -> `Models\ecapa-tdnn.onnx` | `ecapa-tdnn.onnx` | 79.44 MB | `38FDFC7D2BC9E2925349BAAB9639FCAF4B4C755BE83EE7D616B6E3FBC9D5EAB3` | SpeechBrain (ONNX export; verify by SHA-256) |
-| Piper TTS voice | `VoiceModel` / `Voice:en` | `en_US-amy-medium.onnx` | 60.27 MB | `B3A6E47B57B8C7FBE6A0CE2518161A50F59A9CDD8A50835C02CB02BDD6206C18` | Hugging Face `rhasspy/piper-voices` (en_US-amy-medium) |
-| Piper voice config | `VoiceConfig` / `VoiceConfig:en` | `en_US-amy-medium.onnx.json` | 0.005 MB | `95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77` | Hugging Face `rhasspy/piper-voices` |
+**Verify every download** with its checksum:
 
-Install the Piper voice under `Models\Piper\voices\en_US-amy-medium\`. The Piper executable (`PiperExecutable`) is the Piper Windows release (`piper.exe`).
+```
+Get-FileHash <file> -Algorithm SHA256
+```
+
+Record the SHA-256 you obtain and pin it in your deployment notes. MAC needs no
+Whisper or LLM (those belong to other applications).
+
+## 6. Settings
+
+`AIMs/aim-settings.json` maps AIM names to their model/tool paths, so the same
+binaries run on any machine:
+
+```json
+{
+  "MMC-TTS-V2.5": { "Voice:en": "D:/…/en_US-amy-medium.onnx" }
+}
+```
+
+Keys not present fall back to `Models/<file>` under the resolved root. Missing
+settings do not fail startup; a missing **model** fails only when the AIM that
+needs it first runs.
+
+## 7. The enrolment gallery (Shared Storage)
+
+`PAF-FIR` and `MMC-SIR` match against a gallery held in governed **Shared
+Storage** under `SharedStorage/` (key space `MMC-MAC-V2.5`). MAC **reads** the
+gallery; it does not enrol. Enrolment (the ACR application) is not part of this
+release. If the Shared-Storage gallery is empty and a legacy
+`TestData/gallery.json` is present, it is imported once on first run.
+
+## 8. Conformance notes
+
+- The UA↔Controller boundary and the Module topology are addressed by **data type
+  (+ port number)**; port names are labels, not the routing key.
+- Verdict and identity are decided **inside** the Module (`OSD-IDR`); the UA
+  renders the Response and the avatar and does not re-decide identity.
+- Boundary ports that repeat a data type carry a **Port Number**; single
+  occurrences carry none.
+
+## 9. Licence
+
+**BSD 3-Clause** — see `LICENSE` in this folder and at the repository root.
