@@ -64,7 +64,7 @@ public sealed record PiperVoice(
 //  The output Speech Qualifier is built by the three-part transform:
 //    inherit   : Language carries over from the input Text Qualifier
 //    determine : Format (WAV + PCM), Source = Synthetic, SpeakerType = Agent
-//                Ã¢â‚¬â€ facts only this (Piper) AIM knows, from what it builds
+//                facts only this (Piper) AIM knows, from what it builds
 //    provenance: the spoken text is embedded as ContentDescription.TextObject
 //
 //  The Language it inherits also CHOOSES THE VOICE when more than one is
@@ -80,6 +80,7 @@ public sealed class PiperTtsAim : ITtsAim
     private readonly IReadOnlyDictionary<string, PiperVoice> _voices;
 
     private readonly HashSet<string> _warned = new();
+    private string _prosodyArgs = "";
 
     public PiperTtsAim(IMpaiTtsV1 piper, PiperVoiceProfile voice)
         : this(piper, voice, new Dictionary<string, PiperVoice>())
@@ -98,15 +99,20 @@ public sealed class PiperTtsAim : ITtsAim
         _voices = voices;
     }
 
-    public async Task<BasicSpeechObject> ProcessAsync(BasicTextObject text)
+    public Task<BasicSpeechObject> ProcessAsync(BasicTextObject text) => ProcessAsync(text, "");
+
+    // Overload carrying extra Piper flags (prosody) derived from a Speech Personal
+    // Status by the AIF processor. Empty => neutral synthesis (unchanged).
+    public async Task<BasicSpeechObject> ProcessAsync(BasicTextObject text, string prosodyArgs)
     {
+        _prosodyArgs = prosodyArgs ?? "";
         var selected = SelectVoice(text);
 
         // A voice can fail where the translation succeeded - an installed piper
-        // binary too old for a voice's phoneme map, for one, which is what
-        // "aÃ‰Âª is not a single codepoint" means. Letting that throw discards the
-        // TRANSLATION as well, which is the primary result: the whole Module returns
-        // an error and the text nobody can now hear is also text nobody can read.
+        // binary too old for a voice's phoneme map, for one. Letting that throw
+        // discards the TRANSLATION as well, which is the primary result: the whole
+        // Module returns an error and the text nobody can now hear is also text
+        // nobody can read.
         //
         // So: try the chosen voice, fall back to the default, and if that fails
         // too, return an EMPTY Speech Object. The Composite AIM then still
@@ -147,7 +153,7 @@ public sealed class PiperTtsAim : ITtsAim
     private async Task<BasicSpeechObject> SynthesiseAsync(BasicTextObject text, PiperVoice voice)
     {
         // Synthesise: Piper produces WAV bytes from the inline text.
-        var wav = await voice.Engine.GenerateAsync(text.GetText(), "{}");
+        var wav = await voice.Engine.GenerateAsync(text.GetText(), _prosodyArgs);
 
         // Build the output Speech Qualifier and attach it to the Basic Speech Object.
         var qualifier = BuildSpeechQualifier(text, voice.Profile);
@@ -221,8 +227,7 @@ public sealed class PiperTtsAim : ITtsAim
                     SamplingFrequency = voice.SampleRate,
 
                     // Precision, not SamplePrecision: the bits used to represent
-                    // a sample. Every caller wrote the bit depth into the wrong
-                    // field - consistently, which is why nobody noticed.
+                    // a sample.
                     Precision = voice.SamplePrecisionBits
                 }
             },

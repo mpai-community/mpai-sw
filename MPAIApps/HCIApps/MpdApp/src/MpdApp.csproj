@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>MpdApp</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <DefineConstants>$(DefineConstants);WINDOWS_DEVICES</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Framework -->
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.GlobalStorage\AIF.GlobalStorage.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\Core\Mpai.Core.csproj" />
+    <!-- Avatar surface + North API -->
+    <ProjectReference Include="..\..\..\..\UAs\Lib\UaKit\Mpai.UaKit.csproj" />
+    <ProjectReference Include="..\..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
+    <!-- MMC-MPD affective front-end: NLU + ESI + EFI + PSM -->
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\NLU\Mpai.Mmc.Nlu.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\ESI\Mpai.Mmc.Esi.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\EFI\Mpai.Mmc.Efi.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\PSM\Mpai.Mmc.Psm.csproj" />
+    <!-- Dialogue + rendering leaves: ASR + EDP + RSR(PSD+TTS+GFD) -->
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\EDP\Mpai.Mmc.Edp.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+    <!-- Devices: mic capture + speech delivery + webcam (face) -->
+    <ProjectReference Include="..\..\..\..\AIMs\CAE3\V1.0\AOA\Mpai.Cae.Aoa.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\CAE3\V1.0\AOA.Windows\Mpai.Cae.Aoa.Windows.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\SOD\Mpai.Mmc.Sod.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\SOD.Windows\Mpai.Mmc.Sod.Windows.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\CVE\V1.0\VOA.Windows\Mpai.Cve.Voa.Windows.csproj" />
+  </ItemGroup>
+</Project>

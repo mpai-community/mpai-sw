@@ -46,7 +46,10 @@ public sealed class PiperProcessRunner : IPiperProcessRunner
                     Arguments =
                         $"-m \"{request.ModelPath}\" " +
                         $"-c \"{request.ConfigPath}\" " +
-                        $"-f \"{outputPath}\"",
+                        $"-f \"{outputPath}\"" +
+                        (string.IsNullOrWhiteSpace(request.ExtraArgs)
+                            ? ""
+                            : " " + request.ExtraArgs),
 
                     RedirectStandardInput = true,
                     RedirectStandardError = true,

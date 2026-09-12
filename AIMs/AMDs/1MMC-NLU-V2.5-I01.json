@@ -1,0 +1,30 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-NLU-V2.5-I01", "AIMName": "MMC-NLU-V2.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Natural Language Understanding: receives Input Text (PortNumber 1) or Recognised Text (PortNumber 2) - either may be absent - and produces the Text Descriptors Object (MMC-TDO) carrying the Basic Text Descriptors, a Refined Text, and the Text Personal Status (MMC-TPS: a value for each Personal Status Factor). A first-pass tagger fills POS and NE taggings (dependency and SRL left null, as the spec permits). Text ports accept both OSD-BTO and OSD-TXO.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "InputText",           "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 1, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "RecognisedText",      "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 2, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextDescriptors",     "Direction": "Output", "DataType": "MMC-TDO-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "RefinedText",         "Direction": "Output", "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextPersonalStatus",  "Direction": "Output", "DataType": "MMC-TPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-NLU-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Nlu",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "0.5 GB", "Request": "1 GB", "Maximum": "2 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

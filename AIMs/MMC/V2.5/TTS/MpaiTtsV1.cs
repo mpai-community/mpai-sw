@@ -27,7 +27,10 @@ public sealed class MpaiTtsV1 : IMpaiTtsV1
             {
                 Text = text,
                 ModelPath = _configuration.ModelPath,
-                ConfigPath = _configuration.ConfigPath
+                ConfigPath = _configuration.ConfigPath,
+                // The second parameter carries extra Piper flags (prosody) when the
+                // caller supplies them; empty means neutral synthesis (unchanged).
+                ExtraArgs = speechQualifier ?? string.Empty
             };
 
         var speechData =

@@ -1,0 +1,11 @@
+{ "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-PSM-V2.5-I01", "AIMName": "MMC-PSM-V2.5" },
+  "APIProfile":"Basic","Description":"Personal Status Multiplexing.",
+  "ExternalPorts":[{"Name":"TextPersonalStatus","Direction":"Input","DataType":"MMC-TPS-V2.5","IsOptional":true,"Technology":"Software","Protocol":"","IsRemote":false},
+                   {"Name":"SpeechPersonalStatus","Direction":"Input","DataType":"MMC-SPS-V2.5","IsOptional":true,"Technology":"Software","Protocol":"","IsRemote":false},
+                   {"Name":"FacePersonalStatus","Direction":"Input","DataType":"MMC-FPS-V2.5","IsOptional":true,"Technology":"Software","Protocol":"","IsRemote":false},
+                   {"Name":"GesturePersonalStatus","Direction":"Input","DataType":"MMC-GPS-V2.5","IsOptional":true,"Technology":"Software","Protocol":"","IsRemote":false},
+                   {"Name":"EntityPersonalStatus","Direction":"Output","DataType":"MMC-EPS-V2.5","Technology":"Software","Protocol":"","IsRemote":false}],
+  "SubAIMs":[],"Topology":[],
+  "Implementations":[{"ImplementationURI":"file:///D:/AI/AIMs/MMC-PSM-V2.5-I01","MASPort":443,"BinaryName":"Mpai.Mmc.Psm","Architecture":"x86-64","OperatingSystem":"Windows","Version":"2.5","Source":"AIMStorage"}],
+  "ResourcePolicies":[{"Name":"Memory","Minimum":"0.25 GB","Request":"0.5 GB","Maximum":"1 GB"},{"Name":"CPU:Class","Minimum":"Low","Request":"Low","Maximum":"Medium"}],
+  "DataXMData":{},"Documentation":[{"Type":"Tutorial","URI":"https://mpai.community/standards/mpai-mmc/v2-5/"}]}

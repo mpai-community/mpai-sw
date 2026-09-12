@@ -66,5 +66,11 @@
                      },
     "MMC-EDP-V2.5":  {
                          "OllamaModel":  "llama3.2:3b"
+                     },
+    "MMC-ESI-V2.5":  {
+                         "W2v2Model":  "D:\\BI\\Models\\w2v2-emotion\\model.onnx"
+                     },
+    "MMC-EFI-V2.5":  {
+                         "HseModel":  "D:\\BI\\Models\\hsemotion_enet_b0_8_va_mtl.onnx"
                      }
 }

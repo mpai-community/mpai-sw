@@ -1,0 +1,8 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-EFI-V2.5-I01", "AIMName": "MMC-EFI-V2.5" },
+  "APIProfile":"Basic","Description":"Entity Face Interpretation.",
+  "ExternalPorts":[{"Name":"FaceObject","Direction":"Input","DataType":"OSD-BVO-V1.5","Technology":"Software","Protocol":"","IsRemote":false},
+                   {"Name":"FacePersonalStatus","Direction":"Output","DataType":"MMC-FPS-V2.5","Technology":"Software","Protocol":"","IsRemote":false}],
+  "SubAIMs":[],"Topology":[],
+  "Implementations":[{"ImplementationURI":"file:///D:/AI/AIMs/MMC-EFI-V2.5-I01","MASPort":443,"BinaryName":"Mpai.Mmc.Efi","Architecture":"x86-64","OperatingSystem":"Windows","Version":"2.5","Source":"AIMStorage"}],
+  "ResourcePolicies":[{"Name":"Memory","Minimum":"1 GB","Request":"2 GB","Maximum":"4 GB"},{"Name":"CPU:Class","Minimum":"Low","Request":"Medium","Maximum":"High"}],
+  "DataXMData":{},"Documentation":[{"Type":"Tutorial","URI":"https://mpai.community/standards/mpai-mmc/v2-5/"}]}

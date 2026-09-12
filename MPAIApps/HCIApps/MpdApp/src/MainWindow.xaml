@@ -1,0 +1,23 @@
+<Window x:Class="MpdApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="MPD - Multimodal Personal Status Dialogue" Height="1120" Width="1120"
+        Background="#141A24" FontFamily="Segoe UI">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="#1E2632" Padding="12,10">
+      <StackPanel>
+        <TextBlock Text="Multimodal Personal Status-based Dialogue" Foreground="#EAF1FB" FontSize="18" FontWeight="SemiBold"/>
+        <TextBlock Text="Speak - the CAV understands what you mean and senses how you feel, and replies." Foreground="#9FB0C6" FontSize="12" Margin="0,2,0,0"/>
+      </StackPanel>
+    </Border>
+    <Border DockPanel.Dock="Bottom" Background="#1E2632" Padding="12">
+      <DockPanel>
+        <Button x:Name="ListenButton" DockPanel.Dock="Left" Content="Listen" Width="110" Margin="0,0,12,0"
+                Click="ListenButton_Click" FontSize="14"/>
+        <TextBlock x:Name="StatusText" Foreground="#9FB0C6" VerticalAlignment="Center" Text="Press Listen and speak."/>
+      </DockPanel>
+    </Border>
+    <wv2:WebView2 x:Name="Web"/>
+  </DockPanel>
+</Window>

@@ -1,0 +1,37 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-PSE-V2.5-I01", "AIMName": "MMC-PSE-V2.5"},
+
+  "APIProfile":       "Basic",
+  "Description":      "Personal Status Extraction: extracts the entity's Personal Status from the available modalities. PS-Speech Interpretation reads the affect in the Speech Object; PS-Face Interpretation reads the affect in the Face Object; the Text Personal Status arrives ready-made from Natural Language Understanding. Personal Status Multiplexing assembles whichever per-modality Personal Statuses are present - Text, Speech, Face - into one Entity Personal Status. It combines; it does not compute.",
+
+  "InternalTypes":    [{"Name": "SpeechPersonalStatus",  "DataType": "MMC-SPS-V2.5"},
+                       {"Name": "FacePersonalStatus",    "DataType": "MMC-FPS-V2.5"}],
+
+  "ExternalPorts":    [{"Name": "TextPersonalStatus",  "Direction": "Input",  "DataType": "MMC-TPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechObject",        "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceObject",          "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatus",      "Direction": "Output", "DataType": "MMC-EPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-ESI-V2.5-I01", "AIMName": "MMC-ESI-V2.5" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-EFI-V2.5-I01", "AIMName": "MMC-EFI-V2.5" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-PSM-V2.5-I01", "AIMName": "MMC-PSM-V2.5" } }],
+
+  "Topology":         [{ "Output": { "AIMName": "",              "PortName": "TextPersonalStatus" }  , "Input": { "AIMName": "MMC-PSM-V2.5",  "PortName": "TextPersonalStatus" } },
+                       { "Output": { "AIMName": "",              "PortName": "SpeechObject" }        , "Input": { "AIMName": "MMC-ESI-V2.5",  "PortName": "SpeechObject" } },
+                       { "Output": { "AIMName": "",              "PortName": "FaceObject" }          , "Input": { "AIMName": "MMC-EFI-V2.5",  "PortName": "FaceObject" } },
+                       { "Output": { "AIMName": "MMC-ESI-V2.5",  "PortName": "SpeechPersonalStatus" }, "Input": { "AIMName": "MMC-PSM-V2.5",  "PortName": "SpeechPersonalStatus" } },
+                       { "Output": { "AIMName": "MMC-EFI-V2.5",  "PortName": "FacePersonalStatus" }  , "Input": { "AIMName": "MMC-PSM-V2.5",  "PortName": "FacePersonalStatus" } },
+                       { "Output": { "AIMName": "MMC-PSM-V2.5",  "PortName": "EntityPersonalStatus" }, "Input": { "AIMName": "",              "PortName": "PersonalStatus" } }],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-PSE-V2.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Pse",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}
