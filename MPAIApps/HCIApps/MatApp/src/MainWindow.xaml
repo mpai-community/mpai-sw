@@ -1,0 +1,42 @@
+<Window x:Class="HciMat.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="MAT - Multimodal Anonymous Translation" Height="1120" Width="1120"
+        Background="#141A24" FontFamily="Segoe UI">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="#1E2632" Padding="14,10">
+      <StackPanel>
+        <TextBlock Text="Multimodal Anonymous Translation" Foreground="#EAF1FB" FontSize="18" FontWeight="SemiBold"/>
+        <TextBlock x:Name="StatusText" Text="Starting..." Foreground="#9FB0C6" FontSize="13" Margin="0,2,0,0"/>
+      </StackPanel>
+    </Border>
+    <Border DockPanel.Dock="Bottom" Background="#1E2632" Padding="12,8">
+      <StackPanel>
+        <StackPanel x:Name="SelectPanel" Visibility="Collapsed">
+          <DockPanel Margin="0,0,0,6">
+            <TextBlock Text="From:" Foreground="#9FB0C6" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox x:Name="FromLang" Width="150" Height="28" DockPanel.Dock="Left" Margin="0,0,16,0"/>
+            <TextBlock Text="To:" Foreground="#9FB0C6" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox x:Name="ToLang" Width="150" Height="28" DockPanel.Dock="Left"/>
+          </DockPanel>
+          <DockPanel Margin="0,0,0,6">
+            <TextBlock Text="Type text, press Enter:" Foreground="#9FB0C6" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" DockPanel.Dock="Left"/>
+            <TextBox x:Name="TypeBox" Height="28" FontSize="14" KeyDown="TypeBox_KeyDown"/>
+          </DockPanel>
+        </StackPanel>
+        <DockPanel>
+          <Button x:Name="PrimaryButton" DockPanel.Dock="Left" Content="Start" Width="120" Height="40"
+                  FontSize="15" Margin="0,0,12,0" IsEnabled="False" Click="PrimaryButton_Click"/>
+          <Button x:Name="SpeakButton" DockPanel.Dock="Left" Content="Speak" Width="110" Height="40"
+                  FontSize="15" Margin="0,0,12,0" Visibility="Collapsed" Click="SpeakButton_Click"/>
+          <Button x:Name="StopButton" DockPanel.Dock="Left" Content="Stop" Width="110" Height="40"
+                  FontSize="15" Margin="0,0,12,0" Visibility="Collapsed" Click="StopButton_Click"/>
+          <TextBlock x:Name="TurnStatus" Foreground="#7f8ea3" FontSize="11" VerticalAlignment="Center"/>
+        </DockPanel>
+        <TextBlock x:Name="TranslationText" Foreground="#EAF1FB" FontSize="16" TextWrapping="Wrap" Margin="0,8,0,0"/>
+      </StackPanel>
+    </Border>
+    <wv2:WebView2 x:Name="Web"/>
+  </DockPanel>
+</Window>

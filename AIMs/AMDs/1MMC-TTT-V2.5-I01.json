@@ -1,0 +1,30 @@
+{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "MMC-TTT-V2.5-I01", "AIMName": "MMC-TTT-V2.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Text-to-Text Translation. Translates Input Text or Recognised Text into the language named by the Language Selector. Two OSD-BTO-V1.5 text input ports, told apart by PortNumber; when both carry data the Media Selector decides which is translated.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "InputText",        "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "RecognisedText",   "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "LanguageSelector", "Direction": "Input",  "DataType": "OSD-SEL-V1.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "MediaSelector",    "Direction": "Input",  "DataType": "OSD-SEL-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "TranslatedText",   "Direction": "Output", "DataType": "OSD-BTO-V1.5",                  "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/AMDs/MMC-TTT-V2.5-I01",
+                            "MASPort":          443,
+                            "BinaryName":       "Mpai.Mmc.Ttt",
+                            "Architecture":     "x86-64",
+                            "OperatingSystem":  "Windows",
+                            "Version":          "2.5",
+                            "Source":           "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB",   "Request": "3 GB",   "Maximum": "8 GB"},
+                           {"Name": "CPU:Class",  "Minimum": "Medium", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/ai-modules/text-to-text-translation/"}]}

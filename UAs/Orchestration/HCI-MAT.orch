@@ -1,0 +1,27 @@
+# HCI-MAT.orch  -  Multimodal Anonymous Translation (WDL)
+# The User Agent acquires the user's speech AND the user's target-language choice
+# (a Language Selector), supplies both to MMC-MAT-V2.5, and delivers the Module's
+# Machine Speech + Machine Face Descriptors and displays the Translated Text.
+# Translation and target-voice selection are the Module's business.
+
+on Start:
+    present welcome via RSR (neutral):
+        "Welcome to the HCI Multimodal Translation Service. Choose a language and speak."
+    start module MMC-MAT-V2.5
+    loop until Stop:
+        acquire LanguageSelector (OSD-SEL-V1.5) from the user's choice   # target language
+        listen
+        acquire InputSpeech (OSD-BSO-V1.5) via VAD
+        supply InputSpeech, InputSpeechTime (OSD-STM-V1.5) -> module
+        supply LanguageSelector -> module
+        run                                                              # ASR -> TTT -> RSR
+        await module outputs MachineSpeech (OSD-BSO-V1.5),
+                             MachineFaceDescriptors (PAF-FDO-V1.6),
+                             TranslatedText (OSD-BTO-V1.5)
+        present MachineSpeech                                            # avatar speaks (target voice)
+        display TranslatedText
+
+on Stop:
+    stop module
+    present closing via RSR (neutral):
+        "Thank you for using the HCI Multimodal Translation Service."
