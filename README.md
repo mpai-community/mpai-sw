@@ -1,4 +1,4 @@
-# MPAI HCI Applications - MAC, ACR, MAD
+# MPAI HCI Applications - MAC, ACR, MAD, MAT
 
 Reference **Human-CAV Interaction (HCI)** applications built on the
 **MPAI-AIF** AI Framework. Each application is a genuine AIF **Module** (a graph
@@ -25,6 +25,7 @@ Relevant MPAI Technical Specifications:
 | **MAC** | Multimodal Access Control | Recognise a person from **face and voice** and grant or deny access; access is granted only when both modalities agree. | [User](MPAIApps/HCIApps/MacApp/docs/MAC-User.md) / [Developer](MPAIApps/HCIApps/MacApp/docs/MAC-Developer.md) |
 | **ACR** | Access Control Registration | **Enrol** a new person's face and voice into the gallery that MAC reads. | [User](MPAIApps/HCIApps/AcrApp/docs/ACR-User.md) / [Developer](MPAIApps/HCIApps/AcrApp/docs/ACR-Developer.md) |
 | **MAD** | Multimodal Anonymous Dialogue | Hold a spoken **conversation** with a Speaking Avatar; no identity, a local LLM composes the replies. | [User](MPAIApps/HCIApps/MadApp/docs/MAD-User.md) / [Developer](MPAIApps/HCIApps/MadApp/docs/MAD-Developer.md) |
+| **MAT** | Multimodal Anonymous Translation | Speak or type in one language; the Speaking Avatar **translates** and speaks it in another. | [User](MPAIApps/HCIApps/MatApp/docs/MAT-User.md) / [Developer](MPAIApps/HCIApps/MatApp/docs/MAT-Developer.md) |
 
 Each application presents a 3-D **Speaking Avatar** that guides the user by voice.
 
@@ -73,6 +74,7 @@ User Agent  --drives-->  Controller  --builds & runs-->  Module (sub-AIMs)
 | MAC | `MMC-MAC-V2.5` | `PAF-FIR` (SCRFD+ArcFace face), `MMC-SIR` (ECAPA voice), `OSD-IDR` (reconcile), `PAF-RSR` -> `PAF-PSD` + `MMC-TTS` + `PAF-GFD` (avatar) |
 | ACR | `MMC-ACR-V2.5` | `PAF-EFD` (face descriptors), `MMC-ESD` (speech descriptors), `PAF-RSR` (avatar prompts) |
 | MAD | `MMC-MAD-V2.5` | `MMC-ASR` (Whisper speech->text), `MMC-EDP` (local LLM via Ollama), `PAF-RSR` (avatar reply) |
+| MAT | `MMC-MAT-V2.5` | `MMC-ASR` (Whisper speech->text), `MMC-TTT` (M2M100 translation), `PAF-RSR` (avatar speaks the translation) |
 
 `PAF-RSR` (Response and Scene Rendering) is a composite realised by its leaves
 `PAF-PSD` + `MMC-TTS` + `PAF-GFD`; it is shared by all three apps. Live capture
@@ -94,7 +96,7 @@ UAs/
   Lib/UaKit/    Speaking-Avatar host, capture/present toolkit
   Orchestration/  the WDL .orch guidebooks (HCI-MAC/ACR/MAD)
   Assets/       avatar assets (glb, viewer HTML)
-MPAIApps/HCIApps/{MacApp,AcrApp,MadApp}/   the applications (src + docs + build)
+MPAIApps/HCIApps/{MacApp,AcrApp,MadApp,MatApp}/   the applications (src + docs + build)
 schemas/        JSON schemas of the AIF data types
 ```
 
