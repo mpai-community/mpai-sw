@@ -53,7 +53,7 @@ affect; with no speech-emotion model, it uses text + face. Gesture (MMC-GPS) is 
 declared but unsupplied optional input (not implemented).
 
 ## 3. The User Agent
-`MPAIApps/HCIApps/MpdApp/src/` - namespace `MpdApp`; provider `MpdProvider.cs`;
+`MPAIApps/MmcApps/MpdApp/src/` - namespace `MpdApp`; provider `MpdProvider.cs`;
 UA `MainWindow.xaml.cs`. It drives the Module through the **North API** by data type:
 
 - **Start (welcome/load):** `StartFlow("MMC-MPD-V2.5")` loads the models behind a
@@ -79,22 +79,22 @@ reach the spoken text, and the user's affect conditions the reply's tone without
 being named back to the user.
 
 ## 5. Files this app needs (build closure)
-- **App:** `MPAIApps/HCIApps/MpdApp/*`
+- **App:** `MPAIApps/MmcApps/MpdApp/*`
 - **AIF:** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
 - **UA library / North API:** `UAs/Lib/UaKit`, `MW/HciApi`
 - **AIMs:** `AIMs/Core`; leaves `MMC/V2.5/{ASR, NLU, ESI, EFI, PSM, EDP, TTS}`,
   `PAF/V1.6/{PSD, GFD}`; audio devices `CAE3/V1.0/AOA(.Windows)`,
   `MMC/V2.5/SOD(.Windows)`; webcam `CVE/V1.0/VOA.Windows`
 - **L3s:** `1MMC-MPD`, `1MMC-PSE`, and the sub-AIM AMDs
-- **Orchestration:** `UAs/Orchestration/HCI-MPD.orch`
+- **Orchestration:** `UAs/Orchestration/MMC-MPD.orch`
 - **Settings:** `AIMs/aim-settings.json` - `MMC-ASR` (Whisper), `MMC-EDP`
   (`OllamaModel`), `MMC-ESI` (`W2v2Model`), `MMC-EFI` (`HseModel`), `MMC-TTS` (Piper).
 
 ## 6. Build & run
 ```
-D:\BI\MPAIApps\HCIApps\MpdApp\MpdAppBuild.bat     # produces MpdApp.exe
+MPAIApps\MmcApps\MpdApp\MpdAppBuild.bat     # produces MpdApp.exe
 # start Ollama first (serve + model), then:
-D:\BI\MPAIApps\HCIApps\MpdApp\MpdApp.exe
+MPAIApps\MmcApps\MpdApp\src\bin\Release\net10.0-windows10.0.19041.0\MpdApp.exe
 ```
 MPD needs **Ollama running** with the configured model, a **multilingual Whisper**
 model, and the two emotion models below.
@@ -113,3 +113,9 @@ corresponding key in `AIMs\aim-settings.json`. Verify each download with
 | Speech emotion (wav2vec2) | `MMC-ESI-V2.5.W2v2Model` | `w2v2-emotion\model.onnx` | audeering w2v2 dimensional emotion; ships as `w2v2-emotion.zip`. |
 | Face emotion (HSEmotion) | `MMC-EFI-V2.5.HseModel` | `hsemotion_enet_b0_8_va_mtl.onnx` | EfficientNet-B0 face affect. |
 | Piper voice(s) | `MMC-TTS-V2.5` `Voice:<lang>` | `<lang>_*.onnx` (+ `.json`) | one per output language. |
+
+## The package
+
+MPD is also offered as **MPD.zip**: the application, the 29 projects it references transitively, the Module descriptors, the schemas, the avatar assets and these guides - and nothing belonging to another application. No models, no credentials. Unzip it anywhere, place the models under `Models\`, and run `MpdAppBuild.bat`. MPD needs more models than the others: the two emotion models - `w2v2-emotion` for the voice and `hsemotion_enet_b0_8_va_mtl.onnx` for the face - as well as Whisper, Piper and a local LLM served by Ollama.
+
+**A setting that names a path is resolved against the application's own root** - the directory holding `AIMs\` and `UAs\`, found from the executable's location. A relative setting works wherever the folder is placed; an absolute one binds the installation to one machine.
