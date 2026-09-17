@@ -53,3 +53,6 @@ languages; you can translate **typed text** (you read the translation) or
 
 MAT is **anonymous** - there is no identity and no recording kept. Speech is
 processed for the translation of the moment only.
+## The Select button
+
+MAT opens with a pair of languages already shown, and **they are not in effect until you press Select**. The Speak control stays greyed out until you do - including when the pair shown is already the one you want. Press **Select**, confirm the languages, and Speak becomes available.

@@ -52,8 +52,8 @@ is an automatic sub-sequence not under the UA's step-by-step control, **the UA
 cites no numbers** - it supplies the boundary data by type and reads the result.
 
 ## 3. The User Agent
-`MPAIApps/HCIApps/MatApp/src/` - namespace `HciMat`; provider `MatProvider.cs`;
-UA `MainWindow.xaml.cs`, realising `UAs/Orchestration/HCI-MAT.orch`. It drives the
+`MPAIApps/MmcApps/MatApp/src/` - namespace `HciMat`; provider `MatProvider.cs`;
+UA `MainWindow.xaml.cs`, realising `UAs/Orchestration/MMC-MAT.orch`. It drives the
 Module through the **North API** by data type:
 
 - **Start (two presses):** press 1 -> `StartFlow("MMC-MAT-V2.5")` (models load) +
@@ -82,7 +82,7 @@ Real-world limbs (microphone capture, avatar rendering) come from
 `UAs/Lib/UaKit` (`AvatarUaHost`).
 
 ## 4. Files this app needs (build closure)
-- **App:** `MPAIApps/HCIApps/MatApp/*`
+- **App:** `MPAIApps/MmcApps/MatApp/*`
 - **AIF:** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
 - **UA library / North API:** `UAs/Lib/UaKit`, `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`; leaves `MMC/V2.5/ASR`, `MMC/V2.5/TTT`, `PAF/V1.6/PSD`,
@@ -90,7 +90,7 @@ Real-world limbs (microphone capture, avatar rendering) come from
   `MMC/V2.5/SOD(.Windows)`
 - **L3s:** `1MMC-MAT-V2.5-I01.json` + `1MMC-ASR-V2.5-I01.json` +
   `1MMC-TTT-V2.5-I01.json` + the RSR-leaf AMDs
-- **Orchestration:** `UAs/Orchestration/HCI-MAT.orch`
+- **Orchestration:** `UAs/Orchestration/MMC-MAT.orch`
 - **Schemas:** the JSON schemas reachable from MAT's data types (incl. OSD-SEL)
 - **Settings:** `AIMs/aim-settings.json` - `MMC-ASR-V2.5`
   (`ExecutablePath` = whisper-cli, `ModelPath` = **multilingual** ggml model),
@@ -98,8 +98,8 @@ Real-world limbs (microphone capture, avatar rendering) come from
 
 ## 5. Build & run
 ```
-D:\BI\MPAIApps\HCIApps\MatApp\MatAppBuild.bat     # produces MatApp.exe
-D:\BI\MPAIApps\HCIApps\MatApp\MatApp.exe
+MPAIApps\MmcApps\MatApp\MatAppBuild.bat     # produces MatApp.exe
+MPAIApps\MmcApps\MatApp\src\bin\Release\net10.0-windows10.0.19041.0\MatApp.exe
 ```
 MAT needs **no** Ollama. It **does** need a **multilingual** Whisper model (an
 English-only `*.en` model cannot decode other input languages), the M2M100
@@ -124,3 +124,10 @@ the corresponding key in `AIMs\aim-settings.json`.
 
 Install Piper voices under `Models\Piper\voices\<voice>\`; `PiperExecutable` is
 the Piper Windows release (`piper.exe`).
+## The package
+
+MAT is also offered as **MAT.zip**: the application, the 20 projects it references transitively, the Module descriptors, the schemas, the avatar assets and these guides - and nothing belonging to another application. No models, no credentials. Unzip it anywhere, place the models under `Models\`, and run `MatAppBuild.bat`.
+
+**A setting that names a path is resolved against the application's own root** - the directory holding `AIMs\` and `UAs\`, found from the executable's location. A relative setting works wherever the folder is placed; an absolute one binds the installation to one machine.
+
+**Known**: the language pair shown at startup is inert until the user presses Select, and the Speak control stays disabled until then - including when the offered pair is the one wanted.
