@@ -122,3 +122,11 @@ path under `Models\`, or set the corresponding key in `AIMs\aim-settings.json`.
 | Piper voice config | `VoiceConfig` / `VoiceConfig:en` | `en_US-amy-medium.onnx.json` | 0.005 MB | `95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77` | Hugging Face `rhasspy/piper-voices` |
 
 Install the Piper voice under `Models\Piper\voices\en_US-amy-medium\`. The Piper executable (`PiperExecutable`) is the Piper Windows release (`piper.exe`).
+
+## The package
+
+ACR is also offered as **ACR.zip**: the application, the 28 projects it references transitively, the Module descriptors, the schemas, the avatar assets and these guides - and nothing belonging to another application. No models, no gallery, no credentials. Unzip it anywhere, place the models under `Models\`, and run `AcrAppBuild.bat`.
+
+**A setting that names a path is resolved against the application's own root** - the directory holding `AIMs\` and `UAs\`, found from the executable's location. A relative setting therefore works wherever the folder is placed; an absolute one binds the installation to one machine.
+
+**An ONNX model is often two files.** The `.onnx` holds the network's structure and may be a megabyte; an `.onnx.data` beside it holds the weights and may be hundreds. A copy bringing one and not the other produces a model that loads and fails at first use.
