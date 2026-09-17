@@ -59,7 +59,7 @@ one key and merges with any half already stored - it does not rewrite the whole
 gallery. The gallery scope is `"MMC-MAC-V2.5"` - the same scope MAC reads.
 
 ## 3. The User Agent
-`MPAIApps/HCIApps/AcrApp/src/` - provider `AcrProvider.cs`, UA
+`MPAIApps/MmcApps/AcrApp/src/` - provider `AcrProvider.cs`, UA
 `MainWindow.xaml.cs` (namespace `AcrApp`), realising `UAs/Orchestration/HCI-ACR.orch`.
 It drives the Module through the **North API** (`NorthApi`), addressing data only
 by type:
@@ -78,7 +78,7 @@ capture is tagged `VisualObjectType = "Face"`; visual acquisition uses **native
 Windows Media Capture** (no OpenCV). Real-world limbs come from `UAs/Lib/UaKit`.
 
 ## 4. Files this app needs (build closure)
-- **App:** `MPAIApps/HCIApps/AcrApp/*`
+- **App:** `MPAIApps/MmcApps/AcrApp/*`
 - **AIF:** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
 - **UA library / North API:** `UAs/Lib/UaKit`, `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`; leaves `PAF/V1.6/EFD`, `MMC/V2.5/ESD`, `PAF/V1.6/PSD`,
@@ -94,8 +94,8 @@ Windows Media Capture** (no OpenCV). Real-world limbs come from `UAs/Lib/UaKit`.
 
 ## 5. Build & run
 ```
-D:\BI\MPAIApps\HCIApps\AcrApp\AcrAppBuild.bat
-D:\BI\MPAIApps\HCIApps\AcrApp\AcrApp.exe
+MPAIApps\MmcApps\AcrApp\AcrAppBuild.bat
+MPAIApps\MmcApps\AcrApp\src\bin\Release\net10.0-windows10.0.19041.0\AcrApp.exe
 ```
 The application root is resolved at runtime from the executable location
 (`MpaiPaths`, first ancestor holding both `AIMs` and `UAs`), so a clone runs in
