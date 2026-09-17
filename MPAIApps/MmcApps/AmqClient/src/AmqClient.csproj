@@ -27,6 +27,10 @@
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="MainWindow.xaml" />
+    <Compile Include="MainWindow.xaml.cs" />
+    <Compile Include="App.xaml.cs" />
+    <Compile Include="Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
