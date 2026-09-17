@@ -32,6 +32,43 @@ Each presents a 3-D **Speaking Avatar** that guides the user by voice.
 
 ---
 
+
+### Across a network
+
+**AMQ-MAS** is AMQ run across a network: a **Service** holding the models and
+doing the work, and a **Client** holding a microphone, a screen and the avatar and
+no model at all. They speak MPAI-MAS over HTTPS.
+
+| | Guides | Package |
+|---|---|---|
+| **AMQ-MAS** | [User](MPAIApps/MmcApps/AmqServer/docs/AMQ-MAS-User.md) / [Developer](MPAIApps/MmcApps/AmqServer/docs/AMQ-MAS-Developer.md) | [AMQ-MAS.zip](MPAIApps/MmcApps/AmqServer/AMQ-MAS.zip) |
+
+An application and its networked client are **different applications for
+different users**, published separately. `AmqApp` runs its Module in process and
+knows nothing of MPAI-MAS; `AmqClient` drives one over the network and holds no
+Framework and no models.
+
+`MadServer` and `MadClient` are the same arrangement for MAD. They are in the
+repository and not yet published as a package.
+
+### The packages
+
+Each application is offered as a package containing it, the projects it needs, its
+Module descriptors, the schemas, the avatar assets and its guides - and nothing
+belonging to another application. No models, no gallery, no credentials.
+
+[ACR.zip](MPAIApps/MmcApps/AcrApp/ACR.zip) ·
+[MAC.zip](MPAIApps/MmcApps/MacApp/MAC.zip) ·
+[MAD.zip](MPAIApps/MmcApps/MadApp/MAD.zip) ·
+[MAT.zip](MPAIApps/MmcApps/MatApp/MAT.zip) ·
+[MPD.zip](MPAIApps/MmcApps/MpdApp/MPD.zip) ·
+[AMQ.zip](MPAIApps/MmcApps/AmqApp/AMQ.zip)
+
+Unzip anywhere, place the models under `Models\`, run the build script. Every
+package has been unzipped into an empty folder, built, and run.
+
+---
+
 ## Architecture
 
 ### AIF in brief
