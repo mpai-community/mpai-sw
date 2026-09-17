@@ -1,0 +1,28 @@
+{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "CAE-ASI-V2.5-I01", "AIMName": "CAE-ASI-V2.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Audio Scene object Identification: classifies each audio object of the Basic Audio Scene with YAMNet and requalifies it - a speech object becomes a Basic Speech Object (OSD-BSO) for Speaker Recognition/ASR/Personal Status; other sound stays a Basic Audio Object (OSD-BAO) for Audio Instance Identification.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "AudioSceneDescriptors",  "Direction": "Input",  "DataType": "OSD-BAS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "SpeechObject",           "Direction": "Output", "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AudioObject",            "Direction": "Output", "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAE-ASI-V2.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cae.Asi",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "2.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-cae/"}]}

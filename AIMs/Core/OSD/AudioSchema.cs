@@ -159,7 +159,7 @@ public sealed class SubAudioObjectEntry
 // ---------------------------------------------------------------------------
 public sealed class BasicAudioSceneDescriptors
 {
-    public string Header { get; init; } = "OSD-BAD-V1.5";
+    public string Header { get; init; } = "OSD-BAS-V1.5";
     public string? MInstanceID { get; init; }
     public string? UEnvironmentID { get; init; }
     public string BasicAudioSceneDescriptorsID { get; init; } = "";

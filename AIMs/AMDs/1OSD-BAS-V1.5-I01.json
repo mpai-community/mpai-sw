@@ -1,0 +1,27 @@
+{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "OSD-BAS-V1.5-I01", "AIMName": "OSD-BAS-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Basic Audio Scene Description: describes the acquired audio as a Basic Audio Scene - its Basic Audio Objects, each with its point of view. Front-end describer of MMC-HCI. (Front-end record: L3 from the L2; processor to be provided.)",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "BasicAudioObject",            "Direction": "Input",  "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicAudioSceneDescriptors",  "Direction": "Output", "DataType": "OSD-BAS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-BAS-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Bas",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

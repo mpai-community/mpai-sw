@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Mpai.Core;
+using Mpai.Core.OSD;
 
 namespace Mpai.Aims.Asr;
 
@@ -21,6 +22,12 @@ public sealed class WhisperAsrConfiguration
 //    inherit   : Language from the input Speech Qualifier, if it carried one
 //    determine : the recognised Language (from the model) and text Format = UTF-8
 //  Mirror image of the TTS transform.
+//
+//  The Speech Object DECLARES its audio format in its Speech Qualifier (PCM
+//  sampling frequency + precision). whisper-cli needs a real WAV file, so the
+//  bytes are written as a valid WAV: passed through when already a RIFF/WAVE
+//  container (the stand-alone apps supply that), otherwise the raw PCM is wrapped
+//  in a WAV header using the format the qualifier declares.
 // ---------------------------------------------------------------------------
 public sealed class WhisperAsrAim : IAsrAim
 {
@@ -31,7 +38,7 @@ public sealed class WhisperAsrAim : IAsrAim
     public async Task<BasicTextObject> ProcessAsync(BasicSpeechObject speech)
     {
         var wav = Path.Combine(Path.GetTempPath(), $"asr_{Guid.NewGuid():N}.wav");
-        await File.WriteAllBytesAsync(wav, speech.Data);
+        await File.WriteAllBytesAsync(wav, ToWavBytes(speech));
 
         try
         {
@@ -75,6 +82,54 @@ public sealed class WhisperAsrAim : IAsrAim
         {
             try { File.Delete(wav); } catch { }
         }
+    }
+
+    // Produce a valid WAV byte[] for whisper-cli from the Speech Object.
+    // Pass through a RIFF/WAVE container; otherwise wrap the raw PCM in a WAV
+    // header using the format declared by the Speech Qualifier.
+    private static byte[] ToWavBytes(BasicSpeechObject speech)
+    {
+        var data = speech.Data ?? Array.Empty<byte>();
+        if (data.Length == 0) return data;
+
+        // Already a WAV container? Pass through.
+        if (data.Length >= 4 && data[0] == (byte)'R' && data[1] == (byte)'I' && data[2] == (byte)'F' && data[3] == (byte)'F')
+            return data;
+
+        var pcm = speech.SpeechQualifier?.Format?.ContentFormats?.RawData;
+        int rate = pcm?.SamplingFrequency is double f && f > 0 ? (int)f : 16000;
+        int bits = pcm?.Precision ?? 16;
+        int channels = speech.SpeechQualifier?.Attributes?.Device?.CaptureConfiguration?.ChannelCount ?? 1;
+        if (channels <= 0) channels = 1;
+
+        return WrapPcmInWav(data, rate, channels, bits);
+    }
+
+    // Build a canonical 44-byte-header WAV around interleaved PCM.
+    private static byte[] WrapPcmInWav(byte[] pcm, int sampleRate, int channels, int bits)
+    {
+        int byteRate   = sampleRate * channels * bits / 8;
+        int blockAlign = channels * bits / 8;
+        int dataLen    = pcm.Length;
+
+        using var ms = new MemoryStream(44 + dataLen);
+        using var bw = new BinaryWriter(ms);
+        bw.Write(new[] { (byte)'R', (byte)'I', (byte)'F', (byte)'F' });
+        bw.Write(36 + dataLen);
+        bw.Write(new[] { (byte)'W', (byte)'A', (byte)'V', (byte)'E' });
+        bw.Write(new[] { (byte)'f', (byte)'m', (byte)'t', (byte)' ' });
+        bw.Write(16);                       // fmt chunk size
+        bw.Write((short)1);                 // PCM
+        bw.Write((short)channels);
+        bw.Write(sampleRate);
+        bw.Write(byteRate);
+        bw.Write((short)blockAlign);
+        bw.Write((short)bits);
+        bw.Write(new[] { (byte)'d', (byte)'a', (byte)'t', (byte)'a' });
+        bw.Write(dataLen);
+        bw.Write(pcm);
+        bw.Flush();
+        return ms.ToArray();
     }
 
     private string BuildArguments(string wav, BasicSpeechObject speech)

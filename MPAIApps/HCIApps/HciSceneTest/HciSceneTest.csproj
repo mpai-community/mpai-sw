@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>HciSceneTest</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <DefineConstants>$(DefineConstants);WINDOWS_DEVICES</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\HciApp\src\HciProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Framework + North API -->
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.SharedStorage\AIF.SharedStorage.csproj" />
+    <ProjectReference Include="..\..\..\AIF\V3.0\src\AIF.GlobalStorage\AIF.GlobalStorage.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
+    <!-- Scene front-end -->
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\BAS\Mpai.Osd.Bas.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\BVS\Mpai.Osd.Bvs.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\BLS\Mpai.Osd.Bls.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\AVA\Mpai.Osd.Ava.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\VII\Mpai.Osd.Vii.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\CAE3\V1.0\ASI\Mpai.Cae.Asi.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\CAE3\V1.0\AII\Mpai.Cae.Aii.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\CAE3\V1.0\QCV\Mpai.Cae.Qcv.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\CVE\V1.0\VSI\Mpai.Cve.Vsi.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\OSD\V1.5\VisualScene\Mpai.Osd.VisualScene.csproj" />
+    <!-- Recognisers -->
+    <ProjectReference Include="..\..\..\AIMs\PAF\V1.6\FIR\Mpai.Paf.Fir.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\SIR\Mpai.Mmc.Sir.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\HCI\IDR\Mpai.Hci.Idr.csproj" />
+    <!-- Dialogue + rendering -->
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\NLU\Mpai.Mmc.Nlu.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\ESI\Mpai.Mmc.Esi.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\EFI\Mpai.Mmc.Efi.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\PSM\Mpai.Mmc.Psm.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\EDP\Mpai.Mmc.Edp.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+  </ItemGroup>
+</Project>

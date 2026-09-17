@@ -1,0 +1,40 @@
+<Window x:Class="MpaiRca.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="MPAI Remote Client Application" Height="820" Width="700"
+        Background="#101014">
+  <Grid Margin="14">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <TextBlock x:Name="WorkflowText" Grid.Row="0" Foreground="#8899AA"
+               FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"
+               Margin="0,0,0,8" Text="no workflow loaded"/>
+
+    <Border Grid.Row="1" CornerRadius="8" ClipToBounds="True" Background="Black">
+      <wv2:WebView2 x:Name="Web"/>
+    </Border>
+
+    <TextBlock x:Name="InstructionText" Grid.Row="2" Foreground="#DDDDDD"
+               FontSize="16" TextWrapping="Wrap" Margin="0,12,0,8"
+               Text="Choose a workflow and press Start."/>
+
+    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,8">
+      <Button x:Name="LoadButton"  Content="Workflow..." Width="110" Height="30" Margin="0,0,8,0"/>
+      <Button x:Name="StartButton" Content="Start"       Width="90"  Height="30" Margin="0,0,8,0" IsEnabled="False"/>
+      <Button x:Name="StopButton"  Content="Stop"        Width="90"  Height="30" Margin="0,0,8,0" IsEnabled="False"/>
+      <TextBox x:Name="TypedBox"   Width="240" Height="30" VerticalContentAlignment="Center"
+               Margin="8,0,8,0" IsEnabled="False"/>
+      <Button x:Name="SendButton"  Content="Send"        Width="70"  Height="30" IsEnabled="False"/>
+    </StackPanel>
+
+    <TextBlock x:Name="StatusText" Grid.Row="4" Foreground="#667788"
+               FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" Text="ready"/>
+  </Grid>
+</Window>

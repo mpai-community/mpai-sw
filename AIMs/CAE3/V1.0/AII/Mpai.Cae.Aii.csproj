@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Mpai.Cae.Aii</AssemblyName>
+    <RootNamespace>Mpai.Cae.Aii</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+  </ItemGroup>
+</Project>

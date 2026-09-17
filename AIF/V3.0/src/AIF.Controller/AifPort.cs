@@ -28,14 +28,14 @@ public sealed class AifPort
 
     // MPAI_AIFM_Port_Input_Write / used also to place an Output message.
     // The write is non-blocking here (unbounded FIFO) and signals waiters.
-    public void Write(Message message)
+    public void MPAI_AIFM_Port_Input_Write(Message message)
     {
         _fifo.Enqueue(message);
         _available.Release();
     }
 
     // MPAI_AIFM_Port_Output_Read — blocking read. Returns a copy.
-    public async Task<Message> ReadAsync(CancellationToken token = default)
+    public async Task<Message> MPAI_AIFM_Port_Output_Read(CancellationToken token = default)
     {
         await _available.WaitAsync(token);
         _fifo.TryDequeue(out var message);
@@ -43,13 +43,13 @@ public sealed class AifPort
     }
 
     // MPAI_AIFM_Port_Probe — true if a read would currently succeed.
-    public bool Probe() => !_fifo.IsEmpty;
+    public bool MPAI_AIFM_Port_Probe() => !_fifo.IsEmpty;
 
     // MPAI_AIFM_Port_CountPendingMessages.
-    public int CountPendingMessages() => _fifo.Count;
+    public int MPAI_AIFM_Port_CountPendingMessages() => _fifo.Count;
 
     // MPAI_AIFM_Port_Reset — delete all pending messages.
-    public void Reset()
+    public void MPAI_AIFM_Port_Reset()
     {
         while (_fifo.TryDequeue(out _)) { }
         // drain the semaphore count

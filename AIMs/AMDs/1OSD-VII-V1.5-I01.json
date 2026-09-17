@@ -1,0 +1,26 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "OSD-VII-V1.5-I01", "AIMName": "OSD-VII-V1.5" },
+
+  "APIProfile":       "Basic",
+  "Description":      "Visual Instance Identification: receives a Target Visual Object and produces its Visual Instance Identifier (OSD-IID). Runs a YOLOX object classifier on the object image and emits the highest-confidence class as the instance identity against a flat [visual, object, class] taxonomy.",
+
+  "ExternalPorts":    [{"Name": "TargetVisualObject", "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "VisualInstanceID",   "Direction": "Output", "DataType": "OSD-IID-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-VII-V1.5-I01",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Osd.Vii",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.5 GB", "Request": "1 GB",   "Maximum": "2 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

@@ -30,3 +30,32 @@ MPAIApps/HCIApps/MatApp/src/*.bak*
 MPAIApps/HCIApps/MatApp/src/*.allbak
 MPAIApps/HCIApps/MatApp/src/*.flowbak
 MPAIApps/HCIApps/MatApp/src/*.langbak
+
+# transient
+mas-server*.json
+tree.txt
+_stale/
+*.bak
+*.bak2
+*.premas
+*.preclient
+*.fdotest
+*.hangbak
+*.north
+*.northbak
+*.removed
+testcerts/
+
+# transient - the rule, not a list of instances
+*.pre*
+_removed/
+
+# transient, wherever they are
+*.allbak
+*.flowbak
+*.langbak
+*.hangbak
+*.northbak
+
+# built in place, never published as an artefact
+MPAIApps/MmcApps/*/*.exe

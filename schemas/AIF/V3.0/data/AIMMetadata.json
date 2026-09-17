@@ -1,0 +1,200 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "title":                "AIM Metadata V3.0",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "Identifier", "APIProfile", "Description", "ExternalPorts", "Implementations" ],
+
+  "$comment":             "An AIM is Basic or Composite. SubAIMs and Topology are required together and only for a Composite AIM (see dependentRequired). A Port is addressed by its Data Type and, where an AIM has more than one Port of the same Direction and Data Type, by a PortNumber; Port names are not used for addressing. Constrained fields admit a /* ... */ placeholder so that one file serves as both Implementer template and validated instance; AIMMetadata-strict.json disables placeholders through the 'placeholder' dynamic anchor.",
+
+  "properties":           {
+
+    "$schema":            { "type": "string", "format": "uri", "description": "Permitted so an instance may declare the schema it validates against." },
+    "$id":                { "type": "string", "format": "uri", "description": "Canonical URI of this AIM's Metadata." },
+    "$comment":           { "type": "string" },
+    "title":              { "type": "string" },
+
+    "Header":             { "$ref": "#/$defs/MPAIIdentifier",
+                            "description": "This AIM Metadata instance's own identifier in STANDARD-TYPE-Vn.m form, e.g. PAF-RSR-V1.6." },
+
+    "Identifier":         { "$ref": "#/$defs/Identifier" },
+
+    "APIProfile":         { "anyOf": [ { "enum": [ "Basic", "Secure" ] }, { "$dynamicRef": "#placeholder" } ] },
+
+    "Description":        { "type": "string" },
+
+    "InternalTypes":      { "type": "array", "description": "The Data Types used inside a Composite AIM by its SubAIMs, as distinct from those crossing the ExternalPorts.",
+                            "items": { "type": "object", "additionalProperties": false,
+                            "required": [ "DataType" ], "properties": {
+      "DataType":         { "$ref": "#/$defs/DataTypeOrSet" },
+      "Name":             { "type": "string", "description": "Optional human-readable label. Not used for addressing and carries no normative meaning." } } } },
+
+    "ExternalPorts":      { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/PortOptions" } },
+
+    "SubAIMs":            { "type": "array", "description": "Present only for a Composite AIM.",
+                            "items": { "type": "object", "additionalProperties": false,
+                            "required": [ "Identifier" ], "properties": {
+      "Identifier":       { "$ref": "#/$defs/Identifier" },
+      "AIMNumber":        { "type": "integer", "minimum": 1, "description": "1-based ordinal distinguishing SubAIMs that share an AIMName; omitted when the AIMName occurs once (implicitly 1). Referenced by PortID.AIMNumber." } } } },
+
+    "Topology":           { "type": "array", "description": "Connections between Ports. Input is the source endpoint, Output the destination endpoint. These names denote the ends of the connection, not the Direction of the Port they reference: the Port named by Output normally has Direction Input.",
+                            "items": { "type": "object", "additionalProperties": false,
+                            "required": [ "Input", "Output" ], "properties": {
+      "Input":            { "$ref": "#/$defs/PortID" },
+      "Output":           { "$ref": "#/$defs/PortID" } } } },
+
+    "Implementations":    { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false,
+                            "required": [ "BinaryName", "Architecture", "OperatingSystem", "Version", "Source" ],
+                            "allOf": [ { "if":   { "properties": { "Source": { "const": "AIMURL" } }, "required": [ "Source" ] },
+                                         "then": { "required": [ "ImplementationURI" ] } } ],
+                            "properties": {
+      "ImplementationURI":{ "description": "Absolute URI locating the Implementation; any scheme (https, file, an MPAI Store URI, a container-registry reference, ...), so the Implementation may reside anywhere. Generic (a placeholder) in an L2 instance; a concrete URI at L3.", "anyOf": [ { "type": "string", "format": "uri" }, { "$dynamicRef": "#placeholder" } ] },
+      "MASPort":          { "description": "Implementer-defined access port of the embedded MAS API Server; default 443.",
+                            "anyOf": [ { "type": "integer" }, { "$dynamicRef": "#placeholder" } ] },
+      "Firewall":         { "description": "Firewall openings the Implementation requires; each entry gives a Protocol, a Direction and a port Range.",
+                            "anyOf": [ { "type": "array", "items": {
+                            "type": "object", "additionalProperties": false, "required": [ "Protocol", "Direction", "Range" ], "properties": {
+        "Protocol":       { "anyOf": [ { "enum": [ "TCP", "UDP" ] },                { "type": "string" } ] },
+        "Direction":      { "anyOf": [ { "enum": [ "Ingress", "Egress", "Both" ] }, { "type": "string" } ] },
+        "Version":        { "anyOf": [ { "enum": [ "IPV4", "IPV6" ] },              { "type": "string" } ] },
+        "Source":         { "type": "string" },
+        "Range":          { "type": "string" } } } },                               { "$dynamicRef": "#placeholder" } ] },
+      "BinaryName":       { "type": "string" },
+      "Architecture":     { "anyOf": [ { "enum": [ "x86", "x86-64", "ARM", "ARM64", "MIPS", "RISC-V" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "OperatingSystem":  { "anyOf": [ { "enum": [ "Windows", "Linux", "MacOS", "Debian", "Ubuntu", "RedHat", "Android", "Zephyr", "RTOS", "Oniro", "iOS" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "OSVersion":        { "type": "object", "additionalProperties": false, "required": [ "MinimumOSver" ], "properties": {
+      "MinimumOSver":     { "type": "string" } } },
+      "Version":          { "type": "string" },
+      "Source":           { "anyOf": [ { "enum": [ "AIMStorage", "MPAIStore", "AIMURL" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "Destination":      { "type": "string" } } } },
+
+    "ResourcePolicies":   { "type": "array", "items": { "$ref": "#/$defs/ResourcePolicy" } },
+
+    "Documentation":      { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": [ "Type", "URI" ], "properties": {
+      "Type":             { "anyOf": [ { "enum": [ "Specification", "Manual", "Tutorial", "Video" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "URI":              { "anyOf": [ { "type": "string", "format": "uri" }, { "$dynamicRef": "#placeholder" } ] } } } },
+
+    "DataXMData":         { "description": "Declares that the AIM exchanges Data accompanied by Data Exchange Metadata. The empty object is the normal form in AIM Metadata: DataExchangeMetadata requires DataID and Source, which are run-time facts and cannot be known when an AIM is described. A full DEM instance is accepted for the case where one is genuinely available.",
+                            "anyOf": [ { "type": "object", "maxProperties": 0 },
+                                       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" } ],
+                            "$comment": "If a partially specified DEM is ever wanted here, the clean form is a published DEM profile in which DataID and Source are not required, referenced in place of the two branches above." },
+
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Free-text descriptive Metadata about this AIM, following the convention of the identically named field in DataExchangeMetadata." } },
+
+  "dependentRequired":    { "SubAIMs": [ "Topology" ], "Topology": [ "SubAIMs" ] },
+
+  "$defs":                {
+    "Relation":           { "description": "Deployment relationship of a SubAIM to the machine provisioned for the AIM Instance described by THIS AIM Metadata schema instance. Each admissible value is defined individually below.",
+                            "oneOf": [
+      { "const": "Internal", "title": "Internal",
+        "description": "The AIM is installed and operated within the machine that would naturally be provisioned for the AIM Instance described by this AIM Metadata schema instance." },
+      { "const": "External", "title": "External",
+        "description": "The AIM is installed and operated within its own machine provisioned for the AIM Instance described by its own AIM Metadata schema instance, for the sole usage of the AIM Instance described by this AIM Metadata schema instance." },
+      { "const": "Private", "title": "Private",
+        "description": "The AIM is installed and operated within its own machine provisioned for the AIM Instance described by its own AIM Metadata schema instance, for usage by AIM Instances deployed for the same provisioning account. In this case, the value of the Host Property must identify the private service instance." },
+      { "const": "Public", "title": "Public",
+        "description": "The AIM is installed and operated within its own machine provisioned for the AIM Instance described by its own AIM Metadata schema instance, for usage by AIM Instances irrespective of their provisioning account. In this case, the value of the Host Property must identify the public service instance." }
+                            ] },
+
+
+    "Placeholder":        { "$dynamicAnchor": "placeholder",
+                            "$comment": "An unfilled template value of the form /* ... */. Every constrained field admits this as an alternative branch. AIMMetadata-strict.json redefines this anchor as false, so the same AIM file validates strictly once an Implementer has filled it in.",
+                            "type": "string", "pattern": "^/\\*.*\\*/$" },
+
+    "MPAIIdentifier":     { "type": "string", "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-V[0-9]+\\.[0-9]+$",
+                            "description": "The MPAI three-three-version identifier, e.g. OSD-SPO-V1.5." },
+
+    "Identifier":         { "type": "object", "$anchor": "identifier", "additionalProperties": false,
+                            "required": [ "ImplementerID", "ImplementationID", "AIMName" ], "properties": {
+      "ImplementerID":    { "type": "string", "description": "String assigned by IIDRA" },
+      "ImplementationID": { "type": "string", "description": "String assigned by Implementer" },
+      "AIMName":          { "$ref": "#/$defs/MPAIIdentifier" },
+      "Relation":         { "description": "How the SubAIM is deployed relative to the machine provisioned for the AIM Instance described by THIS AIM Metadata schema instance. Empty in an L2 instance means the default Internal, to be fixed at L3. See $defs/Relation for the individual definitions.",
+                            "anyOf": [ { "$ref": "#/$defs/Relation" }, { "const": "" }, { "$dynamicRef": "#placeholder" } ] },
+      "Host":             { "type": "string", "description": "Service instance address; REQUIRED when Relation is Private or Public, otherwise omitted." } } },
+
+    "DataTypeOrSet":      { "description": "The Data Type a Port carries, or the SET of Data Types it accepts when more than one is admissible - a Port receiving either a Basic or a full Audio Object declares both. A value carries its own Header, so the receiving AIM knows which of the set it was given, and no separate 'exactly one of' constraint is needed: one value arrives on one Port. A Controller routes a value to a Port whose Data Type set CONTAINS the value's Data Type.",
+                            "oneOf": [ { "$ref": "#/$defs/MPAIIdentifier" },
+                                       { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "#/$defs/MPAIIdentifier" } } ] },
+
+    "PortOptions":        { "type": "object", "additionalProperties": false,
+                            "required": [ "Direction", "DataType", "Technology", "IsRemote" ], "properties": {
+      "DataType":         { "$ref": "#/$defs/DataTypeOrSet" },
+      "Direction":        { "anyOf": [ { "enum": [ "Input", "Output" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "PortNumber":       { "description": "1-based ordinal among the Ports of the same Direction and Data Type on this AIM; omitted when that pair occurs once (implicitly 1); written only when an AIM has more than one Port of the same Direction and Data Type.",
+                            "anyOf": [ { "type": "integer", "minimum": 1 }, { "$dynamicRef": "#placeholder" } ] },
+      "Name":             { "type": "string", "description": "Optional human-readable label. Not used for addressing and carries no normative meaning." },
+      "IsOptional":       { "description": "True where the Port need not be supplied for the AIM to run; omitted means required (implicitly false).",
+                            "anyOf": [ { "type": "boolean" }, { "$dynamicRef": "#placeholder" } ] },
+      "RecordType":       { "type": "string", "deprecated": true, "description": "Deprecated compatibility alias for DataType. Where both are present DataType prevails. To be removed in a later Version." },
+      "Technology":       { "description": "Hardware or Software. Empty in an L2 instance means the default Software, to be fixed at L3.", 
+                            "anyOf": [ { "enum": [ "Hardware", "Software", "" ] }, { "$dynamicRef": "#placeholder" } ] },
+      "Protocol":         { "description": "Omit where no protocol applies. The empty string is retained for compatibility with V2 instances and is deprecated; it does not appear in the MPAI Ontology Protocol enumeration.",
+                            "anyOf": [ { "enum": [ "UDP", "TCP", "HTTP", "HTTPS", "CoAP", "CoAPS", "L2CAP", "BNEP",
+                                                   "RFCOMM", "SDP", "RPC", "RTP", "RTCP", "OCCI", "" ] },
+                                       { "$dynamicRef": "#placeholder" } ] },
+      "IsRemote":         { "description": "False (local) or True (remote). Empty in an L2 instance means the default False, to be fixed at L3.", 
+                            "anyOf": [ { "type": "boolean" }, { "enum": [ "False", "True", "" ] }, { "$dynamicRef": "#placeholder" } ] } } },
+
+    "PortID":             { "type": "object", "additionalProperties": false,
+                            "description": "Addresses a Port by its Name, plus a PortNumber where the endpoint has more than one Port of the same Direction and Data Type. The Name is resolved to a Data Type through the referenced AIM's ExternalPorts (for a boundary Port) or the enclosing AIM's ExternalPorts and InternalTypes (for a SubAIM Port); Names are the addressing key in a Topology, Data Types are what the resolution yields.",
+                            "$comment": "A Composite AIM ASSIGNS PortNumbers to its OWN ExternalPorts (its boundary) when it has two or more of the same Direction and Data Type, so a caller can direct each same-typed value to the intended Port; it CITES - never assigns - a SubAIM's PortNumber, which is fixed by that SubAIM's own declaration. Every Topology endpoint referencing a Port from a group of two or more of the same Direction and Data Type SHALL cite that Port's PortNumber and SHALL NOT rely on the default of 1. Reordering a Topology does not renumber any Port. The cross-file part is not enforceable by JSON Schema and is checked by the conformance tool.",
+                            "required": [ "AIMName", "PortName" ], "properties": {
+      "AIMName":          { "description": "The AIMName of the SubAIM holding this Port, or the empty string to denote the enclosing Composite AIM itself, that is one of its ExternalPorts.",
+                            "oneOf": [ { "const": "" }, { "$ref": "#/$defs/MPAIIdentifier" } ] },
+      "AIMNumber":        { "type": "integer", "minimum": 1, "description": "Selects which SubAIM is meant when several share an AIMName; omitted => 1." },
+      "PortName":         { "type": "string", "description": "The Name of the Port, as declared in the referenced AIM's ExternalPorts (or, for an internal wire, an InternalTypes Name). This is the addressing key." },
+      "DataType":         { "$ref": "#/$defs/DataTypeOrSet", "description": "Optional. The Data Type the Port carries; normally omitted because it is resolved from the Name. Retained for endpoints that address by Data Type." },
+      "PortNumber":       { "type": "integer", "minimum": 1, "description": "Selects which Port is meant when the endpoint has more than one of the same Direction and Data Type; omitted => 1." } } },
+
+    "ResourcePolicy":     { "$comment": "Derived from the MPAI Ontology V3.0 ResourcePolicy definition, with quantities expressed as a number, a space, and the unit. Memory is in GB rather than the bytes given in the Ontology.",
+                            "type": "object", "additionalProperties": false,
+                            "required": [ "Name", "Minimum", "Maximum", "Request" ],
+                            "properties": {
+      "Name":             { "anyOf": [ { "enum": [ "Memory", "Storage", "StorageType", "CPU:Number", "CPU:Class", "GPU:Number",
+                                                   "GPU:CUDA:Class", "GPU:CUDA:FrameBuffer", "GPU:CUDA:MemorySpeed" ] },
+                                       { "$dynamicRef": "#placeholder" } ] },
+      "Minimum":          true,
+      "Maximum":          true,
+      "Request":          true },
+
+      "allOf": [
+        { "if":   { "properties": { "Name": { "const": "Memory" } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPMem" }, "Maximum": { "$ref": "#/$defs/RPMem" }, "Request": { "$ref": "#/$defs/RPMem" } } } },
+
+        { "if":   { "properties": { "Name": { "enum": [ "CPU:Number", "GPU:Number" ] } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPInt" }, "Maximum": { "$ref": "#/$defs/RPInt" }, "Request": { "$ref": "#/$defs/RPInt" } } } },
+
+        { "if":   { "properties": { "Name": { "const": "CPU:Class" } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPClass" }, "Maximum": { "$ref": "#/$defs/RPClass" }, "Request": { "$ref": "#/$defs/RPClass" } } } },
+
+        { "if":   { "properties": { "Name": { "const": "GPU:CUDA:Class" } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPSM" }, "Maximum": { "$ref": "#/$defs/RPSM" }, "Request": { "$ref": "#/$defs/RPSM" } } } },
+
+        { "if":   { "properties": { "Name": { "const": "GPU:CUDA:FrameBuffer" } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPFB" }, "Maximum": { "$ref": "#/$defs/RPFB" }, "Request": { "$ref": "#/$defs/RPFB" } } } },
+
+        { "if":   { "properties": { "Name": { "const": "GPU:CUDA:MemorySpeed" } }, "required": [ "Name" ] },
+          "then": { "properties": { "Minimum": { "$ref": "#/$defs/RPGHz" }, "Maximum": { "$ref": "#/$defs/RPGHz" }, "Request": { "$ref": "#/$defs/RPGHz" } } } } ] },
+
+    "RPMem":              { "description": "A number, a space, and GB, e.g. 8 GB.",
+                            "anyOf": [ { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+)? GB$" },
+                                       { "$dynamicRef": "#placeholder" } ] },
+
+    "RPInt":              { "description": "0 means all.",
+                            "anyOf": [ { "type": "integer", "minimum": 0 }, { "$dynamicRef": "#placeholder" } ] },
+
+    "RPClass":            { "anyOf": [ { "enum": [ "Low", "Medium", "High" ] }, { "$dynamicRef": "#placeholder" } ] },
+
+    "RPSM":               { "anyOf": [ { "enum": [ "SM10", "SM11", "SM12", "SM13", "SM20", "SM21", "SM30", "SM32", "SM35", "SM37",
+                                                   "SM50", "SM52", "SM53", "SM60", "SM61", "SM62", "SM70", "SM72", "SM75", "SM80",
+                                                   "SM86", "SM87", "SM90" ] },
+                                       { "$dynamicRef": "#placeholder" } ] },
+
+    "RPFB":               { "description": "A number, a space, GB, a space, and the GDDR generation, e.g. 24.0 GB GDDR6X.",
+                            "anyOf": [ { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+)? GB (GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X)$" },
+                                       { "$dynamicRef": "#placeholder" } ] },
+
+    "RPGHz":              { "description": "A number, a space, and GHz, e.g. 1.75 GHz.",
+                            "anyOf": [ { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+)? GHz$" },
+                                       { "$dynamicRef": "#placeholder" } ] } } }

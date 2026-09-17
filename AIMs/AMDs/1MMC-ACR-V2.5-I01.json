@@ -31,6 +31,7 @@
     { "Output": { "AIMName": "",             "PortName": "UserName",   "PortNumber": 2 }, "Input": { "AIMName": "PAF-EFD-V1.6", "PortName": "UserName" } },
     { "Output": { "AIMName": "",             "PortName": "UserName",   "PortNumber": 2 }, "Input": { "AIMName": "MMC-ESD-V2.5", "PortName": "UserName" } },
     { "Output": { "AIMName": "",             "PortName": "Response",   "PortNumber": 1 }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 1 } },
+    { "Output": { "AIMName": "",             "PortName": "Response",   "PortNumber": 1 }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 2 } },
     { "Output": { "AIMName": "",             "PortName": "PersonalStatus" }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "PersonalStatus" } },
 
     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineSpeech"          }, "Input": { "AIMName": "", "PortName": "VocalResponse" } },

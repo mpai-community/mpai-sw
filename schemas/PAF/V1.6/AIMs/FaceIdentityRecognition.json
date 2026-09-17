@@ -1,0 +1,40 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-FIR-V1.6"},
+  "Header":            "PAF-FIR-V1.6",
+
+  "APIProfile":       "Basic",
+  "Description":      "This AIM identifies faces in the bounding boxes of an image.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "TextObject",          "Direction": "Input",  "DataType": "OSD-TXO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "Image",               "Direction": "Input",  "DataType": "OSD-VIO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FaceTime",            "Direction": "Input",  "DataType": "OSD-TIM-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VisualSceneGeometry", "Direction": "Input",  "DataType": "OSD-VSG-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FaceID",              "Direction": "Output", "DataType": "OSD-IID-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BoundingBox",         "Direction": "Output", "DataType": "OSD-BBX-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

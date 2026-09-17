@@ -3,9 +3,9 @@
   "APIProfile":       "Basic",
   "Description":      "Text to Speech: converts a Text Object into a Speech Object. Optionally rendered with a Speech Personal Status so the Machine Speech carries emotion; when the Speech Personal Status is absent the speech is neutral. Input text accepts OSD-BTO and OSD-TXO; output carries OSD-BSO and OSD-SPO.",
 
-  "ExternalPorts":    [{"Name": "InputText",             "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false},
+  "ExternalPorts":    [{"Name": "InputText",             "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"],   "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "SpeechPersonalStatus",  "Direction": "Input",  "DataType": "MMC-SPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "OutputSpeech",          "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false}],
+                       {"Name": "OutputSpeech",          "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"],   "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
   "SubAIMs":          [],
 

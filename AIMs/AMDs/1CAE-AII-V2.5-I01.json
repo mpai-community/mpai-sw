@@ -1,0 +1,27 @@
+{ "Identifier":           { "ImplementerID": "MPAI", "ImplementationID": "CAE-AII-V2.5-I01", "AIMName": "CAE-AII-V2.5" },
+
+  "APIProfile":           "Basic",
+  "Description":          "Audio Instance Identification: identifies a (generic, non-speech) Basic Audio Object against the AudioSet taxonomy, producing an Audio Object Identifier (OSD-IID). The audio analogue of Visual Instance Identification. Engine: YAMNet. The audio arrives already mono, 16 kHz, 16-bit PCM (from Audio Qualifier Conversion), so the samples are read directly.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "InputAudioObject", "Direction": "Input",  "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AudioObjectID",   "Direction": "Output", "DataType": "OSD-IID-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAE-AII-V2.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cae.Aii",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "2.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",    "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class", "Minimum": "Low",  "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-cae/"}]}

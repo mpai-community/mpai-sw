@@ -13,8 +13,17 @@ namespace Mpai.Hci.Api;
 // typed key "DataType#PortNumber": NorthApi neither knows nor uses any port
 // NAME. Outcomes are the standard AifError, surfaced faithfully; no application
 // semantics, no content, no state (memory lives in the Module).
-public sealed class NorthApi : IDisposable
+public sealed class NorthApi : INorthApi, IDisposable
 {
+    // THE FRAMEWORK OFFERS THE PLACE; THIS KNOWS WHAT TO LOOK FOR. AIF.Controller
+    // routes Data Types and payloads and does not know what an MPAI Object is.
+    // MW knows both, so the inspector is installed here - once, for every
+    // application and both servers, since all of them construct a NorthApi.
+    static NorthApi()
+    {
+        AIF.Controller.MachineExecutor.ObjectInspector = Mpai.Core.QualifierCheck.Inspect;
+    }
+
     private readonly UserAgent    _ua;
     private readonly IAimProvider _provider;
     private readonly AimSettings  _settings;
@@ -27,7 +36,7 @@ public sealed class NorthApi : IDisposable
         _settings = AimSettings.Load(settingsPath);
         _provider = provider;
         var store = new AmdStore(amdDir); store.Scan();
-        _ua = new UserAgent(store);
+        _ua = new UserAgent(store, Mpai.Core.MpaiPaths.SharedStorage);
         _ua.MPAI_AIFU_Controller_Initialize();
     }
 
@@ -38,7 +47,7 @@ public sealed class NorthApi : IDisposable
         _settings = AimSettings.Load(settingsPath);
         var store = new AmdStore(amdDir); store.Scan();
         _provider = providerFactory(store);
-        _ua = new UserAgent(store);
+        _ua = new UserAgent(store, Mpai.Core.MpaiPaths.SharedStorage);
         _ua.MPAI_AIFU_Controller_Initialize();
     }
 
@@ -48,7 +57,16 @@ public sealed class NorthApi : IDisposable
         public Datum(string dataType, string json) : this(dataType, 1, json) { }
     }
 
-    public readonly record struct Result(AifError Error, IReadOnlyList<Datum> Outputs, bool Suspended)
+    // WHEN A MODULE SUSPENDS, IT IS WAITING FOR SOMETHING NAMEABLE. The executor
+    // knows exactly which boundary Port was not supplied and records it; until now
+    // the North API discarded that and told the User Agent only THAT the Module was
+    // waiting. A UA cannot act on a bare boolean: it can supply more data and hope,
+    // or give up. WaitingPort carries the boundary key - "DataType#PortNumber" -
+    // so that a UA, or an interpreter reading a workflow description, can say what
+    // is missing instead of guessing.
+    //
+    // Optional and last, so every existing construction still compiles.
+    public readonly record struct Result(AifError Error, IReadOnlyList<Datum> Outputs, bool Suspended, string? WaitingPort = null)
     {
         public bool Ok => Error == AifError.OK;
         public string? ByType(string dataType, int portNumber = 1) =>
@@ -99,7 +117,7 @@ public sealed class NorthApi : IDisposable
         if (outcome is not null && outcome.Suspended)
         {
             _suspended[moduleName] = true;
-            return new Result(AifError.OK, Array.Empty<Datum>(), true);
+            return new Result(AifError.OK, Array.Empty<Datum>(), true, outcome.WaitingPort);
         }
         _suspended[moduleName] = false;
 

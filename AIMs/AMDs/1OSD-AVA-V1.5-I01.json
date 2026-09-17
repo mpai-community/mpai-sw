@@ -1,0 +1,32 @@
+{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "OSD-AVA-V1.5-I01", "AIMName": "OSD-AVA-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Audio-Visual Alignment: aligns the Basic Audio, Visual and LiDAR Scene Descriptors sharing the same spatial attitude. It emits the aligned Audio and Visual Scene Descriptors and the Basic Audio and Visual Scene Geometries; the LiDAR Scene Descriptors are consumed to give the visual objects their points of view and are not re-emitted. Front-end alignment of MMC-HCI. (Front-end record: L3 from the L2, extended with the two Scene Geometry outputs; processor to be provided.)",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "AudioSceneDescriptors",          "Direction": "Input",  "DataType": "OSD-BAS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "VisualSceneDescriptors",         "Direction": "Input",  "DataType": "OSD-BVS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "LiDARSceneDescriptors",          "Direction": "Input",  "DataType": "OSD-BLS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AlignedAudioSceneDescriptors",   "Direction": "Output", "DataType": "OSD-BAS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AlignedVisualSceneDescriptors",  "Direction": "Output", "DataType": "OSD-BVS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicAudioSceneGeometry",        "Direction": "Output", "DataType": "OSD-BAG-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicVisualSceneGeometry",       "Direction": "Output", "DataType": "OSD-BVG-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-AVA-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Ava",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

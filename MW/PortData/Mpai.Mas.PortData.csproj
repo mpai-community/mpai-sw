@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Mpai.Mas.PortData</RootNamespace>
+    <AssemblyName>Mpai.Mas.PortData</AssemblyName>
+  </PropertyGroup>
+
+  <!-- The internal Object types the codecs read and write. Nothing else: no
+       Controller, no AIMs, no application. This library knows Data Types. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\AIMs\Core\Mpai.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" Version="9.4.0" />
+  </ItemGroup>
+
+</Project>

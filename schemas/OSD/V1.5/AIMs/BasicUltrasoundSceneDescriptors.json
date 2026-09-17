@@ -1,0 +1,40 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "OSD-BUS-V1.5"},
+  "Header":            "OSD-BUS-V1.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Basic Ultrasound Scene Description: describes the acquired BasicUltrasoundObject as BasicUltrasoundSceneDescriptors. It raises an Alert when what it describes warrants one, without waiting for integration. Two of its inputs are optional, so that the same AIM serves applications that have something to connect to them and applications that do not: an application holding an ego Spatial Attitude receives descriptors already expressed in that frame, and one that maintains a running environment description returns it as a prior. Both are wired in EnvironmentSensingSubsystem.json and neither is wired in MMC-HCI.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "SpaceTime",                       "Direction": "Input",  "DataType": "OSD-SPT-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicUltrasoundObject",           "Direction": "Input",  "DataType": "OSD-BUO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpatialAttitude",                 "Direction": "Input",  "DataType": "OSD-OSA-V1.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicEnvironmentDescriptors",     "Direction": "Input",  "DataType": "CAV-BED-V1.1", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicUltrasoundSceneDescriptors", "Direction": "Output", "DataType": "OSD-BUS-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "Alert",                           "Direction": "Output", "DataType": "CAV-ALT-V1.1", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

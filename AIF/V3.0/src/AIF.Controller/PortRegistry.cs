@@ -29,20 +29,20 @@ public sealed class PortRegistry
 
     // MPAI_AIFM_Port_Input_Write — write a Message to a named input Port.
     public void InputWrite(string portName, Message message) =>
-        Get(portName).Write(message);
+        Get(portName).MPAI_AIFM_Port_Input_Write(message);
 
     // MPAI_AIFM_Port_Output_Read — blocking read from a named output Port.
     public Task<Message> OutputReadAsync(
         string portName, CancellationToken token = default) =>
-        Get(portName).ReadAsync(token);
+        Get(portName).MPAI_AIFM_Port_Output_Read(token);
 
     // MPAI_AIFM_Port_Probe.
-    public bool Probe(string portName) => Get(portName).Probe();
+    public bool Probe(string portName) => Get(portName).MPAI_AIFM_Port_Probe();
 
     // MPAI_AIFM_Port_CountPendingMessages.
     public int CountPendingMessages(string portName) =>
-        Get(portName).CountPendingMessages();
+        Get(portName).MPAI_AIFM_Port_CountPendingMessages();
 
     // MPAI_AIFM_Port_Reset.
-    public void Reset(string portName) => Get(portName).Reset();
+    public void Reset(string portName) => Get(portName).MPAI_AIFM_Port_Reset();
 }

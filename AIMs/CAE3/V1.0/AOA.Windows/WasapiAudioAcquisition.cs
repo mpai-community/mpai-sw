@@ -26,7 +26,7 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
     private readonly int _bits;
     private readonly int _channels;
 
-    public WasapiAudioAcquisition(int sampleRate = 16000, int bits = 16, int channels = 1)
+    public WasapiAudioAcquisition(int sampleRate = 48000, int bits = 16, int channels = 1)
     {
         _sampleRate = sampleRate;
         _bits = bits;
@@ -59,8 +59,8 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
 
         try
         {
-            Console.Beep(880, 200);
-            Console.Beep(1175, 250);
+            /* beep removed */
+            /* beep removed */
         }
         catch
         {
@@ -91,7 +91,7 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
         try
         {
             NormalizeIfQuiet(wavPath);
-            var bytes = await File.ReadAllBytesAsync(wavPath);
+            var __wav = await File.ReadAllBytesAsync(wavPath); var bytes = StripWavHeader(__wav);
             return BasicAudioObject.FromData(bytes, BuildQualifier());
         }
         finally
@@ -134,7 +134,7 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
         _waveIn.Dispose();
 
         NormalizeIfQuiet(_activePath);
-        var bytes = await File.ReadAllBytesAsync(_activePath);
+        var __wav2 = await File.ReadAllBytesAsync(_activePath); var bytes = StripWavHeader(__wav2);
         try { File.Delete(_activePath); } catch { }
 
         _waveIn = null;
@@ -320,5 +320,27 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
                 }
             }
         };
+    }
+
+    // NAudio writes a RIFF/WAVE file; the BAO carries RAW PCM (the qualifier
+    // describes the format). Strip the header so inline.Data is samples only.
+    private static byte[] StripWavHeader(byte[] wav)
+    {
+        if (wav.Length >= 12 && wav[0]==(byte)'R' && wav[1]==(byte)'I' && wav[2]==(byte)'F' && wav[3]==(byte)'F')
+        {
+            int i = 12;
+            while (i + 8 <= wav.Length)
+            {
+                int id = wav[i] | (wav[i+1]<<8) | (wav[i+2]<<16) | (wav[i+3]<<24);
+                int sz = wav[i+4] | (wav[i+5]<<8) | (wav[i+6]<<16) | (wav[i+7]<<24);
+                if (wav[i]==(byte)'d' && wav[i+1]==(byte)'a' && wav[i+2]==(byte)'t' && wav[i+3]==(byte)'a')
+                {
+                    int start = i + 8, len = System.Math.Min(sz, wav.Length - start);
+                    var pcm = new byte[len]; System.Array.Copy(wav, start, pcm, 0, len); return pcm;
+                }
+                i += 8 + sz + (sz & 1);
+            }
+        }
+        return wav; // not a WAV; assume already raw PCM
     }
 }

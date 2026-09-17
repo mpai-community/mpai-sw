@@ -161,7 +161,7 @@ public sealed class AvatarUaHost
         // lingering device keeps buffered audio (the tail of the previous utterance
         // or the prompt's echo) that would trip the voice-activity START immediately
         // and end the next capture on a fragment. One capture, one fresh device.
-        var mic = new WasapiAudioAcquisition();
+        var mic = new WasapiAudioAcquisition(16000);   // speech to Whisper must be 16 kHz mono
         var soa = new SoaAimProcessor(SoaModule, mic, AimPortReader.Load(store, SoaModule), vadAutoStop: true);
         var msg = new Message
         {
@@ -171,6 +171,18 @@ public sealed class AvatarUaHost
         var outcome = soa.ProcessAsync(msg).GetAwaiter().GetResult();
         var speechJson = outcome.Ports.Values.FirstOrDefault() ?? "";
         return string.IsNullOrWhiteSpace(speechJson) ? null : MpaiJson.FromJson<BasicSpeechObject>(speechJson);
+    }
+
+    // CaptureAudio - the AUDIO ear. Unlike CaptureSpeech (which assumes speech),
+    // this captures raw sound with the CAE-AOA device and returns a Basic AUDIO
+    // Object (OSD-BAO). The caller does not know whether the sound is speech;
+    // discrimination happens downstream (the HCI Module's ASI). Mic is 16 kHz
+    // mono 16-bit; a fixed window is captured.
+    public BasicAudioObject? CaptureAudio(double seconds = 5.0)
+    {
+        var mic = new WasapiAudioAcquisition(16000);   // speech to Whisper must be 16 kHz mono   // 16 kHz mono 16-bit
+        return mic.AcquireAsync(new AcquisitionRequest { Duration = System.TimeSpan.FromSeconds(seconds) })
+                  .GetAwaiter().GetResult();
     }
 
     // Duration of a 16-bit PCM WAV, in seconds, from its bytes.

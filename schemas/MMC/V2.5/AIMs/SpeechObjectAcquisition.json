@@ -1,0 +1,37 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-SOA-V2.5"},
+  "Header":            "MMC-SOA-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Speech Object Acquisition: receives a User Command, an Speech Object, and provides a Speech Object.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "UserCommand",  "Direction": "Input",  "DataType": "CAE-UCM-V1.0",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechObject", "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechObject", "Direction": "Output", "DataType": "OSD-BSO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

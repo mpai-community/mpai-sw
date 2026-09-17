@@ -34,6 +34,7 @@ public sealed class IdrAimProcessor : IAimProcessor
     private readonly string              _userIdPort;
     private readonly string              _personalStatusPort;
     private readonly string              _responsePort;
+    private readonly string              _identificationPort;
     private readonly IdReconciliationAim _idr;
 
     public string InstanceId { get; }
@@ -50,6 +51,12 @@ public sealed class IdrAimProcessor : IAimProcessor
         _userIdPort         = ports.Output("OSD-IID-V1.5");
         _personalStatusPort = ports.Output("MMC-EPS-V2.5");
         _responsePort       = ports.Output("OSD-BTO-V1.5");
+        // THE VERDICT ITSELF, NOT ONLY ITS RENDERING. Whether anybody was
+        // recognised is decided here and was, until now, communicated only by
+        // the words the avatar speaks and the expression it wears. A User Agent
+        // cannot read a verdict from an utterance, and one generated from
+        // Metadata cannot try.
+        _identificationPort = ports.Output("Boolean");
     }
 
     public async Task<Message> ProcessAsync(Message message)
@@ -92,7 +99,8 @@ public sealed class IdrAimProcessor : IAimProcessor
             {
                 [_userIdPort]         = userIdJson,
                 [_personalStatusPort] = psJson,
-                [_responsePort]       = responseJson
+                [_responsePort]       = responseJson,
+                [_identificationPort] = granted ? "true" : "false"
             }
         };
     }

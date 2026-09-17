@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Mpai.Cae.Qcv</AssemblyName>
+    <RootNamespace>Mpai.Cae.Qcv</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+  </ItemGroup>
+</Project>

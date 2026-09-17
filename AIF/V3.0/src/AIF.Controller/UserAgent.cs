@@ -19,7 +19,29 @@ public sealed class UserAgent
     private readonly Dictionary<int, RunningModule> _running = new();
     private int _nextModuleId = 1;
 
-    public UserAgent(AmdStore store) => _store = store;
+    // Where Shared Storage lives for this User Agent's Modules. Null means no
+    // scope is configured and AIMs are handed no storage.
+    private string? _sharedStorageRoot;
+
+    public UserAgent(AmdStore store, string? sharedStorageRoot = null)
+    {
+        _store = store;
+        _sharedStorageRoot = sharedStorageRoot;
+    }
+
+    // MPAI_AIFU_SharedStorage_Init
+    //
+    // The specification has the User Agent ask the Controller to initialise the
+    // storage interface, and that is the whole of the User Agent's part in it: it
+    // says where, and never what identity a write will carry. The Controller binds
+    // each AIM a handle stamped with the Module and the AIM, so that the record of
+    // who wrote is made by the framework and not by the writer.
+    public AifError MPAI_AIFU_SharedStorage_Init(string root)
+    {
+        _sharedStorageRoot = root;
+        _controller?.SetSharedStorageRoot(root);
+        return AifError.OK;
+    }
 
     // A running Module (composite AIM): its graph, host, and boundary Ports.
     private sealed class RunningModule
@@ -40,6 +62,7 @@ public sealed class UserAgent
     public AifError MPAI_AIFU_Controller_Initialize()
     {
         _controller = new Controller(_store);
+        _controller.SetSharedStorageRoot(_sharedStorageRoot);
         return AifError.OK;
     }
 
@@ -98,7 +121,7 @@ public sealed class UserAgent
     {
         if (!_running.TryGetValue(moduleId, out var module)) return AifError.NotFound;
         foreach (var p in module.Graph.Root.Children)
-            module.Host.PauseAim(p.AIMName);
+            module.Host.MPAI_AIFM_AIM_Pause(p.AIMName);
         return AifError.OK;
     }
 
@@ -107,7 +130,7 @@ public sealed class UserAgent
     {
         if (!_running.TryGetValue(moduleId, out var module)) return AifError.NotFound;
         foreach (var p in module.Graph.Root.Children)
-            module.Host.ResumeAim(p.AIMName);
+            module.Host.MPAI_AIFM_AIM_Resume(p.AIMName);
         return AifError.OK;
     }
 

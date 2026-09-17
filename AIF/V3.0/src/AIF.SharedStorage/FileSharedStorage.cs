@@ -14,7 +14,9 @@ namespace AIF.SharedStorage;
 public sealed class FileSharedStorage : ISharedStorage
 {
     private readonly string rootPath;
-    private readonly string topAim;       // Top AIM stamped into every Put (Section 2.4)
+    private readonly string writer;       // Module, and the AIM within it, stamped into
+                                          // every Put. The Controller binds this; a writer
+                                          // cannot supply its own identity.
     private readonly string requestedBy;  // UA / RCA identity stamped into every Put (Section 2.5)
 
     // Per-key locks so two writers to the same key cannot interleave. Ordering
@@ -22,15 +24,15 @@ public sealed class FileSharedStorage : ISharedStorage
     private readonly ConcurrentDictionary<string, object> locks = new(StringComparer.Ordinal);
     private object LockFor(string key) => locks.GetOrAdd(key, _ => new object());
 
-    public FileSharedStorage(string rootPath, string topAim, string requestedBy)
+    public FileSharedStorage(string rootPath, string writer, string requestedBy)
     {
         this.rootPath = rootPath;
-        this.topAim = topAim;
+        this.writer = writer;
         this.requestedBy = requestedBy;
         Directory.CreateDirectory(rootPath);
     }
 
-    public void Put(string key, byte[] data)
+    public void MPAI_AIFM_SharedStorage_Put(string key, byte[] data)
     {
         if (string.IsNullOrEmpty(key)) throw new ArgumentException("key must be non-empty", nameof(key));
         data ??= Array.Empty<byte>();
@@ -38,7 +40,7 @@ public sealed class FileSharedStorage : ISharedStorage
 
         var info = new KeyInfo
         {
-            StoredBy = topAim, RequestedBy = requestedBy,
+            StoredBy = writer, RequestedBy = requestedBy,
             StoredAt = DateTime.UtcNow, Length = data.LongLength
         };
         var infoJson = JsonSerializer.SerializeToUtf8Bytes(info);
@@ -58,7 +60,7 @@ public sealed class FileSharedStorage : ISharedStorage
         }
     }
 
-    public byte[] Get(string key)
+    public byte[] MPAI_AIFM_SharedStorage_Get(string key)
     {
         var (dataPath, _) = PathsFor(key);
         if (!File.Exists(dataPath))
@@ -66,7 +68,7 @@ public sealed class FileSharedStorage : ISharedStorage
         return File.ReadAllBytes(dataPath);
     }
 
-    public void Delete(string key)
+    public void MPAI_AIFM_SharedStorage_Delete(string key)
     {
         var (dataPath, infoPath) = PathsFor(key);
         lock (LockFor(key))
@@ -76,7 +78,7 @@ public sealed class FileSharedStorage : ISharedStorage
         }
     }
 
-    public IReadOnlyList<string> List(string prefix)
+    public IReadOnlyList<string> MPAI_AIFM_SharedStorage_List(string prefix)
     {
         if (!Directory.Exists(rootPath)) return Array.Empty<string>();
         return Directory.GetFiles(rootPath, "*.data", SearchOption.TopDirectoryOnly)
@@ -86,13 +88,13 @@ public sealed class FileSharedStorage : ISharedStorage
             .ToList();
     }
 
-    public bool Exists(string key)
+    public bool MPAI_AIFM_SharedStorage_Exists(string key)
     {
         var (dataPath, _) = PathsFor(key);
         return File.Exists(dataPath);
     }
 
-    public KeyInfo GetKeyInfo(string key)
+    public KeyInfo MPAI_AIFM_SharedStorage_GetKeyInfo(string key)
     {
         var (dataPath, infoPath) = PathsFor(key);
         if (!File.Exists(infoPath))

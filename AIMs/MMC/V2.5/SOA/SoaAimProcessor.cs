@@ -257,6 +257,22 @@ public sealed class SoaAimProcessor : IAimProcessor
             new SpeechQualifier
             {
                 SpeechQualifierID = System.Guid.NewGuid().ToString(),
+
+                // WHAT THE BYTES ARE, CARRIED FROM THE DEVICE THAT KNEW.
+                // The acquisition determined the sampling frequency and the
+                // precision and recorded them in its own Qualifier; the Data is
+                // RAW PCM with no header, so this is the only place that says so.
+                // Dropping it here obliges everything downstream to guess - and a
+                // reader that guesses by looking for a RIFF header finds nothing,
+                // silently, because the header was never there to find.
+                Format = new SpeechFormat
+                {
+                    ContentFormats = new SpeechContentFormats
+                    {
+                        RawData = audio.AudioQualifier?.Formats?.ContentFormat?.RawData?.SampleSpace
+                    }
+                },
+
                 Attributes = new SpeechAttributes
                 {
                     Source = SpeechSource.Real,

@@ -1,0 +1,42 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-BED-V1.1"},
+  "Header":            "CAV-BED-V1.1",
+
+  "APIProfile":       "Basic",
+  "Description":      "This AIM suses of Descriptors into a Basic Environment Descriptors.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "WeatherData",                 "Direction": "Input",  "DataType": "CAV-WDT-V1.1",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FullEnvironmentDescriptors",  "Direction": "Input",  "DataType": "CAV-FED-V1.1",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VisualSceneDescriptors",      "Direction": "Input",  "DataType": "OSD-VSD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "RADARSceneDescriptors",       "Direction": "Input",  "DataType": "OSD-RSD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "LiDARSceneDescriptors",       "Direction": "Input",  "DataType": "OSD-LSD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "UltrasoundSceneDescriptors",  "Direction": "Input",  "DataType": "OSD-USD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "OfflineMapSceneDescriptors",  "Direction": "Input",  "DataType": "OSD-OSD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicEnvironmentDescriptors", "Direction": "Output", "DataType": "CAV-BED-V1.1",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Tutorial", "URI": "https://mpai.community/standards/MPAI-CAV/"}]}

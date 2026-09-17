@@ -44,7 +44,16 @@ public sealed class WebcamVisualAcquisition : IVisualAcquisitionAim
         byte[] jpeg = await CaptureJpegAsync();
         Diag("cam: jpeg bytes=" + jpeg.Length);
         AimLog.Write("CVE-VOA-V1.0", $"acquired webcam frame: {jpeg.Length:N0} bytes JPEG (Windows Media Capture)");
-        return BasicVisualObject.FromFile("webcam.jpg", jpeg, request.VisualObjectType);
+        var visual = BasicVisualObject.FromFile("webcam.jpg", jpeg, request.VisualObjectType);
+
+        // WHAT THE CAMERA ACTUALLY PRODUCED, said once per acquisition. An AIM that
+        // returns an empty Object and an AIM that was never reached look alike from
+        // outside, and the difference is the whole diagnosis.
+        Mpai.Core.AimLog.Write("CVE-VOA-V1.0",
+            $"acquired {jpeg.Length:N0} bytes JPEG; type={request.VisualObjectType ?? "(none)"}; " +
+            $"Qualifier={(visual.VisualQualifier is null ? "NONE" : "present")}");
+
+        return visual;
     }
 
     private async Task<byte[]> CaptureJpegAsync()

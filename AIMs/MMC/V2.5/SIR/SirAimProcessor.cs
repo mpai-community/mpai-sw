@@ -65,7 +65,7 @@ public sealed class SirAimProcessor : IAimProcessor
         // Decode the in-memory WAV to 16 kHz mono samples and identify the speaker.
         // (Speech Time, if delivered on _speechTimePort, could window the samples
         // here; the first version analyses the whole clip.)
-        float[] samples = WavReader.ReadMono16k(speech.Data);
+        float[] samples = WavReader.ReadMono16k(speech);
 
         // --- inner trace: input + VAD metrics ---
         int _vf = 0;

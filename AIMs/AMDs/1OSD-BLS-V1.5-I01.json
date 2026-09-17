@@ -1,0 +1,27 @@
+{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "OSD-BLS-V1.5-I01", "AIMName": "OSD-BLS-V1.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "Basic LiDAR Scene Description: describes the acquired LiDAR as a Basic LiDAR Scene - its Basic LiDAR Objects, each with its point of view. In MMC-HCI its Basic LiDAR Scene Descriptors are aligned with the visual scene to give the visual objects their points of view. Front-end describer. (Front-end record: L3 from the L2; processor to be provided.)",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "BasicLiDARObject",            "Direction": "Input",  "DataType": "OSD-BLO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicLiDARSceneDescriptors",  "Direction": "Output", "DataType": "OSD-BLS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/OSD-BLS-V1.5-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Osd.Bls",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.5",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

@@ -123,9 +123,10 @@ public sealed class PiperTtsAim : ITtsAim
         }
         catch (Exception failure)
         {
-            Console.WriteLine(
-                $"[MMC-TTS-V2.5] the {selected.Profile.LanguageCode ?? "chosen"} voice failed: " +
-                $"{Summarise(failure.Message)}");
+            // A WINDOWED APPLICATION HAS NO CONSOLE. This wrote to one, so a voice
+            // that failed said so to nobody and the avatar mouthed in silence.
+            Mpai.Core.AimLog.Write("MMC-TTS-V2.5",
+                $"the {selected.Profile.LanguageCode ?? "chosen"} voice failed: {Summarise(failure.Message)}");
         }
 
         var fallback = new PiperVoice(_piper, _voice);
@@ -139,7 +140,7 @@ public sealed class PiperTtsAim : ITtsAim
             }
             catch (Exception failure)
             {
-                Console.WriteLine($"[MMC-TTS-V2.5] the default voice failed too: {Summarise(failure.Message)}");
+                Mpai.Core.AimLog.Write("MMC-TTS-V2.5", $"the default voice failed too: {Summarise(failure.Message)}");
             }
         }
 

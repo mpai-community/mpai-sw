@@ -51,6 +51,18 @@ public static class MpaiPaths
     }
 
     public static string Model(string fileName) => System.IO.Path.Combine(Root, "Models", fileName);
+
+    // A SETTING THAT NAMES A PLACE MUST NOT NAME A MACHINE. Models are found under
+    // Models\ beside the application, but the programs that read them - piper,
+    // whisper-cli - are named by setting and were named absolutely, so a published
+    // installation pointed at one person's drive. Resolved here against the root
+    // the application already computes from its own location, so a relative
+    // setting works wherever the folder is placed, and an absolute one still
+    // works for anyone who wants it.
+    public static string Resolve(string? path) =>
+        string.IsNullOrWhiteSpace(path) ? "" :
+        System.IO.Path.IsPathRooted(path) ? path :
+        System.IO.Path.Combine(Root, path);
     public static string Gallery       => System.IO.Path.Combine(Root, "TestData", "gallery.json");
     public static string Amds          => System.IO.Path.Combine(Root, "AIMs", "AMDs");
     public static string Settings      => System.IO.Path.Combine(Root, "AIMs", "aim-settings.json");

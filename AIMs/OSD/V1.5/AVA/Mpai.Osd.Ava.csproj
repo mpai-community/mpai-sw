@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Mpai.Osd.Ava</AssemblyName>
+    <RootNamespace>Mpai.Osd.Ava</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\BLS\Mpai.Osd.Bls.csproj" />
+  </ItemGroup>
+</Project>

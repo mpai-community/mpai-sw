@@ -163,7 +163,7 @@ public sealed class SubjectGallery
         foreach (var s in _subjects.Values)
         {
             var dto = new SubjectDto { SubjectId = s.SubjectId, FaceEmbedding = s.FaceEmbedding, VoiceEmbedding = s.VoiceEmbedding, FaceTime = s.FaceTime, SpeechTime = s.SpeechTime };
-            store.Put(SubjectKeyPrefix + s.SubjectId,
+            store.MPAI_AIFM_SharedStorage_Put(SubjectKeyPrefix + s.SubjectId,
                 System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto, JsonOpts)));
         }
     }
@@ -181,10 +181,10 @@ public sealed class SubjectGallery
         SubjectDto dto = new SubjectDto { SubjectId = subjectId };
         try
         {
-            if (store.Exists(key))
+            if (store.MPAI_AIFM_SharedStorage_Exists(key))
             {
                 var existing = JsonSerializer.Deserialize<SubjectDto>(
-                    System.Text.Encoding.UTF8.GetString(store.Get(key)), JsonOpts);
+                    System.Text.Encoding.UTF8.GetString(store.MPAI_AIFM_SharedStorage_Get(key)), JsonOpts);
                 if (existing is not null) dto = existing;
             }
         }
@@ -194,16 +194,16 @@ public sealed class SubjectGallery
         if (s.VoiceEmbedding is not null) { dto.VoiceEmbedding = s.VoiceEmbedding; dto.SpeechTime = s.SpeechTime; }
         dto.SubjectId = subjectId;
 
-        store.Put(key, System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto, JsonOpts)));
+        store.MPAI_AIFM_SharedStorage_Put(key, System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto, JsonOpts)));
     }
     public static SubjectGallery Load(AIF.SharedStorage.ISharedStorage store,
                                       float faceThreshold = 0.35f, float voiceThreshold = 0.45f)
     {
         var g = new SubjectGallery(faceThreshold, voiceThreshold);
-        foreach (var key in store.List(SubjectKeyPrefix))
+        foreach (var key in store.MPAI_AIFM_SharedStorage_List(SubjectKeyPrefix))
         {
             var dto = JsonSerializer.Deserialize<SubjectDto>(
-                System.Text.Encoding.UTF8.GetString(store.Get(key)), JsonOpts);
+                System.Text.Encoding.UTF8.GetString(store.MPAI_AIFM_SharedStorage_Get(key)), JsonOpts);
             if (dto is null) continue;
             g._subjects[dto.SubjectId] = new Subject
             {

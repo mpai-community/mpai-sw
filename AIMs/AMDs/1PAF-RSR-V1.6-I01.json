@@ -9,16 +9,16 @@
 
   "ExternalPorts":    [{"Name": "TextObject",              "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "TextObject",              "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "PersonalStatus",          "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "MachineSpeech",           "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "MachineFaceDescriptors",  "Direction": "Output", "DataType": "PAF-FDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+                       {"Name": "PersonalStatus",          "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "IsOptional": true,                "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineSpeech",           "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"],                  "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineFaceDescriptors",  "Direction": "Output", "DataType": "PAF-FDO-V1.6",                                    "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
   "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-PSD-V1.6-I01", "AIMName": "PAF-PSD-V1.6" } },
                        { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-TTS-V2.5-I01", "AIMName": "MMC-TTS-V2.5" } },
                        { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-GFD-V1.6-I01", "AIMName": "PAF-GFD-V1.6" } }],
 
   "Topology":         [{ "Output": { "AIMName": "",              "PortName": "TextObject", "PortNumber": 1 }, "Input": { "AIMName": "MMC-TTS-V2.5",  "PortName": "InputText" } },
-                       { "Output": { "AIMName": "",              "PortName": "TextObject" }                 , "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "TextObject" } },
+                       { "Output": { "AIMName": "",              "PortName": "TextObject", "PortNumber": 2 }, "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "TextObject" } },
                        { "Output": { "AIMName": "",              "PortName": "PersonalStatus" }             , "Input": { "AIMName": "PAF-PSD-V1.6",  "PortName": "PersonalStatus" } },
                        { "Output": { "AIMName": "PAF-PSD-V1.6",  "PortName": "SpeechPersonalStatus" }       , "Input": { "AIMName": "MMC-TTS-V2.5",  "PortName": "SpeechPersonalStatus" } },
                        { "Output": { "AIMName": "PAF-PSD-V1.6",  "PortName": "FacePersonalStatus" }         , "Input": { "AIMName": "PAF-GFD-V1.6",  "PortName": "FacePersonalStatus" } },

@@ -1,0 +1,39 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-PSM-V2.5"},
+  "Header":            "MMC-PSM-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "This AIM assembles the per-modality Personal Statuses - Text, Speech, Face, and Gesture - into a single Entity Personal Status. It combines; it does not compute. Each modality input is optional, but at least one shall be present; the Entity Personal Status carries whichever modalities are supplied.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "TextPersonalStatus",    "Direction": "Input",  "DataType": "MMC-TPS-V2.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechPersonalStatus",  "Direction": "Input",  "DataType": "MMC-SPS-V2.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FacePersonalStatus",    "Direction": "Input",  "DataType": "MMC-FPS-V2.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "GesturePersonalStatus", "Direction": "Input",  "DataType": "MMC-GPS-V2.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "EntityPersonalStatus",  "Direction": "Output", "DataType": "MMC-EPS-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

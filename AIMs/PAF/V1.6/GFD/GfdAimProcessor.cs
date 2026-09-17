@@ -131,17 +131,35 @@ public sealed class GfdAimProcessor : IAimProcessor
             var psi = new ProcessStartInfo("espeak-ng", $"-q --ipa=1 \"{text.Replace("\"", "")}\"")
             { RedirectStandardOutput = true, UseShellExecute = false, CreateNoWindow = true };
             using var p = Process.Start(psi);
-            if (p is null) return FallbackGraphemes(text);
+            if (p is null) return Grapheme(text, "espeak-ng did not start");
             string ipa = p.StandardOutput.ReadToEnd();
             p.WaitForExit(4000);
             var toks = ipa.Where(ch => !char.IsWhiteSpace(ch)).Select(ch => ch.ToString()).ToList();
-            return toks.Count > 0 ? toks : FallbackGraphemes(text);
+            return toks.Count > 0 ? toks : Grapheme(text, "espeak-ng returned nothing");
         }
-        catch
+        catch (Exception ex)
         {
-            // espeak-ng not available - fall back to letters (coarse but keeps the mouth moving).
-            return FallbackGraphemes(text);
+            return Grapheme(text, "espeak-ng unavailable: " + ex.Message);
         }
+    }
+
+    // THE FALLBACK IS CONVINCING, WHICH IS THE DANGER. Letters as visemes keep the
+    // mouth moving, so a missing espeak-ng looks like a working avatar rather than a
+    // broken one - and the mouth shapes to the SPELLING instead of the sounds. Said
+    // once per process: a rendering AIM that degrades silently is a fault nobody
+    // reports, because nothing appears to be wrong.
+    private static bool _saidWhyOnce;
+
+    private static IEnumerable<string> Grapheme(string text, string why)
+    {
+        if (!_saidWhyOnce)
+        {
+            _saidWhyOnce = true;
+            AimLog.Write("PAF-GFD-V1.6",
+                $"phonemes unavailable ({why}); falling back to letters. " +
+                "The mouth will move to the spelling, not the sounds.");
+        }
+        return FallbackGraphemes(text);
     }
 
     private static IEnumerable<string> FallbackGraphemes(string text)

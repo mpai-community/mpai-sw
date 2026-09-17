@@ -1,0 +1,50 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "MMC-AMQ-V2.5-I01", "AIMName": "MMC-AMQ-V2.5"},
+  "Header":            "MMC-AMQ-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Answer to Multimodal Question. Receives a Visual Object and a question - as a Speech Object or a Text Object - and returns the answer as Text, as Speech, and as a Visual Object. Acquisition, presentation and delivery are NOT SubAIMs: they interact with the user directly and therefore belong to the User Agent, travelling with it when it becomes a Remote Client Application. The User Agent shows the image and invites the question before this AIW is run, so the image and the question arrive together and the run completes without suspending. Every boundary Port is exchanged with the User Agent.",
+
+  "InternalTypes":   [{"Name": "TextQuestion", "DataType": "OSD-BTO-V1.5"},
+                      {"Name": "TextAnswer",   "DataType": "OSD-BTO-V1.5"}],
+
+  "ExternalPorts":   [{"Name": "InputVisual",  "Direction": "Input",  "DataType": "OSD-BVO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                      {"Name": "InputSpeech",  "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                      {"Name": "InputText",    "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                      {"Name": "OutputText",   "Direction": "Output", "DataType": "OSD-BTO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                      {"Name": "OutputVisual", "Direction": "Output", "DataType": "OSD-BVO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                      {"Name": "OutputSpeech", "Direction": "Output", "DataType": "OSD-BSO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [{ "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "MMC-ASR-V2.5-I01", "AIMName": "MMC-ASR-V2.5", "Relation": "" } },
+                      { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "MMC-TIQ-V2.5-I01", "AIMName": "MMC-TIQ-V2.5", "Relation": "" } },
+                      { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "MMC-TTS-V2.5-I01", "AIMName": "MMC-TTS-V2.5", "Relation": "" } }],
+
+  "Topology":        [{ "Output": { "AIMName": "",             "PortName": "InputSpeech"  }, "Input": { "AIMName": "MMC-ASR-V2.5", "PortName": "InputSpeech" } },
+                      { "Output": { "AIMName": "MMC-ASR-V2.5", "PortName": "OutputText"   }, "Input": { "AIMName": "MMC-TIQ-V2.5", "PortName": "InputText"   } },
+                      { "Output": { "AIMName": "",             "PortName": "InputText"    }, "Input": { "AIMName": "MMC-TIQ-V2.5", "PortName": "InputText"   } },
+                      { "Output": { "AIMName": "",             "PortName": "InputVisual"  }, "Input": { "AIMName": "MMC-TIQ-V2.5", "PortName": "InputVisual" } },
+                      { "Output": { "AIMName": "MMC-TIQ-V2.5", "PortName": "OutputText"   }, "Input": { "AIMName": "MMC-TTS-V2.5", "PortName": "InputText"   } },
+                      { "Output": { "AIMName": "MMC-TIQ-V2.5", "PortName": "OutputText"   }, "Input": { "AIMName": "",             "PortName": "OutputText"   } },
+                      { "Output": { "AIMName": "MMC-TIQ-V2.5", "PortName": "OutputImage"  }, "Input": { "AIMName": "",             "PortName": "OutputVisual" } },
+                      { "Output": { "AIMName": "MMC-TTS-V2.5", "PortName": "OutputSpeech" }, "Input": { "AIMName": "",             "PortName": "OutputSpeech" } }],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+                             
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/use-cases/answer-to-multimodal-question/"}]}

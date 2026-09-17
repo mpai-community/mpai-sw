@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Mpai.Wdl - reading a Workflow Description.
+       The notation only: no window, no device, no Controller. A Service that
+       serves a workflow parses it with the same reader that a Remote Client
+       Application executes it with, so a description accepted in one place is
+       accepted in the other. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Mpai.Wdl</AssemblyName>
+    <RootNamespace>Mpai.Wdl</RootNamespace>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,38 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-PSD-V1.6"},
+  "Header":            "PAF-PSD-V1.6",
+
+  "APIProfile":       "Basic",
+  "Description":      "Personal Status De-multiplexing: the inverse of Personal Status Multiplexing. Splits one Entity Personal Status (the machine's) into the per-modality Personal Statuses - Speech, Face, and Gesture - for the Response and Scene Rendering composite. It de-multiplexes; it does not compute.",
+
+  "InternalTypes":   [ ],
+
+  "ExternalPorts":   [{"Name": "PersonalStatus",        "Direction": "Input",  "DataType": "MMC-EPS-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechPersonalStatus",  "Direction": "Output", "DataType": "MMC-SPS-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FacePersonalStatus",    "Direction": "Output", "DataType": "MMC-FPS-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "GesturePersonalStatus", "Direction": "Output", "DataType": "MMC-GPS-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [ ],
+
+  "Topology":        [ ],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

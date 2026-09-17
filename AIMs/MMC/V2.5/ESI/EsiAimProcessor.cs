@@ -48,7 +48,7 @@ public sealed class EsiAimProcessor : IAimProcessor
             return System.Threading.Tasks.Task.FromResult(
                 Message.Error(message.MessageId, _instanceId, "empty Basic Speech Object"));
 
-        var samples = WavReader.ReadMono16k(speech.Data);
+        var samples = WavReader.ReadMono16k(speech);
         var affect  = _estimator.Estimate(samples);
 
         var sps = ToSpeechPersonalStatus(affect);

@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\AIF.SharedStorage\AIF.SharedStorage.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,27 @@
+{ "Identifier":           { "ImplementerID": "MPAI", "ImplementationID": "CAE-QCV-V1.0-I01", "AIMName": "CAE-QCV-V1.0" },
+
+  "APIProfile":           "Basic",
+  "Description":          "Audio Qualifier Conversion: converts a Basic Audio Object from its current Audio Qualifier (format A) to a target Audio Qualifier (format B), rewriting both the audio data and the qualifier. This implementation performs one conversion - any 16-bit PCM (rate/channels) to mono, 16 kHz, 16-bit PCM - and is structured to be extended with further conversions.",
+
+  "InternalTypes":        [],
+
+  "ExternalPorts":        [{"Name": "InputAudioObject",  "Direction": "Input",  "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "OutputAudioObject", "Direction": "Output", "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [],
+
+  "Topology":             [],
+
+  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/CAE-QCV-V1.0-I01",
+                            "MASPort":           443,
+                            "BinaryName":        "Mpai.Cae.Qcv",
+                            "Architecture":      "x86-64",
+                            "OperatingSystem":   "Windows",
+                            "Version":           "1.0",
+                            "Source":            "AIMStorage"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",    "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
+                           {"Name": "CPU:Class", "Minimum": "Low",  "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":           {},
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-cae/"}]}

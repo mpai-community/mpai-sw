@@ -103,6 +103,7 @@ public sealed class MachineExecutor
 
         Message last = message;
 
+
         for (int position = startPosition; position < plan.Count; position++)
         {
             var aimName = plan[position];
@@ -169,18 +170,47 @@ public sealed class MachineExecutor
             }
             catch (Exception failure)
             {
-                return ExecutionResult.Complete(
-                    Message.Error(message.MessageId, aimName, failure.Message));
+                // A leaf that THROWS is isolated just like one that returns an
+                // error: log it, treat it as having produced nothing, and let the
+                // Module continue (graceful degradation, e.g. a recogniser that
+                // threw on empty/garbled input must not blank the whole graph).
+                Console.WriteLine($"[AIF] {aimName}: threw, skipped (produced no output): {failure.Message}");
+                continue;
             }
 
-            if (result.IsError || result.IsCancelled)
+            // A user CANCEL aborts the whole run. But a single leaf ERROR is
+            // isolated: it means that AIM produced nothing (e.g. a recogniser
+            // that saw no face or heard no speaker). The Module continues so the
+            // rest of the graph - notably ID Reconciliation - can proceed with
+            // whichever modalities DID succeed. Graceful degradation, not abort.
+            if (result.IsCancelled)
                 return ExecutionResult.Complete(result);
+            if (result.IsError)
+            {
+                Console.WriteLine($"[AIF] {aimName}: error, skipped (produced no output): {result.Payload}");
+                last = result;
+                continue;
+            }
 
             // Store each output port tagged with the DataType it carries. For a
             // leaf, result.Ports is keyed by the leaf's own output port names, so
             // the DataType is read from the leaf's declared Ports. For a composite
             // child, result.Ports is keyed by the child's boundary Endpoint.Key
             // ("DataType#n"), so the DataType is the part before '#'.
+            // EVERY OBJECT EVERY AIM PRODUCES PASSES THROUGH HERE. Asked, once
+            // per AIM and Data Type, whether it says what its Data is. It reports
+            // and does not refuse: the defects this finds are months old, and a
+            // check that stopped a Module would turn a quiet fault into an outage.
+            foreach (var produced in result.Ports)
+            {
+                var producedType = child.IsComposite
+                    ? produced.Key.Split('#')[0]
+                    : (child.Ports.FirstOrDefault(p => p.Direction == "Output" && p.Name == produced.Key)?.DataType
+                       ?? result.DataType);
+
+                ObjectInspector?.Invoke(aimName, producedType ?? "", produced.Value);
+            }
+
             outputs[aimName] =
                 result.Ports.ToDictionary(
                     port => port.Key,
@@ -460,6 +490,15 @@ public sealed class MachineExecutor
     // What the composite exposes on its boundary outputs, keyed by the boundary
     // output Endpoint.Key ("DataType#n"), so the User Agent reads outputs by
     // (DataType, PortNumber).
+    // SOMEWHERE TO LOOK, WITHOUT KNOWING WHAT IS BEING LOOKED AT. The Framework
+    // routes Data Types and payloads; it does not know what an MPAI Object is, and
+    // it must not - a Controller that depended on the Data Type library would stop
+    // being generic. So it offers the place and whoever knows both worlds installs
+    // the inspector, exactly as AimLog offers a sink and a host installs it.
+    //
+    // (AIM name, Data Type, payload). No sink, no cost beyond a null check.
+    public static Action<string, string, string>? ObjectInspector { get; set; }
+
     private Dictionary<string, string> CollectOutputs(
         DescriptorNode node,
         IReadOnlyDictionary<string, Dictionary<string, RoutedObject>> outputs,

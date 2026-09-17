@@ -35,7 +35,7 @@ public sealed class EfdAimProcessor : IAimProcessor
     private readonly string _inPort;
     private readonly string _outPort;
     private readonly string _timePort;
-    private readonly string _namePort;
+    private readonly string _textPort;
     private readonly AIF.SharedStorage.ISharedStorage _store;
 
     public EfdAimProcessor(
@@ -51,7 +51,7 @@ public sealed class EfdAimProcessor : IAimProcessor
         _inPort     = ports.Input("OSD-BVO-V1.5");
         _outPort    = ports.Output("PAF-FDO-V1.6");
         _timePort   = ports.Input("OSD-STM-V1.5");      // acquisition time (OSD-STM)
-        _namePort   = ports.InputOrDefault("OSD-BTO-V1.5", 1, string.Empty);   // subject name (UA-originated key), optional
+        _textPort   = ports.InputOrDefault("OSD-BTO-V1.5", 1, string.Empty);   // the OSD-BTO the subject is keyed by, optional
         _store      = store;
     }
 
@@ -94,7 +94,7 @@ public sealed class EfdAimProcessor : IAimProcessor
             };
 
         // Persist the FACE half to the gallery (Shared Storage, via the Controller API).
-        if (message.Ports.TryGetValue(_namePort, out var nmJson) && !string.IsNullOrWhiteSpace(nmJson))
+        if (message.Ports.TryGetValue(_textPort, out var nmJson) && !string.IsNullOrWhiteSpace(nmJson))
         {
             var name = MpaiJson.FromJson<BasicTextObject>(nmJson)?.GetText();
             if (!string.IsNullOrWhiteSpace(name))
@@ -103,6 +103,7 @@ public sealed class EfdAimProcessor : IAimProcessor
                 var g = Mpai.Core.SubjectGallery.Load(_store);
                 g.EnrolEmbeddings(name!, face: embedding, faceTime: ftJson);
                 g.SaveSubject(_store, name!);
+                AimLog.Write("PAF-EFD-V1.6", $"enrolled the FACE half of '{name}'.");
             }
         }
 

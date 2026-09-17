@@ -269,7 +269,44 @@ public sealed class BasicSpeechObject
     public DataExchangeMetadata? DataXMData { get; init; }
     public string? DescrMetadata { get; init; }
 
-    public static BasicSpeechObject FromData(byte[] data, SpeechQualifier? qualifier = null) => new()
+    // AN OBJECT IS DATA AND A QUALIFIER, SO BOTH MUST BE STATED. The Qualifier is
+    // required, and required non-null: Data with nothing to describe it obliges
+    // every consumer downstream to guess, and a consumer that guesses by looking
+    // for a container header finds nothing - silently, because the header was
+    // never there to find. Whoever creates an Object knows what the bytes are;
+    // this is the point at which they must say so.
+    // DERIVATION CARRIES OR RESTATES - AND WHICH ONE DEPENDS ON THE DATA.
+    //
+    // An AIM that produces an Object from another either keeps the Data, in which
+    // case it carries the format across, or changes the Data, in which case it
+    // states a new one describing what it produced. CAE-QCV is the model: it
+    // resamples and rebuilds the Qualifier to describe its own output. CVE-VSI is
+    // the other model: it keeps the bytes, carries the format, and changes only
+    // the object type.
+    //
+    // The failure the compiler cannot catch is changing the Data and carrying the
+    // format anyway. The result is a Qualifier that lies, and a consumer that obeys
+    // it decodes at the wrong rate - silently, because the numbers are plausible.
+    // CAE-ASI did this in reverse for months, asserting 16 kHz over whatever it was
+    // given. Only a conformance check catches it; see Level 5.
+
+    // AND THE QUALIFIER MUST SAY SOMETHING. A Qualifier carrying a language, a
+    // speaker and a capture time, and nothing about the bytes, is decoration: it
+    // satisfies the requirement of Level 1 and leaves every consumer guessing at
+    // the one thing it cannot recover from the Data. Speech Object Acquisition
+    // built exactly such a Qualifier for weeks, and the voice half of every
+    // enrolment failed silently because of it.
+    //
+    // Refused at construction rather than reported later: by the time a consumer
+    // notices, the Object has travelled and whoever knew what the bytes were is no
+    // longer on the stack.
+    public static BasicSpeechObject FromData(byte[] data, SpeechQualifier qualifier) =>
+        !qualifier.StatesFormat()
+            ? throw new ArgumentException(
+                "The Speech Qualifier states no format. Set Format.ContentFormats.RawData " +
+                "(sampling frequency and precision) for raw samples, or " +
+                "Format.TransportFormats.FileFormat for a container.", nameof(qualifier))
+            : new()
     {
         BasicSpeechObjectID = Guid.NewGuid().ToString(),
         Data = data,
@@ -287,7 +324,12 @@ public sealed class BasicSpeechObject
     // holds, as MMC-SOA does in the other direction - it asserts a Speech
     // Qualifier and says in its own comments why an assertion is the honest
     // thing and a conversion is not.
-    public BasicAudioObject AsAudio() => BasicAudioObject.FromData(Data);
+    // AsAudio() and AsSpeech() are gone. Reclassifying a medium is the business of
+    // ONE AIM - CAE-ASI - and nature forces it there: a scene is captured as sound
+    // waves, and only on classification is it known that an object is speech. ASI
+    // keeps the Data and states a Qualifier describing it. These helpers let any
+    // code do the same thing anywhere, silently and with no Qualifier at all, which
+    // is how a 48 kHz capture came to be described as 16 kHz.
 }
 
 // ---------------------------------------------------------------------------
@@ -355,7 +397,16 @@ public sealed class BasicAudioObject
     // This took a SpeechQualifier, so every acquisition built one for audio it
     // had captured and the values were then reinterpreted. The two Qualifiers are
     // separate now, each complete in itself, and nothing converts.
-    public static BasicAudioObject FromData(byte[] data, AudioQualifier? qualifier = null) => new()
+    // Required, and required non-null - see BasicSpeechObject.FromData above.
+    // The Qualifier must say something - see BasicSpeechObject.FromData above.
+    public static BasicAudioObject FromData(byte[] data, AudioQualifier qualifier) =>
+        !qualifier.StatesFormat()
+            ? throw new ArgumentException(
+                "The Audio Qualifier states no format. Set " +
+                "Formats.ContentFormat.RawData.SampleSpace (sampling frequency and " +
+                "precision) for raw samples, or Formats.TransportFormat.FileFormats " +
+                "for a container.", nameof(qualifier))
+            : new()
     {
         BasicAudioObjectID = Guid.NewGuid().ToString(),
         BasicAudioObjectData = new() { new InlineAudioData(Convert.ToBase64String(data)) },
@@ -371,7 +422,7 @@ public sealed class BasicAudioObject
     // sound is speech is what that AIM is FOR. A conversion records nothing
     // about where the sound came from or why anyone should believe it contains
     // speech.
-    public BasicSpeechObject AsSpeech() => BasicSpeechObject.FromData(Data);
+    // AsSpeech() is gone - see the note on BasicAudioObject above.
 
     // Returns a copy with a different BasicAudioObjectID. Used by AOE to
     // correct the stored object's own ID to match the Repository AssetId at

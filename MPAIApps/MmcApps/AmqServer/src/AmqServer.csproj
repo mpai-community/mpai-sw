@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>AmqServer</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <!-- Plain net10.0, not net10.0-windows: this half holds the models and is
+         headed for a Linux host. AmqProvider supplies only ASR, TIQ, TTS, PSD
+         and GFD - acquisition and delivery are the User Agent's, so no device
+         project is referenced and nothing here is Windows-bound. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>MmcAmq.Server</RootNamespace>
+  </PropertyGroup>
+
+  <!-- AmqApp's provider, COMPILED IN rather than referenced. It is internal to
+       AmqApp, and linking the source leaves that file untouched: no change to a
+       file the running application depends on, and one definition of which
+       leaves MMC-AMQ has. -->
+  <ItemGroup>
+    <Compile Include="..\..\AmqApp\src\AmqProvider.cs" Link="AmqProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Framework -->
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.GlobalStorage\AIF.GlobalStorage.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\Core\Mpai.Core.csproj" />
+    <!-- North API -->
+    <ProjectReference Include="..\..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
+    <!-- MAS -->
+    <ProjectReference Include="..\..\..\..\MW\MasServer\Mpai.Mas.Server.csproj" />
+    <ProjectReference Include="..\..\..\..\MW\PortData\Mpai.Mas.PortData.csproj" />
+    <!-- MMC-AMQ leaves, plus the RSR leaves so the avatar can speak -->
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\TIQ\Mpai.Mmc.Tiq.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -37,27 +37,27 @@ public interface ISharedStorage
     // automatically - no parameter lets a caller supply or override them, which
     // is what makes GetKeyInfo trustworthy under a zero-trust model. The write
     // is atomic per key: the value and its provenance become visible together.
-    void Put(string key, byte[] data);
+    void MPAI_AIFM_SharedStorage_Put(string key, byte[] data);
 
     // Retrieves the whole value stored at key. Throws KeyNotFoundException if no
     // value exists at key (Section 4.10.2).
-    byte[] Get(string key);
+    byte[] MPAI_AIFM_SharedStorage_Get(string key);
 
     // Removes the value stored at key, together with its provenance, if any.
     // Deleting a key that does not exist is not an error (Section 4.10.3).
-    void Delete(string key);
+    void MPAI_AIFM_SharedStorage_Delete(string key);
 
     // Returns every currently stored key that begins with prefix (an empty
     // prefix matches every key), in ordinal order. The only enumeration
     // primitive - every richer query is a List with a suitable prefix.
-    IReadOnlyList<string> List(string prefix);
+    IReadOnlyList<string> MPAI_AIFM_SharedStorage_List(string prefix);
 
     // True if a value is currently stored at key, without transferring its
     // content (Section 4.10.5).
-    bool Exists(string key);
+    bool MPAI_AIFM_SharedStorage_Exists(string key);
 
     // Retrieves the framework-stamped provenance and size of the most recent
     // Put to key (Section 4.10.6). Throws KeyNotFoundException if no value
     // exists at key.
-    KeyInfo GetKeyInfo(string key);
+    KeyInfo MPAI_AIFM_SharedStorage_GetKeyInfo(string key);
 }

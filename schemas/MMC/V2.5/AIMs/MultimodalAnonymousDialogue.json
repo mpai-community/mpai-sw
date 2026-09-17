@@ -1,0 +1,51 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-MAD-V2.5"},
+  "Header":            "MMC-MAD-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Multimodal Anonymous Dialogue: the HCI Module for anonymous dialogue with a Speaking Avatar (no identity, no Identity Reconciliation). Automatic Speech Recognition recognises the human's speech into text; Entity Dialogue Processing produces the machine's response Text and Personal Status, using the running Summary as memory; Response and Scene Rendering renders that response into the Machine Speech and the lip-synced Machine Face Descriptors. The affective path (the machine's Personal Status) is wired but optional; a User Agent that does not exercise affect simply supplies none, and the avatar renders neutrally. A turn may be spoken (Speech Object) or typed (Text Object). Acquisition and delivery are the User Agent, not sub-AIMs.",
+
+  "InternalTypes":   [{"Name": "RecognisedText",        "DataType": "OSD-BTO-V1.5"},
+                     {"Name": "MachineText",           "DataType": "OSD-BTO-V1.5"},
+                     {"Name": "MachinePersonalStatus", "DataType": "MMC-EPS-V2.5"}],
+
+  "ExternalPorts":   [{"Name": "InputSpeech",            "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "InputSpeechTime",        "Direction": "Input",  "DataType": "OSD-STM-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "TextObject",             "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "MachineSpeech",          "Direction": "Output", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"],                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "MachineFaceDescriptors", "Direction": "Output", "DataType": "PAF-FDO-V1.6",                                       "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [{ "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-ASR-V2.5", "Relation": "" } },
+                     { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-EDP-V2.5", "Relation": "" } },
+                     { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-RSR-V1.6", "Relation": "" } }],
+
+  "Topology":        [{ "Output": { "AIMName": "",             "PortName": "InputSpeech"            }, "Input": { "AIMName": "MMC-ASR-V2.5", "PortName": "InputSpeech" } },
+                     { "Output": { "AIMName": "",             "PortName": "InputSpeechTime"        }, "Input": { "AIMName": "MMC-ASR-V2.5", "PortName": "InputSpeechTime" } },
+                     { "Output": { "AIMName": "MMC-ASR-V2.5", "PortName": "OutputText"             }, "Input": { "AIMName": "MMC-EDP-V2.5", "PortName": "TextObject" } },
+                     { "Output": { "AIMName": "",             "PortName": "TextObject"             }, "Input": { "AIMName": "MMC-EDP-V2.5", "PortName": "TextObject" } },
+                     { "Output": { "AIMName": "MMC-EDP-V2.5", "PortName": "MachineTextObject"      }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 1 } },
+                     { "Output": { "AIMName": "MMC-EDP-V2.5", "PortName": "MachineTextObject"      }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 2 } },
+                     { "Output": { "AIMName": "MMC-EDP-V2.5", "PortName": "MachinePersonalStatus"  }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "PersonalStatus" } },
+                     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineSpeech"          }, "Input": { "AIMName": "",             "PortName": "MachineSpeech" } },
+                     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineFaceDescriptors" }, "Input": { "AIMName": "",             "PortName": "MachineFaceDescriptors" } }],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

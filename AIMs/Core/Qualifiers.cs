@@ -94,6 +94,18 @@ public sealed class AudioQualifier
 
     public DataExchangeMetadata? DataXMData { get; init; }
     public string? DescrMetadata { get; init; }
+
+    // Does this Qualifier say what the bytes are? See SpeechQualifier.StatesFormat.
+    public bool StatesFormat()
+    {
+        var content = Formats?.ContentFormat;
+        if (content?.RawData?.SampleSpace is { SamplingFrequency: > 0, Precision: > 0 }) return true;
+        if (!string.IsNullOrWhiteSpace(content?.OtherContentFormats)) return true;
+
+        if (!string.IsNullOrWhiteSpace(Formats?.TransportFormat?.FileFormats)) return true;
+
+        return false;
+    }
 }
 
 public sealed class AudioFormats
@@ -184,6 +196,27 @@ public sealed class SpeechQualifier
 
     public DataExchangeMetadata? DataXMData { get; init; }
     public string? DescrMetadata { get; init; }
+
+    // DOES THIS QUALIFIER SAY WHAT THE BYTES ARE? Raw samples with a sampling
+    // frequency and a precision, or a named content format, or a container the
+    // bytes are wrapped in. Any one of those is a statement a consumer can act on.
+    //
+    // None of them, and the Qualifier is decoration: it may carry a language and a
+    // speaker and a capture time, and still leave every consumer guessing at the
+    // one thing it cannot recover. Speech Object Acquisition built exactly such a
+    // Qualifier for weeks.
+    public bool StatesFormat()
+    {
+        var content = Format?.ContentFormats;
+        if (content?.RawData is { SamplingFrequency: > 0, Precision: > 0 }) return true;
+        if (content?.OtherContentFormats is not null) return true;
+
+        var transport = Format?.TransportFormats;
+        if (!string.IsNullOrWhiteSpace(transport?.FileFormat)) return true;
+        if (transport?.StreamFormat is not null) return true;
+
+        return false;
+    }
 }
 
 public sealed class SpeechFormat

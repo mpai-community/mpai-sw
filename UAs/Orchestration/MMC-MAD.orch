@@ -1,0 +1,62 @@
+# =============================================================================
+#  MMC-MAD.orch - Multimodal Anonymous Dialogue
+#  Workflow Description Language, AIF V3.0
+#
+#  THE USER AGENT NEVER ADDRESSES A MODULE. It asks the Controller to start one,
+#  to take a datum for one, to give a datum from one, to stop one. The Module is
+#  named in the request; the Controller is the party asked. Every line beginning
+#  "ask Controller" is one call of the Controller API and nothing else is.
+#
+#      ask Controller to start  M              MPAI_AIFU_MODULE_Start
+#      ask Controller to take   L (T[:n]) for M    MPAI_AIFU_MODULE_Input_Write
+#      ask Controller to give   from M: L (T[:n])  MPAI_AIFU_MODULE_Output_Read
+#      ask Controller to pause  M              MPAI_AIFU_MODULE_Pause
+#      ask Controller to resume M              MPAI_AIFU_MODULE_Resume
+#      ask Controller to stop   M              MPAI_AIFU_MODULE_Stop
+#
+#  A Port is addressed by its Data Type and, where a Module declares more than
+#  one Port of that Data Type, its Port Number. The label before it is for the
+#  reader and does not route.
+# =============================================================================
+
+workflow MMC-MAD over MMC-MAD-V2.5, PAF-RSR-V1.6
+
+on Start:
+
+    # --- Welcome. A one-shot render, so its Module is started and stopped here.
+    #     PAF-RSR declares TextObject twice: #1 feeds Text-To-Speech, #2 feeds
+    #     Generative Face Description. Both are given or the face has nothing of
+    #     the words to shape itself to.
+    ask Controller to start PAF-RSR-V1.6
+    ask Controller to take  Welcome (OSD-BTO-V1.5:1) = "Welcome to the HCI
+        Multimodal Dialogue Service. Press Start to begin, Stop to close."
+        for PAF-RSR-V1.6
+    ask Controller to take  Welcome (OSD-BTO-V1.5:2) = "Welcome to the HCI
+        Multimodal Dialogue Service. Press Start to begin, Stop to close."
+        for PAF-RSR-V1.6
+    ask Controller to give  from PAF-RSR-V1.6:
+        WelcomeSpeech (OSD-BSO-V1.5),
+        WelcomeFace   (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFace
+    ask Controller to stop  PAF-RSR-V1.6
+
+    # --- The dialogue. The Module lives from Start to Stop, so that Entity
+    #     Dialogue Processing keeps the conversation's memory for the session.
+    #     That memory is the Module's own: it is not a boundary datum and the
+    #     User Agent neither holds it nor sees it.
+    ask Controller to start MMC-MAD-V2.5
+
+    loop until Stop:
+        prompt  "Speak when you are ready."
+        acquire UserSpeech (OSD-BSO-V1.5) via VAD
+
+        ask Controller to take UserSpeech     (OSD-BSO-V1.5) for MMC-MAD-V2.5
+        ask Controller to take UserSpeechTime (OSD-STM-V1.5) for MMC-MAD-V2.5
+
+        ask Controller to give from MMC-MAD-V2.5:
+            MachineSpeech (OSD-BSO-V1.5),
+            MachineFace   (PAF-FDO-V1.6)
+        present MachineSpeech, MachineFace
+
+on Stop:
+    ask Controller to stop MMC-MAD-V2.5

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Mpai.Mas.Client</RootNamespace>
+    <AssemblyName>Mpai.Mas.Client</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PortData\Mpai.Mas.PortData.csproj" />
+    <ProjectReference Include="..\HciApi\Mpai.Hci.Api.csproj" />
+  </ItemGroup>
+</Project>

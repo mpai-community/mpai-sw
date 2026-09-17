@@ -1,0 +1,27 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-TIQ-V2.5-I01", "AIMName": "MMC-TIQ-V2.5" },
+
+  "APIProfile":       "Basic",
+  "Description":      "Text and Image Query: produces a Basic Text Object response to a Basic Text Object question about a Basic Visual Object. Within MMC-AMQ-V2.5 its Input Visual arrives from the User Agent across the Composite AIM boundary and its Output Image returns there: Visual Object Acquisition and Delivery are User Agent modules, not SubAIMs.",
+
+  "ExternalPorts":    [{"Name": "InputText",   "Direction": "Input",  "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "InputVisual", "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputText",  "Direction": "Output", "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputImage", "Direction": "Output", "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-TIQ-V2.5-I01",
+                        "MASPort":          443,
+                        "BinaryName":        "Mpai.Mmc.Tiq",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "2 GB",   "Request": "3 GB", "Maximum": "4 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Medium", "Request": "High", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/"}]}

@@ -1,0 +1,53 @@
+{ "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-MAC-V2.5"},
+  "Header":            "MMC-MAC-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Multimodal Access Control: recognises a User from face and speech and issues a spoken/rendered verdict. Face Recognition and Speaker Recognition read the enrolled gallery (the User IDs) and the Scene Descriptors from Shared Storage - these are NOT ports. Time (OSD-STM) accompanies each captured object and is supplied by the User Agent's clock. ID Reconciliation reconciles the two candidate Instance Identifiers and issues the Response (the verdict words) and its Personal Status; Response and Scene Rendering speaks the Response and produces the lip-synced Machine Face Descriptors. The reconciled UserID stays internal; the User consumes the Response and the avatar. Acquisition and delivery are the User Agent, not sub-AIMs.",
+
+  "InternalTypes":   [{"Name": "FaceID",         "DataType": "OSD-IID-V1.5"},
+                     {"Name": "SpeakerID",      "DataType": "OSD-IID-V1.5"},
+                     {"Name": "UserID",         "DataType": "OSD-IID-V1.5"},
+                     {"Name": "PersonalStatus", "DataType": "MMC-EPS-V2.5"}],
+
+  "ExternalPorts":   [{"Name": "FaceObject",      "Direction": "Input",  "DataType": "OSD-BVO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechObject",    "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "Response",        "Direction": "Output", "DataType": "OSD-BTO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VocalResponse",   "Direction": "Output", "DataType": "OSD-BSO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FaceDescriptors", "Direction": "Output", "DataType": "PAF-FDO-V1.6",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":         [{ "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-FIR-V1.6", "Relation": "" } },
+                     { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-SIR-V2.5", "Relation": "" } },
+                     { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "OSD-IDR-V1.5", "Relation": "" } },
+                     { "Identifier": { "ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-RSR-V1.6", "Relation": "" } }],
+
+  "Topology":        [{ "Output": { "AIMName": "",             "PortName": "FaceObject"             }, "Input": { "AIMName": "PAF-FIR-V1.6", "PortName": "InputVisual" } },
+                     { "Output": { "AIMName": "",             "PortName": "SpeechObject"           }, "Input": { "AIMName": "MMC-SIR-V2.5", "PortName": "InputSpeech" } },
+                     { "Output": { "AIMName": "PAF-FIR-V1.6", "PortName": "FaceID"                 }, "Input": { "AIMName": "OSD-IDR-V1.5", "PortName": "FaceID", "PortNumber": 1 } },
+                     { "Output": { "AIMName": "MMC-SIR-V2.5", "PortName": "OutputSpeakerID"        }, "Input": { "AIMName": "OSD-IDR-V1.5", "PortName": "SpeakerID", "PortNumber": 2 } },
+                     { "Output": { "AIMName": "OSD-IDR-V1.5", "PortName": "PersonalStatus"         }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "PersonalStatus" } },
+                     { "Output": { "AIMName": "OSD-IDR-V1.5", "PortName": "Response"               }, "Input": { "AIMName": "PAF-RSR-V1.6", "PortName": "TextObject", "PortNumber": 1 } },
+                     { "Output": { "AIMName": "OSD-IDR-V1.5", "PortName": "Response"               }, "Input": { "AIMName": "",             "PortName": "Response" } },
+                     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineSpeech"          }, "Input": { "AIMName": "",             "PortName": "VocalResponse" } },
+                     { "Output": { "AIMName": "PAF-RSR-V1.6", "PortName": "MachineFaceDescriptors" }, "Input": { "AIMName": "",             "PortName": "FaceDescriptors" } }],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":         { },
+
+  "Documentation":     [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

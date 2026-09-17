@@ -1,0 +1,50 @@
+# =============================================================================
+#  MMC-MAT.orch - Multimodal Anonymous Translation
+#  Workflow Description Language, AIF V3.0
+#
+#  The User Agent never addresses a Module: it asks the Controller. See
+#  HCI-MAD.orch for the mapping of each request onto the Controller API.
+#
+#  The user speaks in one language and chooses another; the Module recognises,
+#  translates, synthesises in the target voice and renders the avatar. Which
+#  voice, and how the translation is made, are the Module's business and appear
+#  nowhere here.
+# =============================================================================
+
+workflow MMC-MAT over MMC-MAT-V2.5, PAF-RSR-V1.6
+
+on Start:
+
+    ask Controller to start PAF-RSR-V1.6
+    ask Controller to take  Welcome (OSD-BTO-V1.5:1) = "Welcome to the HCI
+        Multimodal Translation Service. Choose a language and speak."
+        for PAF-RSR-V1.6
+    ask Controller to take  Welcome (OSD-BTO-V1.5:2) = "Welcome to the HCI
+        Multimodal Translation Service. Choose a language and speak."
+        for PAF-RSR-V1.6
+    ask Controller to give  from PAF-RSR-V1.6:
+        WelcomeSpeech (OSD-BSO-V1.5),
+        WelcomeFace   (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFace
+    ask Controller to stop  PAF-RSR-V1.6
+
+    ask Controller to start MMC-MAT-V2.5
+
+    loop until Stop:
+        acquire TargetLanguage (OSD-SEL-V1.5)          # the user's choice
+        prompt  "Speak when you are ready."
+        acquire UserSpeech     (OSD-BSO-V1.5) via VAD
+
+        ask Controller to take TargetLanguage (OSD-SEL-V1.5) for MMC-MAT-V2.5
+        ask Controller to take UserSpeech     (OSD-BSO-V1.5) for MMC-MAT-V2.5
+        ask Controller to take UserSpeechTime (OSD-STM-V1.5) for MMC-MAT-V2.5
+
+        ask Controller to give from MMC-MAT-V2.5:
+            MachineSpeech  (OSD-BSO-V1.5),
+            MachineFace    (PAF-FDO-V1.6),
+            TranslatedText (OSD-BTO-V1.5)
+        present MachineSpeech, MachineFace
+        display TranslatedText
+
+on Stop:
+    ask Controller to stop MMC-MAT-V2.5

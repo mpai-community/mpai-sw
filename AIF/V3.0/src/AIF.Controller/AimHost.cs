@@ -31,7 +31,7 @@ public sealed class AimHost : IDisposable
 
     // MPAI_AIFM_AIM_Start: prepare the AIM for a new run and return the
     // AimContext the caller should embed in the Message for this invocation.
-    public AimContext StartAim(string instanceId)
+    public AimContext MPAI_AIFM_AIM_Start(string instanceId)
     {
         if (!_lifecycles.TryGetValue(instanceId, out var lc))
             throw new InvalidOperationException(
@@ -40,21 +40,21 @@ public sealed class AimHost : IDisposable
     }
 
     // MPAI_AIFM_AIM_Stop: signal the AIM to stop at its next yield point.
-    public void StopAim(string instanceId)
+    public void MPAI_AIFM_AIM_Stop(string instanceId)
     {
         if (_lifecycles.TryGetValue(instanceId, out var lc))
             lc.Stop();
     }
 
     // MPAI_AIFM_AIM_Pause: close the AIM's pause gate so it blocks.
-    public void PauseAim(string instanceId)
+    public void MPAI_AIFM_AIM_Pause(string instanceId)
     {
         if (_lifecycles.TryGetValue(instanceId, out var lc))
             lc.Pause();
     }
 
     // MPAI_AIFM_AIM_Resume: open the AIM's pause gate so it continues.
-    public void ResumeAim(string instanceId)
+    public void MPAI_AIFM_AIM_Resume(string instanceId)
     {
         if (_lifecycles.TryGetValue(instanceId, out var lc))
             lc.Resume();
@@ -72,7 +72,7 @@ public sealed class AimHost : IDisposable
 
         // Embed an AimContext in the message so the processor can honour
         // lifecycle signals without holding a reference to AimLifecycle.
-        var context = StartAim(instanceId);
+        var context = MPAI_AIFM_AIM_Start(instanceId);
         var msg     = message with { Context = context };
 
         return processor.ProcessAsync(msg);

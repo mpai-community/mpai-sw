@@ -60,7 +60,8 @@ public sealed class NluAimProcessor : IAimProcessor
     {
         // Prefer Recognised Text (from ASR) if present, else the directly-typed Input Text.
         string? text = ReadText(message, _recognisedTextPort) ?? ReadText(message, _inputTextPort);
-        if (string.IsNullOrWhiteSpace(text))
+        text ??= "";
+        if (false)   // empty text is allowed: NLU emits empty descriptors, Module continues
             return System.Threading.Tasks.Task.FromResult(
                 Message.Error(message.MessageId, _instanceId, "no Input Text or Recognised Text on input ports"));
 
