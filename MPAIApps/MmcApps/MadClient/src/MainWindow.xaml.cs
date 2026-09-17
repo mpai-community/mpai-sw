@@ -64,9 +64,17 @@ public partial class MainWindow : Window
 
             await Task.Run(() =>
             {
-                // THIS APPLICATION RUNS ITS MODULE IN PROCESS. Driving one over a
-                // network is MadClient, a different application for a different user.
-                _north = new NorthApi(AmdDir, SettingsPath, store => new MadProvider(store));
+                var server = Environment.GetEnvironmentVariable("MPAI_MAS_SERVER");
+                // THIS CLIENT HOLDS NO MODEL AND NO FRAMEWORK. There is no
+                // in-process branch to fall back to, and a client that quietly ran
+                // the Module locally would be carrying the models it was built to
+                // do without.
+                if (string.IsNullOrWhiteSpace(server))
+                    throw new InvalidOperationException(
+                        "MPAI_MAS_SERVER is not set. This is the client: it drives a " +
+                        "Module over MPAI-MAS and holds no models.");
+                _north = new Mpai.Mas.Client.RemoteNorthApi(
+                    server!, Environment.GetEnvironmentVariable("MPAI_MAS_TOKEN"));
             });
 
             InstructionText.Text = "Press Start to begin.";

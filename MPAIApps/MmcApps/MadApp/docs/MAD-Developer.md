@@ -46,8 +46,8 @@ EDP is asked for a **plain spoken reply** and emits **no** Personal Status; the
 avatar renders neutrally. (Absent inputs are not referenced in the LLM prompt.)
 
 ## 3. The User Agent
-`MPAIApps/HCIApps/MadApp/src/` - namespace `HciMad`; provider `MadProvider.cs`;
-UA `MainWindow.xaml.cs`, realising `UAs/Orchestration/HCI-MAD.orch`.
+`MPAIApps/MmcApps/MadApp/src/` - namespace `HciMad`; provider `MadProvider.cs`;
+UA `MainWindow.xaml.cs`, realising `UAs/Orchestration/MMC-MAD.orch`.
 
 Flow (turn-taking loop, bounded by the **Start** and **Stop** buttons), driven
 through the **North API** by data type:
@@ -64,7 +64,7 @@ Microphone capture (VAD) and avatar rendering come from `UAs/Lib/UaKit`
 (`AvatarUaHost`). Any visual acquisition uses **native Windows Media Capture**.
 
 ## 4. Files this app needs (build closure)
-- **App:** `MPAIApps/HCIApps/MadApp/*`
+- **App:** `MPAIApps/MmcApps/MadApp/*`
 - **AIF:** `AIF/V3.0/src/{Controller, Store, SharedStorage, GlobalStorage}`
 - **UA library / North API:** `UAs/Lib/UaKit`, `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`; leaves `MMC/V2.5/ASR`, `MMC/V2.5/EDP`, `PAF/V1.6/PSD`,
@@ -72,7 +72,7 @@ Microphone capture (VAD) and avatar rendering come from `UAs/Lib/UaKit`
   `MMC/V2.5/SOD(.Windows)`
 - **L3s:** `1MMC-MAD-V2.5-I01.json` + `1MMC-ASR-V2.5-I01.json` +
   `1MMC-EDP-V2.5-I01.json` + the RSR-leaf AMDs
-- **Orchestration:** `UAs/Orchestration/HCI-MAD.orch`
+- **Orchestration:** `UAs/Orchestration/MMC-MAD.orch`
 - **Schemas:** the JSON schemas reachable from MAD's data types
 - **Settings:** `AIMs/aim-settings.json` - `MMC-ASR-V2.5`
   (`ExecutablePath` = whisper-cli, `ModelPath` = ggml-small.bin), `MMC-EDP-V2.5`
@@ -83,9 +83,9 @@ Microphone capture (VAD) and avatar rendering come from `UAs/Lib/UaKit`
 
 ## 5. Build & run
 ```
-D:\BI\MPAIApps\HCIApps\MadApp\MadAppBuild.bat     # produces MadApp.exe
+MPAIApps\MmcApps\MadApp\MadAppBuild.bat     # produces MadApp.exe
 # start Ollama first (serve + model), then:
-D:\BI\MPAIApps\HCIApps\MadApp\MadApp.exe
+MPAIApps\MmcApps\MadApp\src\bin\Release\net10.0-windows10.0.19041.0\MadApp.exe
 ```
 MAD requires **Ollama running** with the configured model; ASR requires the
 Whisper CLI + model at the configured paths.
@@ -111,3 +111,11 @@ path under `Models\`, or set the corresponding key in `AIMs\aim-settings.json`.
 
 MAD additionally requires **Ollama running** (`ollama serve`) with the model pulled,
 reachable at `http://127.0.0.1:11434`, and the Whisper CLI + model at the configured paths.
+
+## The package
+
+MAD is also offered as **MAD.zip**: the application, the 20 projects it references transitively, the Module descriptors, the schemas, the avatar assets and these guides - and nothing belonging to another application. No models, no credentials. Unzip it anywhere, place the models under `Models\`, and run `MadAppBuild.bat`. MAD also needs a local LLM served by **Ollama**; without it the avatar greets you and the conversation never begins.
+
+Driving a Module over a network is **MadClient**, a different application for a different user, published separately.
+
+**A setting that names a path is resolved against the application's own root** - the directory holding `AIMs\` and `UAs\`, found from the executable's location. A relative setting works wherever the folder is placed; an absolute one binds the installation to one machine.
