@@ -7,8 +7,8 @@
        this package physically cannot load a model. About 150 MB smaller,
        nearly all of it ONNX Runtime natives a client never opens.
 
-       THE SOURCES ARE LINKED, NOT COPIED. A copied window drifts from its
-       original. REMOTE_ONLY compiles out the in-process branch. -->
+       ITS OWN SOURCES. AMQ and its client are different applications for
+       different users: one runs a Module in process, the other drives one over MPAI-MAS and holds no model. They no longer share a window. -->
 
   <PropertyGroup>
     <AssemblyName>AmqClient</AssemblyName>
@@ -18,16 +18,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <DefineConstants>$(DefineConstants);WINDOWS_DEVICES;REMOTE_ONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);WINDOWS_DEVICES</DefineConstants>
     <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\AmqApp\src\MainWindow.xaml.cs" Link="MainWindow.xaml.cs" />
-    <Compile Include="..\..\AmqApp\src\App.xaml.cs"        Link="App.xaml.cs" />
-    <Compile Include="..\..\AmqApp\src\Program.cs"         Link="Program.cs" />
-    <ApplicationDefinition Include="..\..\AmqApp\src\App.xaml" Link="App.xaml" />
-    <Page Include="..\..\AmqApp\src\MainWindow.xaml"          Link="MainWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>

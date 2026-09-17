@@ -12,6 +12,7 @@ using AIF.Store;        // AmdStore
 using Mpai.Core;
 using Mpai.UaKit;       // AvatarUaHost, CaptureSpeech
 using Mpai.Hci.Api;     // NorthApi, SpeakingAvatar
+using Mpai.Mas.Client;
 
 namespace MmcAmq;
 
@@ -61,12 +62,25 @@ public partial class MainWindow : Window
             await _avatar.InitAsync();
             await Task.Run(() =>
             {
-                // THIS APPLICATION RUNS ITS MODULE IN PROCESS. Driving one over a
-                // network is AmqClient, a different application for a different
-                // user: it holds no model and no Framework. They were one source
-                // with a compilation switch, which meant the local application
-                // carried the networked path it never used.
-                _north = new NorthApi(AmdDir, SettingsPath, store => new AmqProvider(store));
+                // LOCAL UNLESS TOLD OTHERWISE. Set MPAI_MAS_SERVER to a URL and
+                // this same window drives a Module on another machine; unset, it
+                // runs the Module in process exactly as before. One codebase,
+                // two modes - no copied MainWindow to drift out of step.
+                var server = Environment.GetEnvironmentVariable("MPAI_MAS_SERVER");
+
+                // THE CLIENT PACKAGE CARRIES NO FRAMEWORK. AmqProvider and the
+                // AIM projects are absent from AmqClient.csproj, so there is no
+                // in-process branch to fall back to - and a client that quietly
+                // ran the Module locally would be carrying the models it was
+                // built to do without.
+                if (string.IsNullOrWhiteSpace(server))
+                    throw new InvalidOperationException(
+                        "MPAI_MAS_SERVER is not set. This is the client package: " +
+                        "it drives a Module over MPAI-MAS and holds no models.");
+
+                _north = new RemoteNorthApi(
+                    server!,
+                    Environment.GetEnvironmentVariable("MPAI_MAS_TOKEN"));
             });
             LoadButton.IsEnabled = true;
             SetStatus("Ready.");

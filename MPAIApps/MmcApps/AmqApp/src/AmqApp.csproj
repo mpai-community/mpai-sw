@@ -21,7 +21,6 @@
     <!-- Avatar surface + HCI API -->
     <ProjectReference Include="..\..\..\..\UAs\Lib\UaKit\Mpai.UaKit.csproj" />
     <ProjectReference Include="..\..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\MW\MasClient\Mpai.Mas.Client.csproj" />
     <!-- MMC-AMQ leaves: ASR + TIQ + TTS -->
     <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
     <ProjectReference Include="..\..\..\..\AIMs\MMC\V2.5\TIQ\Mpai.Mmc.Tiq.csproj" />
