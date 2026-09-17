@@ -79,7 +79,7 @@ compare a live probe embedding against enrolled subjects by cosine similarity.
 
 ## 4. The User Agent
 
-`MPAIApps/HCIApps/MacApp/src/` - namespace `HciMac`.
+`MPAIApps/MmcApps/MacApp/src/` - namespace `HciMac`.
 
 - `MainWindow.xaml.cs` - realises `HCI-MAC.orch` via the **North API**:
   `StartFlow("MMC-MAC-V2.5")` -> speak *"...Look at the camera."* (a one-shot **RSR**
@@ -98,7 +98,7 @@ Visual acquisition uses **native Windows Media Capture** (no OpenCV).
 
 ## 5. Files this app needs (build closure)
 
-- **App:** `MPAIApps/HCIApps/MacApp/*`
+- **App:** `MPAIApps/MmcApps/MacApp/*`
 - **Framework (AIF):** `AIF/V3.0/src/{AIF.Controller, AIF.Store, AIF.SharedStorage, AIF.GlobalStorage}`
 - **UA library / North API:** `UAs/Lib/UaKit`; `MW/HciApi` (`NorthApi`)
 - **AIMs:** `AIMs/Core`, and the leaves `PAF/V1.6/FIR`, `MMC/V2.5/SIR`,
@@ -115,8 +115,8 @@ Visual acquisition uses **native Windows Media Capture** (no OpenCV).
 ## 6. Build & run
 
 ```
-D:\BI\MPAIApps\HCIApps\MacApp\MacAppBuild.bat   # produces MacApp.exe
-D:\BI\MPAIApps\HCIApps\MacApp\MacApp.exe
+MPAIApps\MmcApps\MacApp\MacAppBuild.bat   # produces MacApp.exe
+MPAIApps\MmcApps\MacApp\src\bin\Release\net10.0-windows10.0.19041.0\MacApp.exe
 ```
 
 The application root is resolved at runtime from the executable location
@@ -143,3 +143,11 @@ path under `Models\`, or set the corresponding key in `AIMs\aim-settings.json`.
 | Piper voice config | `VoiceConfig` / `VoiceConfig:en` | `en_US-amy-medium.onnx.json` | 0.005 MB | `95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77` | Hugging Face `rhasspy/piper-voices` |
 
 Install the Piper voice under `Models\Piper\voices\en_US-amy-medium\`. The Piper executable (`PiperExecutable`) is the Piper Windows release (`piper.exe`).
+
+## The package
+
+MAC is also offered as **MAC.zip**: the application, the 28 projects it references transitively, the Module descriptors, the schemas, the avatar assets and these guides - and nothing belonging to another application. No models, no gallery, no credentials. Unzip it anywhere, place the models under `Models\`, and run `MacAppBuild.bat`. MAC needs a gallery: enrol with ACR first.
+
+**A setting that names a path is resolved against the application's own root** - the directory holding `AIMs\` and `UAs\`, found from the executable's location. A relative setting works wherever the folder is placed; an absolute one binds the installation to one machine.
+
+**An ONNX model is often two files.** The `.onnx` holds the network's structure and may be a megabyte; an `.onnx.data` beside it holds the weights and may be hundreds.
