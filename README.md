@@ -1,217 +1,85 @@
-# MPAI Applications - MAC, ACR, MAD, MAT, MPD, AMQ
+# MPAI Software
 
-Reference applications built on the **MPAI-AIF** AI Framework. Each application is
-a genuine AIF **Module** - a graph of AI Modules - executed by the AIF
-**Controller** and driven by a **User Agent**. They share a common runtime, a
-common set of AI Modules (AIMs), and a common Speaking-Avatar library.
+Reference software for the standards of MPAI - Moving Picture, Audio and Data
+Coding by Artificial Intelligence (<https://mpai.community>). Contact:
+secretariat@mpai.community. Licence: BSD-3-Clause (see `LICENSE`).
 
-Developed by MPAI - Moving Picture, Audio and Data Coding by Artificial
-Intelligence (<https://mpai.community>). Contact: secretariat@mpai.community.
+This repository holds one application, **MAS-App**: a Service that offers four
+AI applications over the network, and two clients - one for the desktop, one
+for the browser - through which a person uses them. Every application presents
+a 3-D Speaking Avatar that listens, looks, answers and shows expression.
 
-Relevant MPAI Technical Specifications:
+| App | Name | What it does |
+|---|---|---|
+| **MAD** | Multimodal Conversation | A spoken or typed conversation with the avatar. |
+| **AMQ** | Multimodal Question Answering | Show a picture, ask about it, and the avatar answers. |
+| **MAT** | Multimodal Translation | Speak or type in one language; the avatar says it in another. |
+| **MPD** | Multimodal Affective Dialogue | A conversation in which the avatar reads your words, voice and face and answers with feeling. |
+
+- **To install and use it:** [MAS-App User Guide](docs/MAS-App-User.md)
+- **To build on it:** [MAS-App Developer Guide](docs/MAS-App-Developer.md)
+- **The AI models it needs:** [MAS-App - Models](docs/MAS-App-Models.md)
+
+## The standards it implements
 
 - **MPAI-AIF** - AI Framework: <https://mpai.community/standards/mpai-aif/>
+- **MPAI-MAS** - MPAI as a Service: <https://mpai.community/standards/mpai-mas/>
 - **MPAI-MMC** - Multimodal Conversation: <https://mpai.community/standards/mpai-mmc/>
 - **MPAI-PAF** - Portable Avatar Format: <https://mpai.community/standards/mpai-paf/>
 - **MPAI-OSD** - Object and Scene Description: <https://mpai.community/standards/mpai-osd/>
 
----
+## The ideas in one page
 
-## The applications
+**AIM (AI Module).** A unit of processing with typed Ports. A Port is addressed
+by its **Data Type** and **Port Number**, never by its name.
 
-| App | Name | Purpose | Guides |
-|---|---|---|---|
-| **MAC** | Multimodal Access Control | Recognise a person from **face and voice** and grant or deny access; granted only when both modalities agree. | [User](MPAIApps/MmcApps/MacApp/docs/MAC-User.md) / [Developer](MPAIApps/MmcApps/MacApp/docs/MAC-Developer.md) |
-| **ACR** | Access Control Registration | **Enrol** a person's face and voice into the gallery MAC reads. | [User](MPAIApps/MmcApps/AcrApp/docs/ACR-User.md) / [Developer](MPAIApps/MmcApps/AcrApp/docs/ACR-Developer.md) |
-| **MAD** | Multimodal Anonymous Dialogue | Hold a spoken **conversation** with a Speaking Avatar; no identity, a local LLM composes the replies. | [User](MPAIApps/MmcApps/MadApp/docs/MAD-User.md) / [Developer](MPAIApps/MmcApps/MadApp/docs/MAD-Developer.md) |
-| **MAT** | Multimodal Anonymous Translation | Speak in one language; the avatar **translates** and speaks it in another. | [User](MPAIApps/MmcApps/MatApp/docs/MAT-User.md) / [Developer](MPAIApps/MmcApps/MatApp/docs/MAT-Developer.md) |
-| **MPD** | Multimodal Personal Status-based Dialogue | Converse, with the machine reading **how you sound** as well as what you say. | [User](MPAIApps/MmcApps/MpdApp/docs/MPD-User.md) / [Developer](MPAIApps/MmcApps/MpdApp/docs/MPD-Developer.md) |
-| **AMQ** | Audio-Visual Multimodal Question Answering | Show an image, ask a question, and the avatar **answers**. | [User](MPAIApps/MmcApps/AmqApp/docs/AMQ-User.md) / [Developer](MPAIApps/MmcApps/AmqApp/docs/AMQ-Developer.md) |
+**Module.** A composite AIM: a graph of AIMs, described by an **L3** file (JSON,
+in `AIMs/AMDs/`) listing its Sub-AIMs, its boundary Ports and its Topology. Each
+App runs over one Module: MAD over `1MMC-MAD-V2.5-I01`, and so on.
 
-Each presents a 3-D **Speaking Avatar** that guides the user by voice.
+**Controller.** Builds a Module's graph from its L3 and runs it. It exposes only
+the Module's boundary.
 
----
+**User Agent.** Everything on the person's side: it captures speech, text,
+pictures and the face, renders the avatar, and runs the App's **workflow** - a
+short text in the Workflow Description Language (WDL) saying what to acquire,
+what to give the Module, what to ask back and what to present.
 
+**MPAI-MAS.** The same arrangement with the User Agent across a network: the
+**Service** holds the Controller, the Modules and the models; the **client**
+(the Remote Client Application) holds the microphone, the camera, the screen
+and the avatar, and no model at all. They speak MPAI-MAS over HTTPS.
 
-### Across a network
+An App, as a client sees it, is therefore just its workflow, a name and an
+icon. The work is done by the Module on the Service.
 
-**AMQ-MAS** is AMQ run across a network: a **Service** holding the models and
-doing the work, and a **Client** holding a microphone, a screen and the avatar and
-no model at all. They speak MPAI-MAS over HTTPS.
+## What is in the repository
 
-| | Guides | Package |
-|---|---|---|
-| **AMQ-MAS** | [User](MPAIApps/MmcApps/AmqServer/docs/AMQ-MAS-User.md) / [Developer](MPAIApps/MmcApps/AmqServer/docs/AMQ-MAS-Developer.md) | [AMQ-MAS.zip](MPAIApps/MmcApps/AmqServer/AMQ-MAS.zip) |
+| Folder | What it holds |
+|---|---|
+| `AIF/` | The Controller, the Store of L3s, Shared Storage. |
+| `AIMs/` | The AIMs, their L3s (`AIMs/AMDs/`), the shared data types (`AIMs/Core/`), and the providers that build each Module's AIMs (`AIMs/Providers/`). |
+| `MW/` | Middleware: the WDL reader (`Wdl`), the workflow interpreter (`Rca`), the MPAI-MAS server and client (`MasServer`, `MasClient`), the wire form of each Data Type (`PortData`), the North API (`HciApi`). |
+| `MPAIApps/MmcApps/AmqServer/` | The **Service**. (The name is historical: it began as the AMQ server and now offers all four Apps.) |
+| `MPAIApps/RcaApp/` | The **desktop client** (Windows). |
+| `MPAIApps/RcaWeb/` | The **browser client**: `Client` (runs in the browser) and `Host` (serves it). |
+| `Apps/` | One folder per App: its workflow, `app.json` and icon. |
+| `UAs/` | The avatar (`Assets/`), the desktop avatar library (`Lib/UaKit`), and the client's own workflow, MPAI-MAS (`Orchestration/`). |
+| `schemas/` | The JSON Schemas of the MPAI Data Types. |
+| `docs/` | This guide, the User and Developer guides, model provenance. |
 
-An application and its networked client are **different applications for
-different users**, published separately. `AmqApp` runs its Module in process and
-knows nothing of MPAI-MAS; `AmqClient` drives one over the network and holds no
-Framework and no models.
+## What is not in the repository
 
-`MadServer` and `MadClient` are the same arrangement for MAD. They are in the
-repository and not yet published as a package.
+**AI models** are not distributed here. They are obtained separately, by name,
+size, SHA-256 and source, and placed under `Models/` - see
+[MAS-App - Models](docs/MAS-App-Models.md). Nor are there any credentials,
+certificates, server configurations or personal data.
 
-### The packages
+## Privacy, by design
 
-Each application is offered as a package containing it, the projects it needs, its
-Module descriptors, the schemas, the avatar assets and its guides - and nothing
-belonging to another application. No models, no gallery, no credentials.
-
-[ACR.zip](MPAIApps/MmcApps/AcrApp/ACR.zip) ·
-[MAC.zip](MPAIApps/MmcApps/MacApp/MAC.zip) ·
-[MAD.zip](MPAIApps/MmcApps/MadApp/MAD.zip) ·
-[MAT.zip](MPAIApps/MmcApps/MatApp/MAT.zip) ·
-[MPD.zip](MPAIApps/MmcApps/MpdApp/MPD.zip) ·
-[AMQ.zip](MPAIApps/MmcApps/AmqApp/AMQ.zip)
-
-Unzip anywhere, place the models under `Models\`, run the build script. Every
-package has been unzipped into an empty folder, built, and run.
-
----
-
-## Architecture
-
-### AIF in brief
-
-- **AIM (AI Module)** - a unit of processing with typed Ports. **A Port is
-  addressed by its Data Type and its Port Number**, never by its name: a Module
-  may declare two Ports of one Data Type, and a name cannot distinguish them.
-- **Module** - a *composite* AIM, defined by an **L3** descriptor (JSON, under
-  `AIMs/AMDs/`) listing its sub-AIMs, its boundary Ports and its Topology.
-- **Controller** - the runtime. Given an L3 it instantiates each sub-AIM through
-  a **provider**, wires them, and executes the graph.
-- **User Agent** - the application with its real-world edges. It acquires and
-  delivers real-world data - camera, microphone, avatar - and drives the
-  Controller. It is *not* part of the Module.
-- **Data Types and Qualifiers** - every Object carries a **Qualifier** stating
-  what its Data is: the sampling frequency, the precision, the container. An
-  Object cannot be constructed without one. Schemas are under `schemas/`.
-- **Shared Storage** - a governed store; MAC and ACR use it as the enrolment
-  gallery. The framework stamps each write with the Module and the AIM that made
-  it, and a writer cannot choose what that record says.
-
-### The pattern
-
-```
-User Agent  --drives-->  Controller  --builds & runs-->  Module (sub-AIMs)
-   |  (acquire face/voice/speech, present the avatar)          |
-   \------------------ boundary inputs / outputs --------------/
-```
-
-The User Agent's behaviour is described by a **Workflow Description** - the
-`.orch` file under `UAs/Orchestration/`.
-
-### How the applications are composed
-
-| App | Module (L3) | Leaf AIMs |
-|---|---|---|
-| MAC | `MMC-MAC-V2.5` | `PAF-FIR` (SCRFD+ArcFace), `MMC-SIR` (ECAPA), `OSD-IDR`, `PAF-RSR` |
-| ACR | `MMC-ACR-V2.5` | `PAF-EFD`, `MMC-ESD`, `PAF-RSR` |
-| MAD | `MMC-MAD-V2.5` | `MMC-ASR` (Whisper), `MMC-EDP` (LLM via Ollama), `PAF-RSR` |
-| MAT | `MMC-MAT-V2.5` | `MMC-ASR`, `MMC-TTT` (M2M100), `PAF-RSR` |
-| MPD | `MMC-MPD-V2.5` | `MMC-ASR`, `MMC-NLU`, `MMC-ESI`/`MMC-EFI`, `MMC-PSM`, `MMC-EDP`, `PAF-RSR` |
-| AMQ | `MMC-AMQ-V2.5` | `MMC-ASR`, `MMC-TIQ` (BLIP), `MMC-TTS` |
-
-`PAF-RSR` (Response and Scene Rendering) is a composite of `PAF-PSD` +
-`MMC-TTS` + `PAF-GFD`, shared by every application. Live capture uses native
-**Windows Media Capture**; audio capture and delivery use `MMC-SOA` and
-`MMC-SOD`.
-
----
-
-## Repository layout
-
-```
-AIF/            AI Framework runtime (Controller, Store, Shared Storage)
-AIMs/           AI Modules
-  AMDs/         L3 Module descriptors (JSON)
-  Core/         shared types (Data Objects, Qualifiers, JSON, paths)
-  <family>/     the AIMs (MMC, PAF, OSD, CAE3, CVE ...)
-MW/             middleware
-  HciApi/       INorthApi - the seam a User Agent is written against
-  PortData/     Port-data serialisers and schema validation
-  MasClient/    driving a Module over MPAI-MAS
-  MasServer/    serving one
-  Wdl/  Rca/    reading and executing a Workflow Description
-UAs/
-  Lib/UaKit/    Speaking-Avatar host, capture and present toolkit
-  Orchestration/  the Workflow Descriptions (.orch)
-  Assets/       avatar assets
-MPAIApps/MmcApps/{MacApp,AcrApp,MadApp,MatApp,MpdApp,AmqApp}/
-schemas/        JSON schemas of the AIF Data Types
-```
-
----
-
-## Prerequisites
-
-- **.NET 10 SDK**, Windows (the user interfaces are WPF + WebView2).
-- A **webcam** and **microphone** for MAC and ACR; a microphone for the rest.
-- For **MAD** and **MPD**: a running local **LLM via Ollama**.
-- **Model files are NOT included** (size and licensing). Each application's
-  Developer guide lists exactly what it needs.
-
-### Where models go
-
-Place models under `Models/` beside the application root. The settings in
-`AIMs/aim-settings.json` are **relative paths**, resolved against the root the
-application computes from its own location - so the folder may be placed anywhere
-and run. An absolute path still works but binds the installation to one machine.
-
----
-
-## Build and run
-
-Each application has a build script beside it:
-
-```
-MPAIApps\MmcApps\MacApp\MacAppBuild.bat
-MPAIApps\MmcApps\AcrApp\AcrAppBuild.bat
-MPAIApps\MmcApps\MadApp\MadAppBuild.bat
-MPAIApps\MmcApps\MatApp\MatAppBuild.bat
-MPAIApps\MmcApps\MpdApp\MpdAppBuild.bat
-MPAIApps\MmcApps\AmqApp\AmqAppBuild.bat
-```
-
-Each resolves its own location, builds in place, and produces its executable
-under `src\bin\Release\net10.0-windows10.0.19041.0\`.
-
-An application resolves its root - to find `AIMs/`, `Models/`, `UAs/` and
-`SharedStorage/` - from the executable's location.
-
-### One application on its own
-
-Each application is also offered as a **package**: the application, the projects
-it needs, its Module descriptors, the schemas, the avatar assets and its guides,
-and nothing belonging to another application. Unzip it anywhere, place the models
-under `Models\`, run the build script.
-
----
-
-## Models
-
-Distributed separately. The Developer guides give, for each model, the settings
-key, the file name, the size, the **SHA-256** and the source. Verify a download
-with `Get-FileHash <file> -Algorithm SHA256`.
-
-An ONNX model is often two files: a small `.onnx` holding the structure and a
-large `.onnx.data` holding the weights. Both are needed.
-
-Families used: InsightFace (SCRFD, ArcFace), SpeechBrain ECAPA-TDNN, Piper,
-whisper.cpp, BLIP, M2M100, and an Ollama-served local LLM.
-
----
-
-## Status
-
-Reference implementations demonstrating MPAI-AIF end to end. Face and speaker
-recognition quality depends on enrolment and on lighting and acoustic conditions.
-MAD and MPD require a running local LLM. Biometric galleries are user data and are
-not part of this repository.
-
----
-
-## Licence
-
-**BSD 3-Clause License** - `Copyright (c) 2026 MPAI - Moving Picture, Audio and
-Data Coding by Artificial Intelligence`. See [`LICENSE`](LICENSE).
+- **A conversation's memory belongs to the conversation.** The workflow carries
+  it from turn to turn; the Service keeps nothing between turns, and two people
+  using it at once never share a memory.
+- **Nothing a person says or shows is written to disk** unless diagnostics are
+  switched on by the person running the software (`MPAI_DIAG=1`), and then only
+  under the system's temporary folder.

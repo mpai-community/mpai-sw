@@ -1,0 +1,69 @@
+@* THE SHELL. The avatar, what she asks, the App list, the text box with its
+   Enter, and Stop - the same things the desktop RCA shows. *@
+
+<div class="rca">
+  <header>
+    <span class="title">MPAI as a Service</span>
+    <span class="service">@AppTitle</span>
+  </header>
+
+  <main>
+    <iframe id="avatar" src="avatar/cav-webview.html" allow="autoplay"></iframe>
+
+    @if (showApps)
+    {
+      <aside class="apps">
+        <h2>Apps</h2>
+        @foreach (var app in apps)
+        {
+          <button class="app" @onclick="() => ChooseApp(app.Id)">
+            @if (app.IconPath is not null) { <img src="@app.IconPath" alt="" /> }
+            <span class="name">@app.Name</span>
+            <span class="desc">@app.Description</span>
+          </button>
+        }
+      </aside>
+    }
+
+    @if (stageImage is not null)
+    {
+      <aside class="stage"><img src="@stageImage" alt="@stageTitle" /><div>@stageTitle</div></aside>
+    }
+  </main>
+
+  <p class="instruction">@Instruction</p>
+
+  @if (choosingLanguages)
+  {
+    <div class="languages">
+      <label>Input language
+        <select @bind="langFrom">@foreach (var l in Languages) { <option value="@l.Code">@l.Name</option> }</select>
+      </label>
+      <label>Output language
+        <select @bind="langTo">@foreach (var l in Languages) { <option value="@l.Code">@l.Name</option> }</select>
+      </label>
+      <button @onclick="LanguagesChosen">OK</button>
+    </div>
+  }
+
+  @if (choosingPicture)
+  {
+    <div class="picture"><InputFile OnChange="PictureChosen" accept="image/*" /></div>
+  }
+
+  <div class="row">
+    @if (!started)
+    {
+      <button class="start" @onclick="StartAsync">Start</button>
+    }
+    else
+    {
+      <button class="stop" disabled="@(!stopEnabled)" @onclick="Stop">Stop</button>
+    }
+    <textarea id="typed" rows="3" disabled="@(!typing)" @bind="typedText" @bind:event="oninput" @bind:after="OnTypedInput"
+              @onkeydown="OnTypedKey"></textarea>
+    <button class="enter" disabled="@(!typing)" @onclick="SendTyped">Enter</button>
+  </div>
+
+  <footer>@StatusLine</footer>
+</div>

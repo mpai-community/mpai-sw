@@ -18,7 +18,6 @@
        file the running application depends on, and one definition of which
        leaves MMC-AMQ has. -->
   <ItemGroup>
-    <Compile Include="..\..\AmqApp\src\AmqProvider.cs" Link="AmqProvider.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +26,7 @@
     <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
     <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.GlobalStorage\AIF.GlobalStorage.csproj" />
     <ProjectReference Include="..\..\..\..\AIMs\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\AIMs\Providers\Mpai.Providers.csproj" />
     <!-- North API -->
     <ProjectReference Include="..\..\..\..\MW\HciApi\Mpai.Hci.Api.csproj" />
     <!-- MAS -->

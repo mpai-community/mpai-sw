@@ -106,7 +106,7 @@ public sealed class SirAimProcessor : IAimProcessor
 
     private static void Sir(string m)
     {
-        try { System.IO.File.AppendAllText(@"D:\AI\sir-trace.log",
+        try { Mpai.Core.MpaiDiag.Append("sir-trace.log",
             System.DateTime.Now.ToString("HH:mm:ss.fff") + "  SIR " + m + "\n"); } catch {}
     }
 

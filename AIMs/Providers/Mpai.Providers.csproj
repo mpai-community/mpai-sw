@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A PROVIDER BELONGS TO A MODULE, NOT TO A WINDOW. How a Module's AIMs are
+       built is a fact about the Module: the same answer serves the application
+       that runs it in process and the Service that runs it for a client.
+
+       They lived inside the applications, so a Service wanting to offer three
+       Apps had to reference three WPF executables - a Service depending on its
+       clients, which is the wrong direction. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\TIQ\Mpai.Mmc.Tiq.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\EDP\Mpai.Mmc.Edp.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\TTT\Mpai.Mmc.Ttt.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\NLU\Mpai.Mmc.Nlu.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\ESI\Mpai.Mmc.Esi.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\EFI\Mpai.Mmc.Efi.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\PSM\Mpai.Mmc.Psm.csproj" />
+  </ItemGroup>
+
+</Project>

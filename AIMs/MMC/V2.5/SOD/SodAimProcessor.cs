@@ -48,7 +48,7 @@ public sealed class SodAimProcessor : IAimProcessor
         {
             MessageId   = message.MessageId,
             MessageType = "BasicSpeechObject",
-            DataType    = "OSD-SPO-V1.5",
+            DataType    = "OSD-BSO-V1.5",
             Payload     = message.Ports[_inputPort],
             Ports       = new Dictionary<string, string>
             {

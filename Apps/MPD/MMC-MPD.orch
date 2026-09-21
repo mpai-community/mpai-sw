@@ -1,0 +1,54 @@
+﻿# =============================================================================
+#  MMC-MPD.orch - MPAI Multimodal Personal Status-based Dialogue
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  One Controller, one Module. The User Agent offers the Controller data
+#  identified by Data Type and Port Number, and asks for data identified the
+#  same way. It names no AIM.
+#
+#  Each turn gives the Module the person's speech and face. The Module reads
+#  meaning and feeling from them and answers with a Personal Status of its own,
+#  which the avatar speaks and shows.
+# =============================================================================
+
+workflow MMC-MPD over 1MMC-MPD-V2.5-I01
+
+on Start:
+
+    ask Controller to start
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to the MPAI Multimodal Affective Dialogue Service."
+    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFaceDescriptors
+
+    offer Available (OSD-BTO-V1.5:1) = "The service is available. Tell me what is on your mind."
+    ask   AvailableSpeech (OSD-BSO-V1.5), AvailableFaceDescriptors (PAF-FDO-V1.6)
+    present AvailableSpeech, AvailableFaceDescriptors
+
+    offer Farewell (OSD-BTO-V1.5:1) = "Thank you for the conversation. Goodbye."
+    ask   FarewellSpeech (OSD-BSO-V1.5), FarewellFaceDescriptors (PAF-FDO-V1.6)
+
+    loop until Stop:
+
+        acquire UserSpeech (OSD-BSO-V1.5) via VAD
+             or UserText   (OSD-BTO-V1.5)
+        acquire UserFace (OSD-BVO-V1.5) = { "Attributes": { "VisualObjectType": "Face" } }
+        branch on UserText {
+            offer UserText (OSD-BTO-V1.5:2)
+        } else {
+            offer UserSpeech (OSD-BSO-V1.5)
+        }
+        offer UserFace (OSD-BVO-V1.5)
+        ask   MachineSpeech (OSD-BSO-V1.5), MachineFaceDescriptors (PAF-FDO-V1.6),
+              Memory (MMC-SUM-V2.5)
+        present MachineSpeech, MachineFaceDescriptors
+
+        # The conversation's memory goes back with the next turn and nowhere
+        # else: it starts empty with this conversation and ends with it.
+        offer Memory (MMC-SUM-V2.5)
+
+on Stop:
+
+    present FarewellSpeech, FarewellFaceDescriptors
+
+    ask Controller to stop

@@ -25,7 +25,15 @@ public sealed class EdpAimProcessor : IAimProcessor
 {
     private readonly string _instanceId;
     private readonly OllamaClient _llm;
-    private string _sessionSummary = String.Empty;   // running dialogue memory, kept INSIDE the AIM (session lifetime)
+    // THE DIALOGUE MEMORY IS NOT KEPT HERE. It arrives on the Summary input and
+    // leaves, updated, on the EditedSummary output; the workflow carries it from
+    // one turn to the next. This AIM is shared by every App and every client of a
+    // Service, so nothing one person says may stay in it: a conversation's memory
+    // belongs to that conversation, begins empty with it and ends with it.
+    //
+    // Bounded: only the last few exchanges are carried, because a small language
+    // model given a long transcript loses the thread and breaks the reply format.
+    private const int RecentExchanges = 6;
 
     private readonly string _summaryPort;    // MMC-SUM
     private readonly string _textPort;       // OSD-BTO
@@ -71,7 +79,10 @@ public sealed class EdpAimProcessor : IAimProcessor
         string userStatus = affect ? VerbalisePersonalStatus(psIn) : "";
         string userId     = ReadInstanceLabel(message, _userIdPort);
         string sceneClause = VerbaliseScene(message);
-        string summaryIn   = _sessionSummary;   // memory is internal; UA does not supply Summary
+        var memory = (Read<Summary>(message, _summaryPort)?.Text() ?? "")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList();
+        while (memory.Count > RecentExchanges * 2) memory.RemoveAt(0);
+        string summaryIn   = string.Join("\n", memory);   // the memory the workflow carried in
 
         // System prompt. EDP INPUT->OUTPUT RULE: the machine produces a Personal
         // Status ONLY when a Personal Status was provided as input. With no EPS in
@@ -126,6 +137,10 @@ public sealed class EdpAimProcessor : IAimProcessor
         {
             var (rt, emotion, attitude, _) = ParseReply(reply, userText);
             responseText = rt;
+            // What the model chose - the only place it can be seen.
+            var raw = reply.Replace('\n', ' ').Trim();
+            Console.WriteLine($"[MMC-EDP-V2.5] emotion {emotion}, attitude {attitude}; model said: " +
+                              (raw.Length > 200 ? raw[..200] + "..." : raw));
             machinePs = MachinePersonalStatus(emotion, attitude);
         }
         else
@@ -134,11 +149,11 @@ public sealed class EdpAimProcessor : IAimProcessor
         }
 
         var machineText = BasicTextObject.FromText(responseText);
-        var transcript = string.IsNullOrWhiteSpace(summaryIn)
-            ? $"User: {userText}\nCAV: {responseText}"
-            : $"{summaryIn}\nUser: {userText}\nCAV: {responseText}";
-        var editedSummary = Summary.Of(transcript);
-        _sessionSummary = transcript;   // keep memory inside the AIM for the next turn
+        // The memory goes back out with this exchange added, one line per turn.
+        memory.Add("User: " + userText.Replace('\n', ' ').Trim());
+        memory.Add("CAV: " + responseText.Replace('\n', ' ').Trim());
+        while (memory.Count > RecentExchanges * 2) memory.RemoveAt(0);
+        var editedSummary = Summary.Of(string.Join("\n", memory));
 
         var ports = new Dictionary<string, string>
         {
@@ -379,11 +394,18 @@ public sealed class EdpAimProcessor : IAimProcessor
     {
         FactorLabel emo = emotion.ToUpperInvariant() switch
         {
-            "HAPPINESS" => FactorLabel.Of("HAPPINESS", "happy", null, 0.8),
-            "SADNESS"   => FactorLabel.Of("SADNESS", "sad", null, 0.8),
-            "ANGER"     => FactorLabel.Of("ANGER", "angry", null, 0.8),
-            "FEAR"      => FactorLabel.Of("FEAR", "fearful/scared", null, 0.8),
-            "CALMNESS"  => FactorLabel.Of("CALMNESS", "calm", null, 0.8),
+            // A small model does not always use the exact word it was given: the
+            // words it uses instead for the same emotion are taken as that emotion.
+            "HAPPINESS" or "HAPPY" or "JOY" or "JOYFUL" or "EXCITED" or "EXCITEMENT" or "DELIGHTED" or "CHEERFUL"
+                        => FactorLabel.Of("HAPPINESS", "happy", null, 0.8),
+            "SADNESS" or "SAD"
+                        => FactorLabel.Of("SADNESS", "sad", null, 0.8),
+            "ANGER" or "ANGRY"
+                        => FactorLabel.Of("ANGER", "angry", null, 0.8),
+            "FEAR" or "AFRAID" or "SCARED" or "FEARFUL"
+                        => FactorLabel.Of("FEAR", "fearful/scared", null, 0.8),
+            "CALMNESS" or "CALM"
+                        => FactorLabel.Of("CALMNESS", "calm", null, 0.8),
             _           => FactorLabel.Of("CALMNESS", "calm", null, 0.5)
         };
         SocialAttitude? att = attitude.ToLowerInvariant() switch

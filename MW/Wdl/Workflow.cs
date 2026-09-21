@@ -33,13 +33,17 @@ public enum StepKind
     Give,             // ask Controller to give from M: L (T:n), ...
 
     // --- the User Agent's own ---
-    Acquire,          // acquire L (T) [via VAD]
+    Acquire,          // acquire L (T) [via VAD] [or L (T) [via VAD] ...]
     Type,             // type L (T)
     Prompt,           // prompt "..."
     Display,          // display L
     Present,          // present L [, L...]
     Wait,             // wait 1s
     Set,              // set V = ...
+    Await,            // await "Ask"  - show a button and wait for it
+    EndLoop,          // end  - leave the enclosing loop
+    Say,              // say (T:n) "..." give (T), (T) - words in, speech and face out
+    Run,              // run L  - obtain the App named by that datum and run it
     Loop,             // loop until Stop:
     Branch            // branch on V { ... } else { ... }
 }
@@ -57,8 +61,29 @@ public sealed class Step
     public string?  Value         { get; init; }   // Set
     public TimeSpan Duration      { get; init; }   // Wait
     public bool     ViaVad        { get; init; }   // Acquire
+
+    // WHAT IS WANTED, NOT WHERE IT COMES FROM. A workflow names a Qualifier -
+    // 'as image/png' - and never a device. Two Visual Objects may be a webcam
+    // frame and a file chosen from disk; the Data Type cannot tell them apart
+    // because the difference is not in the data, and the Qualifier can.
+    //
+    // A client holding no source that produces the named Qualifier refuses the
+    // step and says what it does have, so that an App can be corrected rather
+    // than guessed at. Unstated, and with more than one possible, the client
+    // asks the person.
+    public string?  Qualifier     { get; init; }   // Acquire, Type
+
+    // A BRANCH MAY TEST WHAT WAS SAID. A Boolean means one thing and is the
+    // better test; but a person answering yes or no gives words, and an App that
+    // asks a question must be able to read the answer.
+    public string?  Contains      { get; init; }   // Branch
     public IReadOnlyList<Step> Body { get; init; } = Array.Empty<Step>();  // Loop, Branch
     public IReadOnlyList<Step> Else { get; init; } = Array.Empty<Step>();  // Branch
+
+    // Acquire with 'or': every alternative, the first one included. The User Agent
+    // waits for all of them at once and keeps the first to arrive; the others are
+    // abandoned and their labels hold nothing.
+    public IReadOnlyList<Step> Alternatives { get; init; } = Array.Empty<Step>();
     public int      Line          { get; init; }   // so a message can name the place
 
     public bool IsControllerRequest => Kind is

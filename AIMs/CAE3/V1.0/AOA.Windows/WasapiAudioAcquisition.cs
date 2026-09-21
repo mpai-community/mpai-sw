@@ -180,8 +180,13 @@ public sealed class WasapiAudioAcquisition : IAudioAcquisitionAim, IStartStopAcq
             }
 
             var capabilities = WaveInEvent.GetCapabilities(0);
-            Console.WriteLine($"[AOA] recording from '{capabilities.ProductName}'" +
-                              $" ({WaveInEvent.DeviceCount} device(s) available)");
+            var all = string.Join(", ", Enumerable.Range(0, WaveInEvent.DeviceCount)
+                .Select(i => $"{i}={WaveInEvent.GetCapabilities(i).ProductName}"));
+            var said = $"[AOA] recording from '{capabilities.ProductName}'" +
+                       $" ({WaveInEvent.DeviceCount} available: {all})";
+            Console.WriteLine(said);
+            try { Mpai.Core.MpaiDiag.Append("hci-diag.log",
+                 System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + said + "\n"); } catch { }
         }
         catch (Exception failure)
         {

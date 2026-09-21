@@ -57,5 +57,7 @@ _removed/
 *.hangbak
 *.northbak
 
-# built in place, never published as an artefact
-MPAIApps/MmcApps/*/*.exe
+*.zip
+
+# backups made by the Apply/Prepare scripts
+_backup-*/

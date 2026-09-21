@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mpai.Rca;
@@ -25,21 +27,43 @@ public sealed class DeviceRegistry
     // Gets a datum of this Data Type from the real world. The flag is the
     // workflow's "via VAD": wait for the speaker to stop, rather than for a fixed
     // interval or a button.
-    public delegate Task<string?> Acquire(bool viaVad);
+    // THE REQUEST IS A QUALIFIER, AND THE SOURCE ANSWERS IT. The User Agent says
+    // what it wants by writing the Qualifier fields it cares about; the source
+    // returns the Object it made, or - when it cannot make that - an Object with
+    // no data and a Qualifier saying what it does have. The User Agent then
+    // decides: abandon, or ask again naming what was offered.
+    //
+    // A Qualifier describes. It never chooses: the source reads the request and
+    // answers it, and nothing here matches one against another.
+    public delegate Task<string?> Acquire(bool viaVad, string? wanted);
+
+    // THE SAME, FOR A SOURCE THAT CAN BE ABANDONED. When a workflow waits for
+    // speech or typed text, whichever comes first, the one that did not come is
+    // told so and returns nothing; a source that cannot be told simply finishes
+    // later, and what it brings is dropped.
+    public delegate Task<string?> AcquireUntil(bool viaVad, string? wanted, CancellationToken abandon);
 
     // Renders a datum of this Data Type. Several may be presented together - an
     // OSD-BSO and a PAF-FDO are one utterance, not two - so a presenter receives
     // everything being presented at once and takes what it recognises.
     public delegate Task Present(IReadOnlyDictionary<string, string> byDataType);
 
-    private readonly Dictionary<string, Acquire> acquirers =
+    private readonly Dictionary<string, AcquireUntil> sources =
         new(StringComparer.OrdinalIgnoreCase);
 
     private readonly List<(string Name, Present Render)> presenters = new();
 
+    // ONE SOURCE PER DATA TYPE. Which device serves a Data Type is the User
+    // Agent's own business; the request that reaches it says what is wanted.
     public DeviceRegistry RegisterAcquire(string dataType, Acquire how)
     {
-        acquirers[dataType] = how;
+        sources[dataType] = (viaVad, wanted, _) => how(viaVad, wanted);
+        return this;
+    }
+
+    public DeviceRegistry RegisterAcquire(string dataType, AcquireUntil how)
+    {
+        sources[dataType] = how;
         return this;
     }
 
@@ -52,14 +76,28 @@ public sealed class DeviceRegistry
         return this;
     }
 
-    public bool CanAcquire(string dataType) => acquirers.ContainsKey(dataType);
+    public bool CanAcquire(string dataType) => sources.ContainsKey(dataType);
 
-    public Task<string?> AcquireAsync(string dataType, bool viaVad) =>
-        acquirers.TryGetValue(dataType, out var how)
-            ? how(viaVad)
-            : throw new NotSupportedException(
-                  $"Nothing in this Remote Client Application acquires a {dataType}. " +
-                  "A workflow may only ask for what the client can get.");
+    // ASKED WHEN THE WORKFLOW DID NOT SAY AND MORE THAN ONE IS POSSIBLE. The
+    // client puts the choice to the person; a client that cannot ask uses the
+    // first it has.
+    public Func<string, IReadOnlyList<string>, Task<string?>>? Ask { get; set; }
+
+    // WAITING FOR THE PERSON. The word is the App's and the client shows it on a
+    // button; a client that cannot wait proceeds, which is what a console does.
+    public Func<string, Task>? Await { get; set; }
+
+    // RUNNING AN APP. The User Agent obtains the Workflow Description of the
+    // Application named, gives it a Controller of its own, interprets it, and
+    // returns when it ends. Nothing of that is the interpreter's business, which
+    // is why it is asked for rather than done here.
+    public Func<string, Task>? Run { get; set; }
+
+    public Task<string?> AcquireAsync(string dataType, bool viaVad, string? wanted = null,
+                                      CancellationToken abandon = default) =>
+        sources.TryGetValue(dataType, out var how)
+            ? how(viaVad, wanted, abandon)
+            : throw new NotSupportedException($"This client acquires no {dataType}.");
 
     public async Task PresentAsync(IReadOnlyDictionary<string, string> byDataType)
     {
@@ -67,5 +105,5 @@ public sealed class DeviceRegistry
             await render(byDataType);
     }
 
-    public IReadOnlyCollection<string> KnownAcquisitions => acquirers.Keys;
+    public IReadOnlyCollection<string> KnownAcquisitions => sources.Keys;
 }

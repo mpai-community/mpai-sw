@@ -1,11 +1,13 @@
-{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-ASR-V2.5-I01", "AIMName": "MMC-ASR-V2.5" },
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-ASR-V2.5-I01", "AIMName": "1MMC-ASR-V2.5-I01" },
 
   "APIProfile":       "Basic",
-  "Description":      "Automatic Speech Recognition: receives a Basic Speech Object and its Speech Time and returns the recognised text as a Basic Text Object.",
+  "Description":      "Automatic Speech Recognition: receives a Basic Speech Object and its Speech Time and Speech arrives on one of two Ports and the text leaves on the matching one: Port 1 is a question about an image, Port 2 a reply to something the User Agent asked. The Port the speech arrives on says which it is, so nothing downstream has to infer it from what happens to be missing.",
 
-  "ExternalPorts":    [{"Name": "InputSpeech",     "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "InputSpeechTime", "Direction": "Input",  "DataType": "OSD-STM-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "OutputText",      "Direction": "Output", "DataType": "OSD-BTO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+  "ExternalPorts":    [{"Name": "ImageSpeech",    "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "PortNumber": 1, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "ResponseSpeech", "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "PortNumber": 2, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "InputSpeechTime", "Direction": "Input",  "DataType": "OSD-STM-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "UserTextQuestion", "Direction": "Output", "DataType": "OSD-BTO-V1.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextQuestion",     "Direction": "Output", "DataType": "OSD-BTO-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
   "SubAIMs":          [],
 

@@ -23,7 +23,7 @@ public sealed class WorkflowReader
     }
 
     private static readonly Regex Header =
-        new(@"^workflow\s+(?<name>\S+)\s+over\s+(?<modules>.+)$", RegexOptions.Compiled);
+        new(@"^workflow\s+(?<name>\S+)\s+over\s+(?<modules>\S+)\s*$", RegexOptions.Compiled);
 
     private static readonly Regex Ask =
         new(@"^ask\s+Controller\s+to\s+(?<verb>start|stop|pause|resume|take|give)\b\s*(?<rest>.*)$",
@@ -96,19 +96,36 @@ public sealed class WorkflowReader
 
         if (line.StartsWith("branch ", StringComparison.OrdinalIgnoreCase))
         {
-            // branch on <name> {
-            var m = Regex.Match(line, @"^branch\s+on\s+(?<v>[A-Za-z_][\w]*)\s*\{?\s*$",
-                                RegexOptions.IgnoreCase);
+            // branch on <name> {                     - tests a Boolean
+            // branch on <name> contains "<text>" {   - tests what was said
+            //
+            // A Boolean means one thing and is the better test. But a person asked a
+            // question answers in words, and an App that asks must be able to read
+            // the answer.
+            var m = Regex.Match(line,
+                @"^branch\s+on\s+(?<v>[A-Za-z_][\w]*)" +
+                @"(\s+contains\s+""(?<c>[^""]*)"")?\s*\{?\s*$",
+                RegexOptions.IgnoreCase);
             if (!m.Success)
-                throw new WorkflowSyntaxError(here.Line, "'branch' expects 'branch on <name> {'.");
+                throw new WorkflowSyntaxError(here.Line,
+                    "'branch' expects 'branch on <name> {' or 'branch on <name> contains \"<text>\" {'.");
             i++;
             var body = ReadBraced(lines, ref i, out var hasElse);
             var alt  = hasElse ? ReadBraced(lines, ref i, out _) : new List<Step>();
             return new Step { Kind = StepKind.Branch, Variable = m.Groups["v"].Value,
+                              Contains = m.Groups["c"].Success ? m.Groups["c"].Value : null,
                               Body = body, Else = alt, Line = here.Line };
         }
 
         i++;
+
+        // TWO THINGS BEGIN WITH 'ask'. 'ask Controller to ...' is a request of the
+        // Controller and is read as such; anything else beginning 'ask' is the User
+        // Agent asking for data by Data Type and Port Number.
+        if (line.StartsWith("ask ", StringComparison.OrdinalIgnoreCase) &&
+            !Regex.IsMatch(line, @"^ask\s+Controller\b", RegexOptions.IgnoreCase))
+            return ReadStep(here.Line, "askfor " + line.Substring(4).Trim());
+
         return ReadStep(here.Line, line);
     }
 
@@ -159,13 +176,74 @@ public sealed class WorkflowReader
         {
             case "acquire":
             {
-                var viaVad = rest.EndsWith("via VAD", StringComparison.OrdinalIgnoreCase);
-                if (viaVad) rest = rest.Substring(0, rest.Length - "via VAD".Length).Trim();
-                return new Step { Kind = StepKind.Acquire, Port = ReadDatum(n, rest).Port,
-                                  ViaVad = viaVad, Line = n };
+                // WHICHEVER COMES FIRST. 'or' names alternatives - speech or typed
+                // text, say - that the User Agent waits for together; the first to
+                // arrive is kept, and a 'branch on <label>' then follows the path
+                // it opened:
+                //
+                //     acquire UserSpeech (OSD-BSO-V1.5) via VAD or UserText (OSD-BTO-V1.5)
+                //     branch on UserText { ... } else { ... }
+                var parts = SplitAlternatives(rest);
+                if (parts.Count > 1)
+                {
+                    var alternatives = parts.Select(p => ReadAcquire(n, p)).ToList();
+                    var first = alternatives[0];
+                    return new Step { Kind = StepKind.Acquire, Port = first.Port, ViaVad = first.ViaVad,
+                                      Qualifier = first.Qualifier, Alternatives = alternatives, Line = n };
+                }
+                return ReadAcquire(n, rest);
             }
             case "type":
                 return new Step { Kind = StepKind.Type, Port = ReadDatum(n, rest).Port, Line = n };
+
+
+            // A STEP THAT WAITS FOR THE PERSON. The word is the App's, and the
+            // client shows it on a button: an App decides what a person is invited
+            // to do, because only the App knows what is about to happen.
+            // LEAVE THE ENCLOSING LOOP. A conversation a person has ended should
+            // not go round again.
+            case "end":
+                return new Step { Kind = StepKind.EndLoop, Line = n };
+
+            // WHAT IS SAID TO A PERSON IS A STEP. The words go in at the Port the
+            // Module declares for them; the Speech Object and the Face Descriptors
+            // come back, and the User Agent renders them through the physical
+            // layer it owns - it cannot render what it has not received, which is
+            // why both sides are named.
+            //
+            //     say (OSD-BTO-V1.5:1) "Select a picture."
+            //         give (OSD-BSO-V1.5), (PAF-FDO-V1.6)
+            //
+            // The step ends when she has finished speaking.
+            case "say":
+            {
+                int at = rest.IndexOf(" give ", StringComparison.OrdinalIgnoreCase);
+                if (at < 0) throw new WorkflowSyntaxError(n, "'say' expects words then 'give'.");
+
+                var head = rest.Substring(0, at).Trim();
+                var tail = rest.Substring(at + 6).Trim();
+
+                var m = Regex.Match(head, @"^\(\s*(?<type>[^):]+?)\s*(?::\s*(?<pn>\d+)\s*)?\)\s*(?<lit>.*)$");
+                if (!m.Success) throw new WorkflowSyntaxError(n, "'say' expects a Data Type then the words.");
+
+                var inPort = new PortRef("", m.Groups["type"].Value.Trim(),
+                    m.Groups["pn"].Success ? int.Parse(m.Groups["pn"].Value) : 1);
+
+                var outs = SplitData(tail).Select(one =>
+                {
+                    var g2 = Regex.Match(one.Trim(), @"^\(\s*(?<type>[^):]+?)\s*(?::\s*(?<pn>\d+)\s*)?\)$");
+                    if (!g2.Success) throw new WorkflowSyntaxError(n, "'say' expects '(<type>[:n])' after give.");
+                    return new PortRef("", g2.Groups["type"].Value.Trim(),
+                        g2.Groups["pn"].Success ? int.Parse(g2.Groups["pn"].Value) : 1);
+                }).ToList();
+                if (outs.Count == 0) throw new WorkflowSyntaxError(n, "'say' names nothing to give back.");
+
+                return new Step { Kind = StepKind.Say, Port = inPort, Ports = outs,
+                                  Literal = Unquote(m.Groups["lit"].Value.Trim()), Line = n };
+            }
+
+            case "await":
+                return new Step { Kind = StepKind.Await, Text = Unquote(rest), Line = n };
 
             case "prompt":
                 return new Step { Kind = StepKind.Prompt, Text = Unquote(rest), Line = n };
@@ -187,6 +265,31 @@ public sealed class WorkflowReader
                                   Variable = rest.Substring(0, eq).Trim(),
                                   Value = Unquote(rest.Substring(eq + 1).Trim()), Line = n };
             }
+            // OFFER AND ASK. The User Agent offers the Controller data identified
+            // by Data Type and Port Number, and asks for data identified the same
+            // way. One Module under a Controller, so nothing names it.
+            // A WORKFLOW MAY RUN AN APP. The datum names an Application; the User
+            // Agent obtains that Application's Workflow Description, gives it a
+            // Controller of its own, interprets it, and returns here when it ends.
+            //
+            // This is neither a request of the Controller nor an act upon the real
+            // world: it directs the User Agent itself, as loop, branch and end do.
+            case "run":
+                return new Step { Kind = StepKind.Run, Labels = Names(rest), Line = n };
+
+            case "offer":
+            {
+                var od = ReadDatum(n, rest);
+                return new Step { Kind = StepKind.Take, Port = od.Port, Literal = od.Literal, Line = n };
+            }
+
+            case "askfor":
+            {
+                var wanted = SplitData(rest).Select(d => ReadDatum(n, d).Port).ToList();
+                if (wanted.Count == 0) throw new WorkflowSyntaxError(n, "'ask' names no datum.");
+                return new Step { Kind = StepKind.Give, Ports = wanted, Line = n };
+            }
+
             default:
                 throw new WorkflowSyntaxError(n, "'" + verb + "' is not a step of this notation.");
         }
@@ -195,34 +298,34 @@ public sealed class WorkflowReader
     {
         switch (verb)
         {
-            case "start":  return new Step { Kind = StepKind.StartModule,  Module = rest, Line = n };
-            case "stop":   return new Step { Kind = StepKind.StopModule,   Module = rest, Line = n };
-            case "pause":  return new Step { Kind = StepKind.PauseModule,  Module = rest, Line = n };
-            case "resume": return new Step { Kind = StepKind.ResumeModule, Module = rest, Line = n };
+            // start, stop, pause, resume take no argument: one Controller, one Module.
+            case "start":  return new Step { Kind = StepKind.StartModule,  Line = n };
+            case "stop":   return new Step { Kind = StepKind.StopModule,   Line = n };
+            case "pause":  return new Step { Kind = StepKind.PauseModule,  Line = n };
+            case "resume": return new Step { Kind = StepKind.ResumeModule, Line = n };
 
+            // OFFER AND ASK. The User Agent offers the Controller data identified
+            // by Data Type and Port Number, and asks for data identified the same
+            // way. One Module under a Controller, so nothing names it.
             case "take":
             {
-                // <datum> for <Module>
-                int at = rest.LastIndexOf(" for ", StringComparison.Ordinal);
-                if (at < 0) throw new WorkflowSyntaxError(n, "'take' expects '<datum> for <Module>'.");
-                var d = ReadDatum(n, rest.Substring(0, at).Trim());
-                return new Step { Kind = StepKind.Take, Port = d.Port, Literal = d.Literal,
-                                  Module = rest.Substring(at + 5).Trim(), Line = n };
+                // <datum>. There is one Module under a Controller, so there is
+                // nothing to name: the User Agent gives data identified by Data Type
+                // and the Controller routes it.
+                var d = ReadDatum(n, rest);
+                return new Step { Kind = StepKind.Take, Port = d.Port, Literal = d.Literal, Line = n };
             }
 
             case "give":
             {
-                // from <Module>: <datum>, <datum>, ...
-                if (!rest.StartsWith("from ", StringComparison.OrdinalIgnoreCase))
-                    throw new WorkflowSyntaxError(n, "'give' expects 'from <Module>: <datum>[, <datum>...]'.");
+                // : <datum>, <datum>, ... The Module is not named.
                 int colon = rest.IndexOf(':');
-                if (colon < 0) throw new WorkflowSyntaxError(n, "'give' expects a ':' after the Module.");
+                if (colon < 0) throw new WorkflowSyntaxError(n, "'give' expects ': <datum>[, <datum>...]'.");
 
-                var module = rest.Substring(5, colon - 5).Trim();
                 var ports  = SplitData(rest.Substring(colon + 1))
                              .Select(d => ReadDatum(n, d).Port).ToList();
                 if (ports.Count == 0) throw new WorkflowSyntaxError(n, "'give' names no datum.");
-                return new Step { Kind = StepKind.Give, Module = module, Ports = ports, Line = n };
+                return new Step { Kind = StepKind.Give, Ports = ports, Line = n };
             }
             default:
                 throw new WorkflowSyntaxError(n, "the Controller is not asked to '" + verb + "'.");
@@ -274,10 +377,68 @@ public sealed class WorkflowReader
         return joined;
     }
 
+    // One acquisition: its datum, whether it waits for the speaker to stop, and
+    // the Qualifier of what is wanted.
+    private Step ReadAcquire(int n, string rest)
+    {
+        rest = rest.Trim();
+        var viaVad = rest.EndsWith("via VAD", StringComparison.OrdinalIgnoreCase);
+        if (viaVad) rest = rest.Substring(0, rest.Length - "via VAD".Length).Trim();
+
+        // THE REQUEST CARRIES A QUALIFIER. A Qualifier describes; it does not
+        // choose. The User Agent says what it wants - a format, a capture
+        // device, whatever the Qualifier can express - by writing the fields
+        // it cares about and leaving the rest absent.
+        //
+        //     acquire Picture (OSD-BVO-V1.5) = {
+        //         "Formats": { "Content": { "2D": { "Static": "JPEG" } } }
+        //     }
+        //
+        // It is the Qualifier's own JSON, carried through untouched, so a
+        // field added to the Qualifier tomorrow can be asked for without a
+        // change to this notation.
+        string? qualifier = null;
+        var brace = rest.IndexOf('{');
+        if (brace > 0 && rest.LastIndexOf('=', brace) > 0)
+        {
+            qualifier = rest.Substring(brace).Trim();
+            rest      = rest.Substring(0, rest.LastIndexOf('=', brace)).Trim();
+        }
+
+        return new Step { Kind = StepKind.Acquire, Port = ReadDatum(n, rest).Port,
+                          ViaVad = viaVad, Qualifier = qualifier, Line = n };
+    }
+
+    // 'or' separates alternatives, except inside quotes or a Qualifier's braces.
+    private static List<string> SplitAlternatives(string rest)
+    {
+        var parts = new List<string>();
+        int depth = 0, start = 0;
+        bool quoted = false;
+        for (int i = 0; i < rest.Length; i++)
+        {
+            char c = rest[i];
+            if (c == '"') quoted = !quoted;
+            else if (!quoted && c == '{') depth++;
+            else if (!quoted && c == '}') depth--;
+            else if (!quoted && depth == 0 && i + 4 <= rest.Length &&
+                     char.IsWhiteSpace(c) &&
+                     string.Compare(rest, i + 1, "or", 0, 2, StringComparison.OrdinalIgnoreCase) == 0 &&
+                     i + 3 < rest.Length && char.IsWhiteSpace(rest[i + 3]))
+            {
+                parts.Add(rest.Substring(start, i - start).Trim());
+                start = i + 4;
+                i += 3;
+            }
+        }
+        parts.Add(rest.Substring(start).Trim());
+        return parts;
+    }
+
     private static readonly string[] Starters =
     {
         "workflow ", "on Start:", "on Stop:", "ask ", "acquire ", "type ", "prompt ",
-        "display ", "present ", "wait ", "set ", "loop ", "branch "
+        "display ", "present ", "wait ", "set ", "loop ", "branch ", "await ", "end", "say ", "offer ", "ask ", "run ", "run "
     };
 
     // A brace stands on its own: it closes a block and is not a continuation

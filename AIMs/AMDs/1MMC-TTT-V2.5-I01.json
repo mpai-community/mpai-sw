@@ -1,4 +1,4 @@
-{ "Identifier":           {"ImplementerID": "MPAI", "ImplementationID": "MMC-TTT-V2.5-I01", "AIMName": "MMC-TTT-V2.5"},
+{ "Identifier":           {"ImplementerID": "1", "ImplementationID": "MMC-TTT-V2.5-I01", "AIMName": "1MMC-TTT-V2.5-I01"},
 
   "APIProfile":           "Basic",
   "Description":          "Text-to-Text Translation. Translates Input Text or Recognised Text into the language named by the Language Selector. Two OSD-BTO-V1.5 text input ports, told apart by PortNumber; when both carry data the Media Selector decides which is translated.",

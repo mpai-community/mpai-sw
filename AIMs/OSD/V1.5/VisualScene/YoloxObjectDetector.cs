@@ -20,7 +20,7 @@ namespace Mpai.Osd.VisualScene;
 //  the 80 COCO categories (person, car, bicycle, ...). Identifying WHICH car or
 //  WHOSE face is downstream work; this only says "a car is here".
 //
-//  Model: yolox_s.onnx (Apache-2.0, Megvii YOLOX), staged under D:\AI\Models\.
+//  Model: yolox_s.onnx (Apache-2.0, Megvii YOLOX), staged under Models\.
 //  ONNX Runtime + ImageSharp, matching the ScrfdFaceDetector pattern exactly.
 //
 //  NOT COMPILE-VERIFIED and NOT RUN here. Two parts are the standard places a

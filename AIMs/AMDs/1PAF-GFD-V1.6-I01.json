@@ -1,10 +1,10 @@
-{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-GFD-V1.6-I01", "AIMName": "PAF-GFD-V1.6"},
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-GFD-V1.6-I01", "AIMName": "1PAF-GFD-V1.6-I01"},
 
   "APIProfile":       "Basic",
   "Description":      "Generative Face Description: produces the Machine Face Descriptors from the Text and the Machine Speech, and optionally a Face Personal Status for expression; when the Face Personal Status is absent the face carries visemes with a neutral expression.",
 
   "ExternalPorts":    [{"Name": "FacePersonalStatus",      "Direction": "Input",  "DataType": "MMC-FPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "TextObject",              "Direction": "Input",  "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"],   "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextObject",              "Direction": "Input",  "DataType": "OSD-BTO-V1.5",   "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "MachineSpeech",           "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
                        {"Name": "MachineFaceDescriptors",  "Direction": "Output", "DataType": "PAF-FDO-V1.6",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
 

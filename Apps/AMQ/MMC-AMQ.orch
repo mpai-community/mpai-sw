@@ -1,0 +1,85 @@
+# =============================================================================
+#  MMC-AMQ.orch - MPAI Picture Question Answering Service
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  One Controller, one Module. The User Agent offers the Controller data
+#  identified by Data Type and Port Number, and asks for data identified the
+#  same way. It names no AIM.
+#
+#  A step completes before the next begins.
+# =============================================================================
+
+workflow MMC-AMQ over 1MMC-AMQ-V2.5-I01
+
+on Start:
+
+    ask Controller to start
+
+    # --- the welcome, in two parts with a pause between them ---
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to the MPAI Picture Question
+        Answering Service."
+    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFaceDescriptors
+
+    wait 1s
+
+    offer Invitation (OSD-BTO-V1.5:1) = "Do you want to ask a question about a
+        picture?"
+    ask   InvitationSpeech (OSD-BSO-V1.5), InvitationFaceDescriptors (PAF-FDO-V1.6)
+    present InvitationSpeech, InvitationFaceDescriptors
+
+    # --- what the person answers decides what follows ---
+
+    loop until Stop:
+
+        # spoken, it goes to the Module to be recognised; typed, it is already text
+        acquire Reply (OSD-BSO-V1.5) via VAD
+             or ReplyText (OSD-BTO-V1.5)
+        branch on Reply {
+            offer Reply (OSD-BSO-V1.5:2)
+            ask   ReplyText (OSD-BTO-V1.5:2)
+        }
+
+        branch on ReplyText contains "yes" {
+
+            offer Choose (OSD-BTO-V1.5:1) = "Please select a picture."
+            ask   ChooseSpeech (OSD-BSO-V1.5), ChooseFaceDescriptors (PAF-FDO-V1.6)
+            present ChooseSpeech, ChooseFaceDescriptors
+
+            acquire Picture (OSD-BVO-V1.5) = { "Formats": { "Content": { "2D": { "Static": "JPEG" } } } }
+            present Picture
+
+            acquire UserQuestion (OSD-BSO-V1.5) via VAD
+                 or TypedQuestion (OSD-BTO-V1.5)
+
+            offer Picture (OSD-BVO-V1.5)
+            branch on TypedQuestion {
+                offer TypedQuestion (OSD-BTO-V1.5:2)
+            } else {
+                offer UserQuestion (OSD-BSO-V1.5:1)
+            }
+            ask   Answer                 (OSD-BTO-V1.5:1),
+                  MachineSpeech          (OSD-BSO-V1.5),
+                  MachineFaceDescriptors (PAF-FDO-V1.6)
+            present MachineSpeech, MachineFaceDescriptors
+            display Answer
+
+            wait 2s
+
+            offer Again (OSD-BTO-V1.5:1) = "Do you want to ask a question about
+                another picture?"
+            ask   AgainSpeech (OSD-BSO-V1.5), AgainFaceDescriptors (PAF-FDO-V1.6)
+            present AgainSpeech, AgainFaceDescriptors
+
+        } else {
+
+            offer Farewell (OSD-BTO-V1.5:1) = "Maybe another time."
+            ask   FarewellSpeech (OSD-BSO-V1.5), FarewellFaceDescriptors (PAF-FDO-V1.6)
+            present FarewellSpeech, FarewellFaceDescriptors
+            end
+
+        }
+
+on Stop:
+    ask Controller to stop

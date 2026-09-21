@@ -1,10 +1,10 @@
-{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-SOA-V2.5-I01", "AIMName": "MMC-SOA-V2.5" },
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-SOA-V2.5-I01", "AIMName": "1MMC-SOA-V2.5-I01" },
 
   "APIProfile":       "Basic",
   "Description":      "Speech Object Acquisition: acquires a Basic Speech Object from a device (microphone, network, disk).",
 
-  "ExternalPorts":    [{"Name": "InputSpeech",  "Direction": "Input",  "DataType": "OSD-SPO-V1.5", "Technology": "Hardware", "Protocol": "", "IsRemote": false},
-                       {"Name": "OutputSpeech", "Direction": "Output", "DataType": "OSD-SPO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+  "ExternalPorts":    [{"Name": "InputSpeech",  "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Hardware", "Protocol": "", "IsRemote": false},
+                       {"Name": "OutputSpeech", "Direction": "Output", "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
   "SubAIMs":          [],
 

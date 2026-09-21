@@ -39,10 +39,10 @@ public sealed class TiqAimProcessor : IAimProcessor
         var question    = MpaiJson.FromJson<BasicTextObject>(message.Ports[_textInputPort]);
         var imageJson   = message.Ports[_visualInputPort];
         var image       = MpaiJson.FromJson<BasicVisualObject>(imageJson);
-        try { /*AMQTRACE_TIQ_IN*/ System.IO.Directory.CreateDirectory(@"C:\Users\Leonardo\Downloads\amq-trace"); System.IO.File.WriteAllText(@"C:\Users\Leonardo\Downloads\amq-trace\5_TIQ_in_question.txt", question?.GetText() ?? "(null)"); if(image?.Data?.Length>0) System.IO.File.WriteAllBytes(@"C:\Users\Leonardo\Downloads\amq-trace\5_TIQ_in_image.bin", image.Data); System.IO.File.AppendAllText(@"C:\Users\Leonardo\Downloads\amq-trace\trace.log","TIQ in: q=["+(question?.GetText()??"null")+"] imgBytes="+(image?.Data?.Length ?? -1)+System.Environment.NewLine); } catch {}
+        try { /*AMQTRACE_TIQ_IN*/ Mpai.Core.MpaiDiag.WriteText("5_TIQ_in_question.txt", question?.GetText() ?? "(null)"); if(image?.Data?.Length>0) Mpai.Core.MpaiDiag.WriteBytes("5_TIQ_in_image.bin", image.Data); Mpai.Core.MpaiDiag.Append("trace.log","TIQ in: q=["+(question?.GetText()??"null")+"] imgBytes="+(image?.Data?.Length ?? -1)+System.Environment.NewLine); } catch {}
         var answer      = await _tiq.ProcessAsync(question, image);
         var answerJson  = MpaiJson.ToJson(answer);
-        try { /*AMQTRACE_TIQ_OUT*/ System.IO.File.WriteAllText(@"C:\Users\Leonardo\Downloads\amq-trace\6_TIQ_out_answer.txt", answer?.GetText() ?? "(null)"); System.IO.File.AppendAllText(@"C:\Users\Leonardo\Downloads\amq-trace\trace.log","TIQ out: ["+(answer?.GetText()??"null")+"]"+System.Environment.NewLine); } catch {}
+        try { /*AMQTRACE_TIQ_OUT*/ Mpai.Core.MpaiDiag.WriteText("6_TIQ_out_answer.txt", answer?.GetText() ?? "(null)"); Mpai.Core.MpaiDiag.Append("trace.log","TIQ out: ["+(answer?.GetText()??"null")+"]"+System.Environment.NewLine); } catch {}
 
         return new Message
         {

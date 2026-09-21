@@ -19,7 +19,7 @@ namespace Mpai.Osd.VisualScene;
 //  whose face it is; that is FIR's job downstream.
 //
 //  Model: scrfd_10g_bnkps.onnx (Apache-2.0, from fal/AuraFace-v1), staged under
-//  D:\AI\Models\. ONNX Runtime + ImageSharp, matching the TIQ/BLIP pattern.
+//  Models\. ONNX Runtime + ImageSharp, matching the TIQ/BLIP pattern.
 //
 //  NOT COMPILE-VERIFIED and NOT RUN here. The post-processing (anchor decode
 //  across strides 8/16/32 + NMS) is written to the standard SCRFD-bnkps output

@@ -1,0 +1,33 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/Selector.json",
+  "title":                    "Selector V1.5",
+  "description":              "Selector for languages, media type, and  switches.",
+  "type":                     "object",
+  "required":                 ["Header"],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "OSD-SEL-V1.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "SelectorID":             { "type": "string" },
+    "SelectorSpaceTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "Language":               { "type": "object", "required": ["InputLanguage", "OutputLanguage"], "additionalProperties": false, "properties": {
+      "InputLanguage":        { "type": "string", "minLength": 2, "maxLength": 3 },
+      "OutputLanguage":       { "type": "string", "minLength": 2, "maxLength": 3 } } },
+
+    "InputMedia":             { "type": "string", "enum": ["Text", "Speech"] },
+
+    "OutputMedia":             { "type": "string", "enum": ["", "Speech"] },
+
+    "MediaOrDescriptors":     { "type": "object", "additionalProperties": false, "properties": {
+      "Text":                 { "type": "string", "enum": ["Text", "TextDescriptors"] },
+      "Speech":               { "type": "string", "enum": ["Speech", "SpeechDescriptors"] },
+      "Face":                 { "type": "string", "enum": ["Face", "FaceDescriptors"] },
+      "Gesture":              { "type": "string", "enum": ["Gesture", "GestureDescriptors"] },
+      "View":                 { "type": "string", "enum": ["Avatar", "Scene"] } } },
+
+    "SpeechDescriptors":      { "type": "boolean" },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

@@ -56,7 +56,7 @@ public sealed class UserAgent
         public SuspendedExecution? Suspended { get; set; }
     }
 
-    // â”€â”€ 3.1 General: initialise / destroy the Controller â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- 3.1 General: initialise / destroy the Controller ---------------------
 
     // MPAI_AIFU_Controller_Initialize
     public AifError MPAI_AIFU_Controller_Initialize()
@@ -76,7 +76,30 @@ public sealed class UserAgent
         return AifError.OK;
     }
 
-    // â”€â”€ 3.2 Start/Pause/Resume/Stop the Module (composite AIM) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- 3.2 Start/Pause/Resume/Stop the Module (composite AIM) ------------------
+
+    private readonly Dictionary<string, IAimProcessor> _retained = new();
+
+    private sealed class Retaining : IAimProvider
+    {
+        private readonly IAimProvider inner;
+        private readonly Dictionary<string, IAimProcessor> kept;
+
+        public Retaining(IAimProvider inner, Dictionary<string, IAimProcessor> kept)
+        { this.inner = inner; this.kept = kept; }
+
+        public bool CanCreate(string aimName) => inner.CanCreate(aimName);
+
+        public IAimProcessor Create(string aimName,
+            IReadOnlyDictionary<string, string> settings,
+            AIF.SharedStorage.ISharedStorage? storage)
+        {
+            if (kept.TryGetValue(aimName, out var already)) return already;
+            var made = inner.Create(aimName, settings, storage);
+            kept[aimName] = made;
+            return made;
+        }
+    }
 
     // MPAI_AIFU_MODULE_Start(name, out MODULE_ID)
     public AifError MPAI_AIFU_MODULE_Start(
@@ -97,7 +120,16 @@ public sealed class UserAgent
 
         var graph = _controller.RegisterAim(identifier);
         var host  = new AimHost();
-        _controller.Instantiate(graph, provider, settings, host);
+
+        // THE CONTROLLER KEEPS WHAT IT HAS BUILT. Stopping a Module releases the
+        // Module; it does not throw away the models its AIMs loaded. A person who
+        // tries one App, then another, then returns to the first should not wait
+        // for the same models to load twice.
+        //
+        // What is retained is the AIM implementation, so anything it holds is
+        // retained with it. An AIM that keeps state between runs - a dialogue
+        // memory, say - will carry that state into the next Module that uses it.
+        _controller.Instantiate(graph, new Retaining(provider, _retained), settings, host);
 
         // Declare the composite's boundary Ports from its ExternalPorts.
         var ports = new PortRegistry();
@@ -143,7 +175,7 @@ public sealed class UserAgent
         return AifError.OK;
     }
 
-    // â”€â”€ 3.3 Inquire about AIM state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- 3.3 Inquire about AIM state ------------------------------------------
 
     // MPAI_AIFU_AIM_GetStatus(MODULE_ID, name, out status)
     public AifError MPAI_AIFU_AIM_GetStatus(int moduleId, string name, out AimState status)
@@ -154,7 +186,7 @@ public sealed class UserAgent
         return AifError.OK;
     }
 
-    // â”€â”€ Boundary Port access (section 4.6, used across the boundary) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Boundary Port access (section 4.6, used across the boundary) ---------
     // The User Agent writes a data object to a composite input Port, and reads
     // a data object from a composite output Port. This is how the folder
     // screenshot goes in and the RecognisedText comes back out.
@@ -183,7 +215,7 @@ public sealed class UserAgent
         _running.TryGetValue(moduleId, out var module) &&
         module.Ports.Has(portName) && module.Ports.Probe(portName);
 
-    // â”€â”€ Resumable run: the User Agent writes boundary PORTS and reacts â”€â”€â”€â”€â”€â”€
+    // -- Resumable run: the User Agent writes boundary PORTS and reacts ------
     // The UA supplies data on the composite's boundary input ports and reacts
     // to the composite's requests for more input. It never names an AIM nor
     // orders execution - the Controller/executor runs the AIMs per the Topology.
@@ -212,7 +244,13 @@ public sealed class UserAgent
             new Message
             {
                 MessageId   = Guid.NewGuid().ToString(),
-                MessageType = "AMQ",
+                // MessageType carries no meaning the framework itself relies on (the
+                // only values Message.IsError/IsCancelled compare against are the
+                // reserved ErrorType/CancelledType constants). It is the RUNNING
+                // Module's own name - never a fixed application name - so a run of MAD
+                // is never labelled as AMQ. UserAgent is shared infrastructure; it
+                // must not know which application is calling it.
+                MessageType = module.Name,
                 Ports       = new Dictionary<string, string>(boundaryPorts)
             });
 

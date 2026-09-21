@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <!-- THE REMOTE CLIENT APPLICATION, IN A BROWSER. The MPAI code the desktop RCA
+       uses - WDL reader, source registry, wire translation, data types - is
+       referenced unchanged. What is new here is only what a browser needs:
+       an asynchronous North API client and interpreter, and the media in
+       JavaScript (wwwroot/js/rca.js). -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Mpai.RcaWeb</RootNamespace>
+    <!-- Plain file names under _framework, so the Host can serve them as files. -->
+    <WasmFingerprintAssets>false</WasmFingerprintAssets>
+    <!-- The reused libraries read JSON by reflection; trimming would remove what they read. -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MW\Wdl\Mpai.Wdl.csproj" />
+    <ProjectReference Include="..\..\..\MW\Rca\Mpai.Rca.csproj" />
+    <ProjectReference Include="..\..\..\MW\PortData\Mpai.Mas.PortData.csproj" />
+    <ProjectReference Include="..\..\..\AIMs\Core\Mpai.Core.csproj" />
+  </ItemGroup>
+
+</Project>

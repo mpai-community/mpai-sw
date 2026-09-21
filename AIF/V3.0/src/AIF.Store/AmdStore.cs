@@ -51,10 +51,13 @@ public sealed class AmdStore
         return amdDocuments.ContainsKey(identifier);
     }
 
-    // Look up the AMD whose AIMName matches, regardless of ImplementerID /
-    // ImplementationID. This is needed because SubAIM references in composite
-    // AMDs may use placeholder strings for those fields that differ from the
-    // actual AMD file's Identifier.
+    // Look up by the identifier an L3 uses to name an AIM. Every AIM in an L3 is
+    // an implementation instance - 1MMC-ASR-V2.5-I01, not MMC-ASR-V2.5 - so this
+    // match is exact, and a request for an implementation this Service does not
+    // hold finds nothing rather than finding a different one.
+    //
+    // An L3 that named the standard AIM would be a diagram: it would say what the
+    // Module is made of in principle, and leave open which software builds it.
     public Identifier? FindByAimName(string aimName)
     {
         foreach (var key in amdDocuments.Keys)

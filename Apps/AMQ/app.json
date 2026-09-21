@@ -1,0 +1,6 @@
+﻿{
+    "Name":  "Multimodal Question Answering",
+    "Description":  "Show a picture and ask a question about it. The avatar answers aloud.",
+    "Icon":  "icon.svg",
+    "Pane":  "wide"
+}

@@ -45,8 +45,8 @@ public sealed class SoaAimProcessor : IAimProcessor
         _duration    = duration ?? System.TimeSpan.FromSeconds(5);
         _pressToStop = pressToStop;
         _vadAutoStop = vadAutoStop;
-        _inputPort  = ports.InputOrDefault("OSD-SPO-V1.5", "InputSpeech");
-        _outputPort = ports.Output("OSD-SPO-V1.5");
+        _inputPort  = ports.InputOrDefault("OSD-BSO-V1.5", "InputSpeech");
+        _outputPort = ports.Output("OSD-BSO-V1.5");
     }
 
     // Voice-activity-detection capture: record until the speaker finishes. Watches
@@ -72,7 +72,7 @@ public sealed class SoaAimProcessor : IAimProcessor
         bool speechStarted = false;
         System.DateTime? silenceSince = null;
         string stopReason = "?"; int poll = 0; double maxLevel = 0;
-        try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO VAD enter: speak=" + speakThreshold + " silence=" + silenceThreshold + " hangover=" + silenceHangover.TotalMilliseconds + "ms") + "\n"); } catch {}
+        try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO VAD enter: speak=" + speakThreshold + " silence=" + silenceThreshold + " hangover=" + silenceHangover.TotalMilliseconds + "ms") + "\n"); } catch {}
 
         while (true)
         {
@@ -80,13 +80,13 @@ public sealed class SoaAimProcessor : IAimProcessor
             double level = _levelMeter!.CurrentLevel;
             var now = System.DateTime.UtcNow;
             poll++; if (level > maxLevel) maxLevel = level;
-            if (poll % 8 == 0) try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO poll t=" + (now-start).TotalMilliseconds.ToString("F0") + "ms level=" + level.ToString("F4") + " started=" + speechStarted) + "\n"); } catch {}
+            if (poll % 8 == 0) try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO poll t=" + (now-start).TotalMilliseconds.ToString("F0") + "ms level=" + level.ToString("F4") + " started=" + speechStarted) + "\n"); } catch {}
 
             if (now - start > runawayGuard) { stopReason = "runaway"; break; }
 
             if (!speechStarted)
             {
-                if (level > speakThreshold) { speechStarted = true; try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO SPEECH STARTED t=" + (now-start).TotalMilliseconds.ToString("F0") + "ms level=" + level.ToString("F4")) + "\n"); } catch {} }
+                if (level > speakThreshold) { speechStarted = true; try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO SPEECH STARTED t=" + (now-start).TotalMilliseconds.ToString("F0") + "ms level=" + level.ToString("F4")) + "\n"); } catch {} }
                 else if (now - start > startTimeout) { stopReason = "start-timeout-nobody-spoke"; break; }
             }
             else
@@ -97,7 +97,7 @@ public sealed class SoaAimProcessor : IAimProcessor
         }
 
         var audio = await _startStop.StopAcquireAsync();
-        try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO STOP reason=" + stopReason + " elapsed=" + (System.DateTime.UtcNow-start).TotalSeconds.ToString("F2") + "s bytes=" + audio.Data.Length + " maxLevel=" + maxLevel.ToString("F4")) + "\n"); } catch {}
+        try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO STOP reason=" + stopReason + " elapsed=" + (System.DateTime.UtcNow-start).TotalSeconds.ToString("F2") + "s bytes=" + audio.Data.Length + " maxLevel=" + maxLevel.ToString("F4")) + "\n"); } catch {}
         System.Console.WriteLine($"[MMC-SOA-V2.5] captured {audio.Data.Length:N0} bytes (VAD)");
         return audio;
     }
@@ -121,7 +121,7 @@ public sealed class SoaAimProcessor : IAimProcessor
             {
                 MessageId   = message.MessageId,
                 MessageType = "BasicSpeechObject",
-                DataType    = "OSD-SPO-V1.5",
+                DataType    = "OSD-BSO-V1.5",
                 // suppliedJson is provably non-null here: 'supplied' was parsed
                 // from it. The compiler lost that when the test moved from the
                 // string to the parsed object, hence the two CS8601 warnings.
@@ -136,10 +136,10 @@ public sealed class SoaAimProcessor : IAimProcessor
 
         // VAD auto-stop mode: record until the speaker finishes (no manual stop).
         // Requires a start/stop device that also meters its level.
-        try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO branch: vadAutoStop=" + _vadAutoStop + " startStop=" + (_startStop is not null) + " levelMeter=" + (_levelMeter is not null)) + "\n"); } catch {}
+        try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO branch: vadAutoStop=" + _vadAutoStop + " startStop=" + (_startStop is not null) + " levelMeter=" + (_levelMeter is not null)) + "\n"); } catch {}
         if (_vadAutoStop && _startStop is not null && _levelMeter is not null)
         {
-            try { System.IO.File.AppendAllText(@"D:\AI\hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO -> VAD branch") + "\n"); } catch {}
+            try { Mpai.Core.MpaiDiag.Append("hci-diag.log", System.DateTime.Now.ToString("HH:mm:ss.fff") + "  " + ("AUDIO -> VAD branch") + "\n"); } catch {}
             audio = await CaptureWithVadAsync();
         }
         else
@@ -291,13 +291,13 @@ public sealed class SoaAimProcessor : IAimProcessor
         // Keep what was captured, and say where. When a transcription comes back
         // as a sentence the speaker never said, the only way to tell a deaf
         // microphone from a deaf model is to LISTEN to the recording - and by
-        // then the bytes are inside a Message and gone. Written unconditionally
-        // rather than behind a setting: it is a few seconds of audio, and the one
-        // time it is wanted is the time nobody thought to switch it on.
-        try
+        // then the bytes are inside a Message and gone. Only when diagnostics are
+        // on (MPAI_DIAG=1): a recording of what a person said is theirs, and is
+        // not kept by default.
+        if (Mpai.Core.MpaiDiag.Enabled) try
         {
             var captureFolder = System.IO.Path.Combine(
-                System.IO.Path.GetTempPath(), "mpai-captures");
+                Mpai.Core.MpaiDiag.Dir, "captures");
 
             System.IO.Directory.CreateDirectory(captureFolder);
 
@@ -318,7 +318,7 @@ public sealed class SoaAimProcessor : IAimProcessor
         {
             MessageId   = message.MessageId,
             MessageType = "BasicSpeechObject",
-            DataType    = "OSD-SPO-V1.5",
+            DataType    = "OSD-BSO-V1.5",
             Payload     = json,
             Ports       = new Dictionary<string, string> { [_outputPort] = json }
         };

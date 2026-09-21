@@ -1,0 +1,27 @@
+html, body { margin: 0; height: 100%; background: #0E1116; color: #DDDDDD; font-family: "Segoe UI", system-ui, sans-serif; }
+.loading { padding: 2em; }
+#blazor-error-ui { display: none; position: fixed; bottom: 0; width: 100%; background: #402020; padding: .6em; }
+.rca { display: flex; flex-direction: column; height: 100vh; padding: 12px 16px; box-sizing: border-box; gap: 8px; }
+header { display: flex; justify-content: space-between; align-items: baseline; }
+header .title { font-size: 20px; font-weight: 600; }
+header .service { color: #8899AA; }
+main { flex: 1; display: flex; gap: 12px; min-height: 0; }
+#avatar { flex: 1; border: 0; border-radius: 8px; background: #0A0D11; min-width: 0; }
+aside { width: 360px; overflow-y: auto; background: #151A21; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+aside h2 { margin: 4px 0 10px; font-size: 16px; }
+.app { display: grid; grid-template-columns: 48px 1fr; grid-template-rows: auto auto; gap: 2px 10px; width: 100%;
+       text-align: left; background: #1D232C; color: inherit; border: 1px solid #2A323D; border-radius: 6px;
+       padding: 8px; margin-bottom: 8px; cursor: pointer; }
+.app:hover { border-color: #4A7BD0; }
+.app img { grid-row: 1 / span 2; width: 48px; height: 48px; }
+.app .name { font-weight: 600; }
+.app .desc { font-size: 13px; color: #99A; }
+.stage img { max-width: 100%; border-radius: 6px; }
+.instruction { font-size: 16px; margin: 4px 0; min-height: 1.4em; }
+.languages, .picture { display: flex; gap: 16px; align-items: end; }
+.languages label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.row { display: flex; gap: 8px; align-items: flex-start; }
+.row textarea { flex: 1; height: 64px; resize: none; font-size: 14px; padding: 6px; box-sizing: border-box;
+                background: #151A21; color: #EEE; border: 1px solid #2A323D; border-radius: 4px; }
+.row button { width: 90px; height: 30px; }
+footer { font-family: Consolas, monospace; font-size: 11px; color: #667788; min-height: 1.2em; }

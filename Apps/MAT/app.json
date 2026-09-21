@@ -1,0 +1,6 @@
+﻿{
+    "Name":  "Multimodal Translation",
+    "Description":  "Speak in one language and hear the avatar say it in another.",
+    "Icon":  "icon.svg",
+    "Pane":  "normal"
+}

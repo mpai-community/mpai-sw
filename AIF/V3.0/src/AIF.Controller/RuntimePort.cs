@@ -65,4 +65,19 @@ public sealed class RuntimePort
     // Declared in the AMD as "IsOptional": true. Absent means false, so no
     // existing AMD changes behaviour.
     public bool IsOptional { get; init; }
+
+    // M3194 NUMBER 4 - INPUT. Declared by a composite on its own Input
+    // ExternalPorts: every Port of one Data Type meant to receive ONE shared
+    // external supply carries the same "Input" value. PAF-RSR's two Text Ports
+    // (PortNumber 1 to Text-To-Speech, 2 to Generative Face Description) both
+    // declare Input 1. Null when the AMD states none. Independent of PortNumber:
+    // PortNumber says which internal recipient a Port is; Input says which
+    // external supply feeds it.
+    public int? InputGroup { get; init; }
+
+    // M3194 NUMBER 3 - OUTPUT, declared on a boundary INPUT flow. A composite
+    // states it on the ExternalPort through which a datum enters it, when that
+    // datum is sent on to a child composite's Input group of the same number.
+    // Null when the AMD states none.
+    public int? OutputGroup { get; init; }
 }

@@ -109,29 +109,19 @@ public sealed class MachineExecutor
             var aimName = plan[position];
             var child   = children[aimName];
 
-            var missing =
-                MissingBoundaryInput(node, child, boundary, outputs);
-
-            if (missing is not null)
-            {
-                var suspended = new SuspendedExecution
-                {
-                    Node            = node,
-                    Plan            = plan,
-                    Position        = position,
-                    Outputs         = outputs,
-                    Boundary        = boundary,
-                    Envelope        = message,
-                    WaitingAim      = aimName,
-                    WaitingPort     = missing.Value.Key,
-                    WaitingDataType = missing.Value.DataType,
-                    PartialOutputs  = CollectOutputs(node, outputs, last)
-                };
-                return ExecutionResult.Suspend(suspended);
-            }
+            // AN EXCHANGE COMPLETES. The User Agent gives what it has and names what
+            // it wants; it never promises to supply more, so there is nothing to wait
+            // for. An AIM whose inputs are absent has no business in this exchange -
+            // Text and Image Query when the words are a reply rather than a question
+            // about an image - and is skipped below like any other.
+            //
+            // This held the whole exchange open instead, and the outputs that had
+            // been produced surfaced on the next one: every answer arrived a turn
+            // late, and the welcome was heard when an answer was expected.
 
             // Nothing suspended us, but this AIM may have nothing to work on -
             // e.g. an optional boundary input that was not supplied. Skip it.
+            System.Console.WriteLine($"[EXEC] {aimName}: boundary has {string.Join(", ", boundary.Keys)}");
             if (HasNoInputAvailable(node, child, boundary, outputs))
             {
                 Console.WriteLine($"[AIF] {aimName}: skipped (no input available)");
@@ -516,12 +506,11 @@ public sealed class MachineExecutor
 
             var dataType = source.DataType;
 
-            if (outputs.TryGetValue(source.AimName, out var producedPorts))
-            {
-                var routed = FindProduced(producedPorts, dataType);
-                if (routed is not null)
-                    composite[dest.Key] = routed.Payload;
-            }
+            var had = outputs.TryGetValue(source.AimName, out var producedPorts);
+            var routed = had ? FindProduced(producedPorts!, dataType) : null;
+            System.Console.WriteLine($"[COLLECT] {source.AimName}.{dataType} -> {dest.Key}: ran={had} found={routed is not null}");
+            if (routed is not null)
+                composite[dest.Key] = routed.Payload;
         }
 
         return composite.Count > 0

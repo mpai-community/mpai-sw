@@ -29,6 +29,11 @@ public sealed class DescriptorNode
     public Dictionary<string, string> InternalTypes { get; } =
         new();
 
+    // InternalType name -> the Output number (M3194 Number 3) declared on that
+    // flow, for the flows that are sent on to a child composite's Input group.
+    public Dictionary<string, int> InternalTypeOutputs { get; } =
+        new();
+
     public List<DescriptorNode> Children { get; } =
         new();
 

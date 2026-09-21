@@ -178,13 +178,17 @@ public sealed class RemoteNorthApi : INorthApi, IDisposable
             // client probes: #1, then upwards while each answers. A Port that
             // produced nothing this run answers 404, which is not an error - it
             // simply did not fire - and ends the probe for that type.
-            for (int portNumber = 1; ; portNumber++)
+            // A 404 MEANS THAT PORT DID NOT FIRE, NOT THAT THERE ARE NO MORE.
+            // Stopping at the first one lost every later Port whenever an earlier
+            // one produced nothing: a reply recognised at Port 2 was never asked
+            // for because the answer at Port 1 was absent, and the App saw silence.
+            for (int portNumber = 1; portNumber <= 4; portNumber++)
             {
                 var response = http.GetAsync(
                     $"{Root}/{mid}/Output/{Segment(dataType, portNumber)}")
                     .GetAwaiter().GetResult();
 
-                if (!response.IsSuccessStatusCode) break;
+                if (!response.IsSuccessStatusCode) continue;
 
                 var wire = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                 outputs.Add(new NorthApi.Datum(

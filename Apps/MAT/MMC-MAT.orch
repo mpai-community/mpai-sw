@@ -1,0 +1,53 @@
+﻿# =============================================================================
+#  MMC-MAT.orch - MPAI Multimodal Translation Service
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  One Controller, one Module. The User Agent offers the Controller data
+#  identified by Data Type and Port Number, and asks for data identified the
+#  same way. It names no AIM.
+#
+#  The person chooses the input and the output language - one Language
+#  Selector carries both - then speaks or types; the avatar says it in the other
+#  language and the translation is shown.
+# =============================================================================
+
+workflow MMC-MAT over 1MMC-MAT-V2.5-I01
+
+on Start:
+
+    ask Controller to start
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to the Multimodal Translation Service.
+        Please wait a few seconds while the models load."
+    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFaceDescriptors
+
+    offer Instructions (OSD-BTO-V1.5:1) = "Choose the input and output languages.
+        Then speak, and I will say it in the other language."
+    ask   InstructionsSpeech (OSD-BSO-V1.5), InstructionsFaceDescriptors (PAF-FDO-V1.6)
+    present InstructionsSpeech, InstructionsFaceDescriptors
+
+    offer Farewell (OSD-BTO-V1.5:1) = "Thank you for using the Multimodal Translation Service. Goodbye."
+    ask   FarewellSpeech (OSD-BSO-V1.5), FarewellFaceDescriptors (PAF-FDO-V1.6)
+
+    acquire Languages (OSD-SEL-V1.5)
+
+    loop until Stop:
+
+        acquire UserSpeech (OSD-BSO-V1.5) via VAD
+             or UserText   (OSD-BTO-V1.5)
+        offer Languages (OSD-SEL-V1.5)
+        branch on UserText {
+            offer UserText (OSD-BTO-V1.5:2)
+        } else {
+            offer UserSpeech (OSD-BSO-V1.5)
+        }
+        ask   TranslatedText (OSD-BTO-V1.5), MachineSpeech (OSD-BSO-V1.5), MachineFaceDescriptors (PAF-FDO-V1.6)
+        display TranslatedText
+        present MachineSpeech, MachineFaceDescriptors
+
+on Stop:
+
+    present FarewellSpeech, FarewellFaceDescriptors
+
+    ask Controller to stop

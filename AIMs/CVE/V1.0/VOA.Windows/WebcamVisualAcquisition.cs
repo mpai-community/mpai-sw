@@ -23,7 +23,6 @@ namespace Mpai.Aims.Visual;
 // to the working tree.
 public sealed class WebcamVisualAcquisition : IVisualAcquisitionAim
 {
-    private const string DiagLog = @"C:\Users\Leonardo\Downloads\cam-diag.log";
 
     private readonly int _settleMs;
 
@@ -36,7 +35,7 @@ public sealed class WebcamVisualAcquisition : IVisualAcquisitionAim
 
     private static void Diag(string s)
     {
-        try { System.IO.File.AppendAllText(DiagLog, s + System.Environment.NewLine); } catch { }
+        Mpai.Core.MpaiDiag.Append("cam-diag.log", s + System.Environment.NewLine);
     }
 
     public async Task<BasicVisualObject> AcquireAsync(VisualAcquisitionRequest request)

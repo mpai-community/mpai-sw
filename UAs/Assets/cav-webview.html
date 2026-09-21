@@ -55,8 +55,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 // A realistic ReadyPlayerMe head with full ARKit blendshapes + Oculus visemes
 // (the avatar used by the open-source TalkingHead project). Served from the RPM CDN.
-// The avatar GLB is served locally (python -m http.server 8000 in the folder
-// D:\\AI\\TestData\\Avatars), so no external CDN is fetched at view time.
+// The avatar GLB is served locally, from beside this page (UAs/Assets), so no
+// external CDN is fetched at view time.
 // It is a realistic ReadyPlayerMe head with ARKit blendshapes + Oculus visemes.
 const AVATAR_URL = 'https://cavapp.local/cav-avatar.glb';
 
@@ -266,9 +266,19 @@ let responseFrames = null;   // [{ t, targets: {arkitName: weight} }]
 // Receive the CAV response (FDO timeline + speech WAV) from the host app via a
 // WebView message (window.chrome.webview), instead of fetching files.
 function receiveResponse(fdoJson, speechWavBase64) {
+  // THE VOICE DOES NOT DEPEND ON THE FACE. A Module that returns speech and no
+  // Face Descriptors - AMQ is one - gave JSON.parse(null), which threw, and the
+  // audio lines below were never reached: the avatar was silent because her
+  // mouth had nothing to move to. The speech is set up first and plays whether
+  // or not a face came with it; a still mouth saying the answer is better than
+  // a moving one saying nothing.
+  const audio = document.getElementById('responseAudio');
+  if (speechWavBase64) audio.src = 'data:audio/wav;base64,' + speechWavBase64;
+
+  responseFrames = [];
   try {
-    const fdo = JSON.parse(fdoJson);
-    const items = fdo.FaceDescriptorsData || [];
+    const fdo = fdoJson ? JSON.parse(fdoJson) : null;
+    const items = (fdo && fdo.FaceDescriptorsData) || [];
     responseFrames = items.map(item => {
       // frame time (seconds) from SimpleTime.SimpleTimeData[0].StartTime
       let t = 0;
@@ -287,14 +297,13 @@ function receiveResponse(fdoJson, speechWavBase64) {
       }
       return { t, targets };
     }).sort((a,b) => a.t - b.t);
-    const audio = document.getElementById('responseAudio');
-    if (speechWavBase64) audio.src = 'data:audio/wav;base64,' + speechWavBase64;
-    // Auto-play the response as soon as it arrives.
-    playResponse();
   } catch(e) {
-    (document.getElementById('status')||{}).textContent = 'Bad response payload';
+    // A face that cannot be read is not a reason to stay silent.
+    (document.getElementById('status')||{}).textContent = 'face descriptors unreadable; speaking without them';
     console.error(e);
   }
+
+  playResponse();
 }
 
 // Listen for messages from the host app (the C# WebView3DModelDelivery device).

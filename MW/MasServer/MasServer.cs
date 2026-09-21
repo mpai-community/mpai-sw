@@ -43,6 +43,12 @@ public sealed class MasServer
 {
     private const string Prefix = "/MPAI/AIFU";
 
+    // WHAT THIS SERVICE OFFERS, if anything. A Service with no catalogue serves
+    // Modules to clients that already know which one they want; a Service with
+    // one also tells a client what Apps it has, so a client holding no
+    // application can be handed one.
+    public AppCatalogue Catalogue { get; init; } = AppCatalogue.Scan(null);
+
     private readonly IModuleRunner runner;
     private readonly PortDataCodecs codecs;
     private readonly string listenUrl;
@@ -168,6 +174,36 @@ public sealed class MasServer
             var segs = rest.Length == 0
                 ? Array.Empty<string>()
                 : rest.Split('/');
+
+            // GET /Apps - the catalogue
+            if (method == "GET" && segs.Length == 1 && segs[0] == "Apps")
+            {
+                await Write(ctx, 200, "application/json", Catalogue.ToJson());
+                return;
+            }
+
+            // GET /Apps/{id} - the Workflow Description itself
+            if (method == "GET" && segs.Length == 2 && segs[0] == "Apps")
+            {
+                var app = Catalogue.Find(segs[1]);
+                if (app is null) { await Write(ctx, 404, "text/plain", "No such App."); return; }
+                await Write(ctx, 200, "text/plain; charset=utf-8",
+                            await System.IO.File.ReadAllTextAsync(app.WorkflowPath));
+                return;
+            }
+
+            // GET /Apps/{id}/Icon
+            if (method == "GET" && segs.Length == 3 && segs[0] == "Apps" && segs[2] == "Icon")
+            {
+                var app = Catalogue.Find(segs[1]);
+                if (app?.IconFile is null) { await Write(ctx, 404, "text/plain", "No icon."); return; }
+                var bytes = await System.IO.File.ReadAllBytesAsync(
+                    System.IO.Path.Combine(app.Folder, app.IconFile));
+                ctx.Response.StatusCode  = 200;
+                ctx.Response.ContentType = IconType(app.IconFile);
+                await ctx.Response.Body.WriteAsync(bytes);
+                return;
+            }
 
             // POST /Controller
             if (method == "POST" && segs.Length == 1 && segs[0] == "Controller")
@@ -476,6 +512,16 @@ public sealed class MasServer
         await ctx.Request.Body.CopyToAsync(buffer);
         return buffer.ToArray();
     }
+
+    private static string IconType(string file) =>
+        System.IO.Path.GetExtension(file).ToLowerInvariant() switch
+        {
+            ".png"  => "image/png",
+            ".jpg"  => "image/jpeg",
+            ".jpeg" => "image/jpeg",
+            ".svg"  => "image/svg+xml",
+            _       => "application/octet-stream"
+        };
 
     private static async Task Write(
         HttpContext ctx, int status, string contentType, string body)

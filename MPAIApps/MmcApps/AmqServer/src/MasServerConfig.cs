@@ -60,6 +60,23 @@ public sealed class MasServerConfig
     // presenting a certificate the client already trusts costs nothing.
     public string? AuthorityPath { get; init; }
 
+    // WHERE THE APPS ARE. One folder per App, each holding a Workflow
+    // Description, a manifest naming it, and an icon. A Service without this
+    // serves Modules to clients that already know which they want; a Service
+    // with it can hand an application to a client that holds none.
+    public string? AppDirectory { get; init; }
+
+    // WHICH APPS THIS SERVICE OFFERS. The Service is told; it does not decide.
+    // A folder appearing under AppDirectory is where an App's files happen to
+    // be, not a declaration that this Service serves it.
+    public string[]? Apps { get; init; }
+
+    // THE APP A CLIENT RUNS IN ORDER TO OFFER THE OTHERS. It is held and served
+    // like any other App, and a client fetches it by name; it is not among the
+    // Apps a person is offered, because an App that offered itself would be
+    // chosen and would run inside itself.
+    public string? Shell { get; init; }
+
     // Required of every request as "Authorization: Bearer <token>". A server
     // reachable from anywhere but loopback will not start without one.
     public string? BearerToken { get; init; }

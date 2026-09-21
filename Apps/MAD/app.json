@@ -1,0 +1,6 @@
+﻿{
+    "Name":  "Multimodal Conversation",
+    "Description":  "Hold a spoken conversation with the avatar. No identity is asked for or kept.",
+    "Icon":  "icon.svg",
+    "Pane":  "none"
+}

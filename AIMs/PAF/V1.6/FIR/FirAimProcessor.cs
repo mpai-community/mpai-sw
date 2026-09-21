@@ -92,7 +92,7 @@ public sealed class FirAimProcessor : IAimProcessor
         // Detect faces (SCRFD separates them); take the user's face = the most
         // prominent (largest area) when several are present.
         var faces = _detector.Detect(picture.Data);
-        System.IO.File.AppendAllText(@"C:\Users\Leonardo\Downloads\mac-diag.log", "[FIR] type=" + (picture.VisualQualifier?.Attributes?.VisualObjectType ?? "nil") + " bytes=" + (picture.Data == null ? 0 : picture.Data.Length) + " faces=" + faces.Count + System.Environment.NewLine);
+        Mpai.Core.MpaiDiag.Append("mac-diag.log", "[FIR] type=" + (picture.VisualQualifier?.Attributes?.VisualObjectType ?? "nil") + " bytes=" + (picture.Data == null ? 0 : picture.Data.Length) + " faces=" + faces.Count + System.Environment.NewLine);
         if (faces.Count == 0)
         {
             // No face found: emit a coarse "no identity" IID and an empty BBX so
@@ -150,7 +150,7 @@ public sealed class FirAimProcessor : IAimProcessor
     {
         var fir = new FaceIdentityRecognitionAim(_recogniser, _gallery);
         var iid = fir.Identify(crop);
-        try { var __c = iid?.InstanceIdentifierData; var __top = (__c != null && __c.Count > 0) ? __c[0] : null; System.IO.File.AppendAllText(@"C:\Users\Leonardo\Downloads\mac-diag.log", "[FIR] IID label=" + (__top == null ? "nil" : __top.InstanceLabel) + " conf=" + (__top == null ? "nil" : __top.LabelConfidenceLevel.ToString("F3")) + " candidates=" + (__c == null ? 0 : __c.Count) + System.Environment.NewLine); } catch { }
+        try { var __c = iid?.InstanceIdentifierData; var __top = (__c != null && __c.Count > 0) ? __c[0] : null; Mpai.Core.MpaiDiag.Append("mac-diag.log", "[FIR] IID label=" + (__top == null ? "nil" : __top.InstanceLabel) + " conf=" + (__top == null ? "nil" : __top.LabelConfidenceLevel.ToString("F3")) + " candidates=" + (__c == null ? 0 : __c.Count) + System.Environment.NewLine); } catch { }
         return iid;
     }
 

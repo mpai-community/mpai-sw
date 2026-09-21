@@ -11,6 +11,6 @@ public sealed class EsiPlugin : IAimPlugin
     private Wav2Vec2EmotionEstimator? _dep;
     public string AimName => "MMC-ESI-V2.5";
     public IAimProcessor Create(AimPortReader ports, IReadOnlyDictionary<string, string> settings)
-        => new EsiAimProcessor(AimName, _dep ??= new Wav2Vec2EmotionEstimator(Get(settings,"W2v2Model",@"D:\AI\Models\w2v2-emotion\model.onnx")), ports);
+        => new EsiAimProcessor(AimName, _dep ??= new Wav2Vec2EmotionEstimator(Get(settings,"W2v2Model",Mpai.Core.MpaiPaths.Model(@"w2v2-emotion\model.onnx"))), ports);
     private static string Get(IReadOnlyDictionary<string,string> s, string k, string d) => s.TryGetValue(k, out var v) && !string.IsNullOrWhiteSpace(v) ? v : d;
 }

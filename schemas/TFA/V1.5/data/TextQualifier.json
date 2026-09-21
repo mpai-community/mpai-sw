@@ -2,7 +2,7 @@
   "$schema":                "https://json-schema.org/draft/2020-12/schema",
 
   "title":                  "Text Qualifier V1.5",
-  "description":            "Qualifier describing the structure, metadata, and linguistic properties of text data.",
+  "description":            "Qualifier describing the structure, metadata, linguistic properties and role of text data.",
   "type":                   "object",
   "required":               [ "Header", "TextQualifierID", "SubTypes", "Formats" ],
   "additionalProperties":   false,
@@ -23,6 +23,8 @@
 
     "Attributes":           { "type": "object", "additionalProperties": false, "properties": {
       "ObjectIdentifier":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" },
+      "TextRole":           { "type": "string", "enum": [ "Prose", "AppName", "Identifier", "Command" ],
+                              "description": "The part the text plays, where Formats says how it is written and Language in what tongue. Prose is ordinary text. AppName is the name of an MPAI Application. Identifier names something other than an Application. Command is text to be acted upon rather than read. Absent means unconstrained." },
       "Language":           { "type": "object", "additionalProperties": false, "properties": {
         "LanguageCode":     { "type": "string" },
         "LanguageFormat":   { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/LanguageFormats.json" } } } } },
