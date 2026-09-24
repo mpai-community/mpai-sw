@@ -2,7 +2,8 @@
 
 How MAS-App is built, and how to change it or add an App. For installing and
 using it, see the [User Guide](MAS-App-User.md); for an overview, see
-[MPAI Software](MPAI-Software.md).
+[MPAI Software](MPAI-Software.md); for running one AIM on a machine of its
+own, see [Remote Deployment](MAS-App-Remote-Deployment.md).
 
 ---
 
@@ -213,17 +214,31 @@ back to its last-known L3 cache without saying why in those words.
 
 ### 10.2 A Service's own configuration
 
-These settings go in a Service's `mas-server-*.json` (see
-`MasServerConfig.cs` for the full set):
+Every setting a Service reads, from `MasServerConfig.cs`, in a
+`mas-server-*.json` named as the Service's first argument:
 
 | Setting | Effect |
 |---|---|
-| `L3Source: "Store"`, `StoreUrl`, `L3Cache` | L3s come from the Store instead of `AmdDirectory`. |
-| `AimSource: "Packages"`, `PackageCache` | AIMs are built from the packages their L3s name, falling back to the compiled providers for any package missing or built for another machine. |
-| `ModelSource: "Fetch"`, `ModelCache` | A model a setting names and the machine lacks is fetched from `Source:<setting>` and checked against `SHA256:<setting>`. |
-| `Collections`, `DefaultCollection` | Which Apps this Service offers, and where (`/MPAI/AIFU/c/<name>`). |
-| `RemoteAims`, `RemoteToken` | A Sub-AIM this Service does not build itself; see 10.3. |
-| `BearerToken` | Required once `ListenUrl` is not loopback (`127.0.0.1` or `localhost`); the Service refuses to start without one, so that a machine reachable from outside cannot be used by an uninvited caller. |
+| `ListenUrl` | Where the Service listens. Default `https://localhost:5005/`. Loopback is the only address for which a missing certificate and a missing `BearerToken` are tolerated. |
+| `CertificatePath`, `PrivateKeyPath`, `CertificatePassword` | A real certificate for a non-loopback `ListenUrl`: a PEM certificate and its PEM private key, or a PFX (`CertificatePath` alone, with `CertificatePassword` if it is encrypted). A path, not a certificate-store thumbprint, so the same configuration works on Windows or Linux. |
+| `AuthorityPath` | Intermediate certificates to present alongside the Service's own, concatenated into one PEM file, so a client can build the chain to a root it already trusts. Omitting this when it is needed makes a client refuse the connection before sending anything - the Service sees no request and logs nothing. |
+| `AppDirectory`, `Apps` | Where Apps live, and which of them this Service offers. Absent `Apps`: none offered as plain Apps (a Service may still offer Collections). |
+| `Shell` | The workflow a client runs to offer the others (MPAI-MAS); served like any App but never itself among the Apps offered. |
+| `Collections`, `DefaultCollection` | Named subsets of the Apps, each served at `/MPAI/AIFU/c/<name>/...`; which one an address naming none receives. Absent `Collections`: the plain `Apps` list is the only offer, as before this mechanism existed. |
+| `StoreUrl` | The MPAI Store an App's L3 must be approved by before the App is offered. Absent: no check. |
+| `L3Source: "Store"`, `L3Cache` | L3s come from the Store at `StoreUrl` instead of `AmdDirectory`, fetched with their Sub-AIMs into `L3Cache` (default `<local application data>\MPAI\SCI\L3`). |
+| `AimSource: "Packages"`, `PackageCache` | AIMs are built from the packages their L3s name, cached at `PackageCache` (default `<local application data>\MPAI\SCI\Packages`), falling back to the compiled providers for any package missing or built for another machine. |
+| `ModelSource: "Fetch"`, `ModelCache` | A model a setting names and the machine lacks is fetched from `Source:<setting>` and checked against `SHA256:<setting>`, cached at `ModelCache` (default `<local application data>\MPAI\SCI\Models`). |
+| `RemoteAims`, `RemoteToken` | A Sub-AIM this Service does not build itself, and the token it presents to the machine that does; see 10.3. |
+| `BearerToken` | Required of every caller as `Authorization: Bearer <token>`, and required once `ListenUrl` is not loopback - the Service refuses to start without one, so that a machine reachable from outside cannot be used by an uninvited caller. |
+| `AmdDirectory` | Where L3s live when `L3Source` is absent or anything but `"Store"`. |
+| `SettingsPath` | The settings file naming AIMs' models and configuration. |
+| `OutputFolder` | Where delivered output is written. |
+
+For a machine that hosts one AIM for a Service elsewhere - real certificates,
+firewall rules, and the failures a first attempt tends to hit - see
+[Remote Deployment](MAS-App-Remote-Deployment.md), which walks through 10.3
+below end to end.
 
 ### 10.3 A Sub-AIM on another machine
 

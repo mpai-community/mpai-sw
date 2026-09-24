@@ -5,7 +5,9 @@ and two **clients** to use them with: one for the Windows desktop, one for a web
 browser. This guide explains how to install it, start it and use it.
 
 For what the software is, see [MPAI Software](MPAI-Software.md). For how it is
-built, see the [Developer Guide](MAS-App-Developer.md).
+built, see the [Developer Guide](MAS-App-Developer.md). To run one AIM on a
+machine of its own - a separate GPU box, or your own cloud instance - see
+[Remote Deployment](MAS-App-Remote-Deployment.md).
 
 ---
 
@@ -95,8 +97,15 @@ To stop a program, press **Ctrl+C** in its window.
 
 ## 5. Using it
 
-The avatar welcomes you and shows the Apps. Choose one. **Stop** ends the App
-you are in and brings the list back; with no App running, it ends the session.
+The avatar welcomes you, says how many other people are using it right now,
+and shows the Apps. Choose one. **Stop** ends the App you are in and brings
+the list back; with no App running, it ends the session.
+
+**Finding an App.** With few Apps offered, the list alone is enough. Where a
+Service offers more, you may instead say or type what you want to do (for
+example "I want to translate what I say"), and the closest matches are
+offered instead of the full list - this depends on how the Service you are
+using is configured, so it may not appear on every installation.
 
 **Speaking or typing.** Whenever the avatar waits for you, you may either speak,
 or type in the text box and press **Enter**. As soon as you type the first
