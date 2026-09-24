@@ -1,6 +1,32 @@
 ﻿{
-    "Name":  "Multimodal Question Answering",
-    "Description":  "Show a picture and ask a question about it. The avatar answers aloud.",
-    "Icon":  "icon.svg",
-    "Pane":  "wide"
+    "Name": "Multimodal Question Answering",
+    "Description": "Show a picture and ask a question about it. The avatar answers aloud.",
+    "Icon": "icon.svg",
+    "Pane": "wide",
+    "Version": "1.0",
+    "Standard": "MPAI-MMC V2.5",
+    "UseCase": "AMQ",
+    "Module": "1MMC-AMQ-V2.5-I01",
+    "Keywords": [
+        "picture",
+        "image",
+        "photo",
+        "question",
+        "answer",
+        "visual",
+        "describe"
+    ],
+    "Categories": [
+        "Vision",
+        "Question answering"
+    ],
+    "Languages": [
+        "en"
+    ],
+    "Asks": [
+        "microphone",
+        "typed text",
+        "a picture"
+    ],
+    "Keeps": "Nothing."
 }

@@ -181,8 +181,14 @@ public sealed class Controller
                     ImplementerID    = subAim.GetProperty("Identifier").GetProperty("ImplementerID").GetString()    ?? string.Empty,
                     ImplementationID = subAim.GetProperty("Identifier").GetProperty("ImplementationID").GetString() ?? string.Empty
                 };
-                if (!string.IsNullOrWhiteSpace(subId.AIMName))
-                    node.Children.Add(BuildNode(subId, expanding));
+                if (string.IsNullOrWhiteSpace(subId.AIMName)) continue;
+
+                var child = BuildNode(subId, expanding);
+                child.Relation =
+                    subAim.GetProperty("Identifier").TryGetProperty("Relation", out var relation)
+                        ? relation.GetString() ?? string.Empty
+                        : string.Empty;
+                node.Children.Add(child);
             }
         }
 
@@ -435,9 +441,30 @@ public sealed class Controller
         // The Module names the context for every provenance stamp made inside it.
         var moduleName = graph.Root?.AIMName ?? "";
 
+        // WHAT A REMOTE CLIENT STARTS MAY BE A BASIC AIM. MPAI-MAS action 6 starts
+        // "the AIM selected": a Service that offers one AIM - as the machine running
+        // a Sub-AIM of another machine's composite does - runs that AIM, and it stays
+        // an AIM. Nothing contains it, so there is nothing to walk: it is built here.
+        if (!graph.Root.IsComposite)
+        {
+            var aimName = graph.Root.AIMName;
+            CheckResources(graph.Root);
+            var elsewhere = RemoteAims?.Invoke(aimName, graph.Root.Relation);
+            host.RegisterRuntime(elsewhere ??
+                provider.Create(aimName, settings.For(aimName), StorageFor(moduleName, aimName)));
+            instantiated.Add(aimName);
+            return instantiated;
+        }
+
         InstantiateNode(graph.Root, provider, settings, host, instantiated, moduleName);
         return instantiated;
     }
+
+    // WHERE A SUB-AIM THAT RUNS ELSEWHERE IS REACHED. A Service sets this; it is
+    // asked for every AIM, with what the L3 says about where that AIM runs, and
+    // answers null for the AIMs this machine builds itself. The Controller stays
+    // free of any knowledge of MPAI-MAS: what comes back is an IAimProcessor.
+    public static Func<string, string, IAimProcessor?>? RemoteAims { get; set; }
 
     private void InstantiateNode(
         DescriptorNode node,
@@ -460,7 +487,14 @@ public sealed class Controller
                 continue;
 
             CheckResources(child);
-            host.RegisterRuntime(
+
+            // A SUB-AIM MAY RUN ON ANOTHER MACHINE (MPAI-MAS: Relation other than
+            // Internal). The Service says where, and supplies something that looks
+            // to this Controller like any AIM and carries its Ports there and back.
+            // Unanswered - no such arrangement, or none for this AIM - it is built
+            // here, as every AIM is today.
+            var elsewhere = RemoteAims?.Invoke(aimName, child.Relation);
+            host.RegisterRuntime(elsewhere ??
                 provider.Create(aimName, settings.For(aimName), StorageFor(moduleName, aimName)));
             instantiated.Add(aimName);
         }

@@ -36,6 +36,33 @@
           <TextBlock x:Name="AppPanelHint" DockPanel.Dock="Top" Foreground="#8899AA"
                      FontSize="12" TextWrapping="Wrap" Margin="0,0,0,14"
                      Text="These are offered by the Service. This client holds none of them."/>
+
+          <!-- FINDING AN APP: words, a category, or both. Enter searches. -->
+          <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+            <ComboBox x:Name="CategoryBox" DockPanel.Dock="Right" Width="130" Margin="8,0,0,0"
+                      SelectionChanged="CategoryBox_SelectionChanged" ToolTip="Show one category"/>
+            <TextBox x:Name="SearchBox" KeyDown="SearchBox_KeyDown" FontSize="13" Padding="4,3"
+                     Background="#1A2029" Foreground="#EAF1FB" BorderBrush="#2A3342" CaretBrush="#EAF1FB"
+                     ToolTip="Search: type words and press Enter; an empty search shows every App"/>
+          </DockPanel>
+
+          <!-- AN APP'S PAGE: what it does, what it will ask for, what it keeps.
+               Choosing is consenting, so the person sees this before it starts. -->
+          <Border x:Name="AppDetail" DockPanel.Dock="Bottom" Visibility="Collapsed" Background="#1A2029"
+                  CornerRadius="8" Padding="12" Margin="0,8,0,0">
+            <StackPanel>
+              <TextBlock x:Name="DetailName" Foreground="#EAF1FB" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+              <TextBlock x:Name="DetailDescription" Foreground="#9FB0C6" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"/>
+              <TextBlock x:Name="DetailFacts" Foreground="#8899AA" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
+              <TextBlock x:Name="DetailAsks" Foreground="#DDDDDD" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"/>
+              <TextBlock x:Name="DetailKeeps" Foreground="#DDDDDD" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"/>
+              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Button Content="Open" Width="90" Height="28" Click="OpenApp_Click"/>
+                <Button Content="Back" Width="70" Height="28" Margin="8,0,0,0" Click="CloseDetail_Click"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
           <ListBox x:Name="AppList" SelectionChanged="AppList_SelectionChanged" Background="Transparent" BorderThickness="0"
                    Foreground="#DDDDDD" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>

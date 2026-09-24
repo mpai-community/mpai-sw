@@ -4,7 +4,7 @@ MAS-App is a **Service** offering four AI applications - MAD, AMQ, MAT and MPD -
 and two **clients** to use them with: one for the Windows desktop, one for a web
 browser. This guide explains how to install it, start it and use it.
 
-For what the software is, see [MPAI Software](../README.md). For how it is
+For what the software is, see [MPAI Software](MPAI-Software.md). For how it is
 built, see the [Developer Guide](MAS-App-Developer.md).
 
 ---

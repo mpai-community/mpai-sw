@@ -2,7 +2,9 @@
     "1MMC-ASR-V2.5-I01": {
         "ExecutablePath": "Models\\Whisper\\bin\\whisper-cli.exe",
         "ModelPath": "Models\\Whisper\\models\\ggml-small.bin",
-        "LanguageCode": "en"
+        "LanguageCode": "en",
+        "SHA256:ExecutablePath": "800A0FD754AFA75E109C7248286AD735670FB6B23D92CA5D12604647EF638A65",
+        "SHA256:ModelPath": "1BE3A9B2063867B937E64E2EC7483364A79917E157FA98C5D94B5C1FFFEA987B"
     },
     "1MMC-TTS-V2.5-I01": {
         "PiperExecutable": "Models\\Piper\\piper_windows_amd64\\piper\\piper.exe",
@@ -12,8 +14,8 @@
         "VoiceConfig:en": "Models\\Piper\\voices\\en_US-amy-medium\\en_US-amy-medium.onnx.json",
         "Voice:pt": "Models\\Piper\\voices\\pt_BR-cadu-medium\\pt_BR-cadu-medium.onnx",
         "VoiceConfig:pt": "Models\\Piper\\voices\\pt_BR-cadu-medium\\pt_BR-cadu-medium.onnx.json",
-        "Voice:es": "Models\\Piper\\voices\\es_ES-mls_10246-low\\es_ES-mls_10246-low.onnx",
-        "VoiceConfig:es": "Models\\Piper\\voices\\es_ES-mls_10246-low\\es_ES-mls_10246-low.onnx.json",
+        "Voice:es": "Models\\Piper\\voices\\es_ES-davefx-medium\\es_ES-davefx-medium.onnx",
+        "VoiceConfig:es": "Models\\Piper\\voices\\es_ES-davefx-medium\\es_ES-davefx-medium.onnx.json",
         "Voice:ja": "Models\\Piper\\voices\\ja_JA-hi_fi_captain-medium\\ja_JA-hi_fi_captain-medium.onnx",
         "VoiceConfig:ja": "Models\\Piper\\voices\\ja_JA-hi_fi_captain-medium\\ja_JA-hi_fi_captain-medium.onnx.json",
         "Voice:zh": "Models\\Piper\\voices\\zh_CN-huayan-medium\\zh_CN-huayan-medium.onnx",
@@ -23,7 +25,26 @@
         "Voice:fr": "Models\\Piper\\voices\\fr_FR-siwis-medium\\fr_FR-siwis-medium.onnx",
         "VoiceConfig:fr": "Models\\Piper\\voices\\fr_FR-siwis-medium\\fr_FR-siwis-medium.onnx.json",
         "Voice:it": "Models\\Piper\\voices\\it_IT-paola-medium\\it_IT-paola-medium.onnx",
-        "VoiceConfig:it": "Models\\Piper\\voices\\it_IT-paola-medium\\it_IT-paola-medium.onnx.json"
+        "VoiceConfig:it": "Models\\Piper\\voices\\it_IT-paola-medium\\it_IT-paola-medium.onnx.json",
+        "SHA256:PiperExecutable": "96F3DA3811151580073E40BB4DD20EB0FB8115F5F5F76E2FB54282B3EDFA5C1F",
+        "SHA256:VoiceModel": "B3A6E47B57B8C7FBE6A0CE2518161A50F59A9CDD8A50835C02CB02BDD6206C18",
+        "SHA256:VoiceConfig": "95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77",
+        "SHA256:Voice:en": "B3A6E47B57B8C7FBE6A0CE2518161A50F59A9CDD8A50835C02CB02BDD6206C18",
+        "SHA256:VoiceConfig:en": "95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77",
+        "SHA256:Voice:pt": "765F0809A6EA9035D4A6D0D008DBF8876E68B2DD32029312672FA8F405BDB535",
+        "SHA256:VoiceConfig:pt": "5FE03AA3D4901880554905B12075713CD552598C8A350455A1EC73F8B4E6BE19",
+        "SHA256:Voice:es": "3F9D76D2778778942297AAB052AA7B2E67248D3F43614C889EE82901A230E197",
+        "SHA256:VoiceConfig:es": "A865944D7F6972AF347263B0B8152466DABBA3B78B8FE5A6985F7D3B19FD06A1",
+        "SHA256:Voice:ja": "5EAFA1610FC7A0FF2E7FDE9CBE0972D876266E23D8DB331727EB2466F19460EB",
+        "SHA256:VoiceConfig:ja": "542EB0B6389CD89CA02AE662700E1DEC49EBF1B612821C4ED2E1D1CA4E0D257C",
+        "SHA256:Voice:zh": "9929917BF8CABB26FD528EA44D3A6699C11E87317A14765312420BE230BE0F3D",
+        "SHA256:VoiceConfig:zh": "D521DC45504A8CCC99E325822B35946DD701840BFB07E3DBB31A40929ED6A82B",
+        "SHA256:Voice:de": "E88CF290FBFB768BF111330D2E8A46E376B0D85E3423A28BFEBBC863A260DAD8",
+        "SHA256:VoiceConfig:de": "EF14B3DCB279AB4B18422A7A132877BEE7A148821BD91152FB7AE9C4B3D79625",
+        "SHA256:Voice:fr": "641D1AB097DA2B81128C076810EDB052B385DECC8BE3381814802A64A73BAF99",
+        "SHA256:VoiceConfig:fr": "39479916C2DB192B5AC9764DADDD0C744D83E023AD890C6976C0633AE4DF8959",
+        "SHA256:Voice:it": "6FC918B5A0EA6137382833DDDFA567BFFBE6A5060C02043C87192EE59C04210C",
+        "SHA256:VoiceConfig:it": "AEA19C0A7FCE29FBC359B93F10E7902854401E4C95AE2EA328AE516B15D296CF"
     },
     "1MMC-TTT-V2.5-I01": {
         "TttEncoderModel": "Models\\Whisper\\M2M100\\encoder_model.onnx",
@@ -32,21 +53,36 @@
         "TttDecoderPastModel": "Models\\Whisper\\M2M100\\decoder_with_past_model.onnx",
         "TttSpmModel": "Models\\Whisper\\M2M100\\sentencepiece.bpe.model",
         "TttSpecialTokens": "Models\\Whisper\\M2M100\\special_tokens_map.json",
-        "TttVocab": "Models\\Whisper\\M2M100\\vocab.json"
+        "TttVocab": "Models\\Whisper\\M2M100\\vocab.json",
+        "SHA256:TttEncoderModel": "2AAF1612C2738DEC7DE0A12D3F5EBB1168A38B735A33DB5BE7719DD669750544",
+        "SHA256:TttDecoderModel": "007654BCABB6CEA6FD3BDE34CE933137B431330B3755781145D7B6906270B45A",
+        "SHA256:TttDecoderFirstModel": "0523BCDAB1AADD68FB8A16CA8FF7637547D8A352F6149F7223869D1BD0122DBB",
+        "SHA256:TttDecoderPastModel": "BDE055E103A0C12F2528147CCE7C8C5374A867D6281D870137018A4FAF842E6B",
+        "SHA256:TttSpmModel": "D8F7C76ED2A5E0822BE39F0A4F95A55EB19C78F4593CE609E2EDBC2AEA4D380A",
+        "SHA256:TttSpecialTokens": "C1A4F86C3874D279AE1B2A05162858DB5DD6C61665D84223ED886CBCFF08FDA6",
+        "SHA256:TttVocab": "B6E77E474AEEA8F441363ACA7614317C06381F3EACFE10FB9856D5081D1074CC"
     },
     "1MMC-TIQ-V2.5-I01": {
         "VisionModel": "Models\\BLIP\\onnx\\blip_vision_model.onnx",
         "EncoderModel": "Models\\BLIP\\onnx\\blip_text_encoder_wrapper.onnx",
         "DecoderModel": "Models\\BLIP\\onnx\\blip_decoder_context_dynamic.onnx",
-        "VocabFile": "Models\\BLIP\\blip-vqa-base\\vocab.txt"
+        "VocabFile": "Models\\BLIP\\blip-vqa-base\\vocab.txt",
+        "SHA256:VisionModel": "161F6D21D7380C22568F4E41A4F764410CF157BE9FAC75E3BB064EA4DEBB82DC",
+        "VisionModelData": "Models\\BLIP\\onnx\\blip_vision_model.onnx.data",
+        "SHA256:VisionModelData": "1B099A7F3F04A41127DD6CD54CBBFBDEF832518F15A4A6C2CD9AEB4ABA4A5C80",
+        "SHA256:EncoderModel": "BA2BACC981297823B2ADE32D49ECCA847DB4A39CC6637EB716EAD45DD5E2C530",
+        "SHA256:DecoderModel": "554B87CD9892D34CBF9029F2AA4B9EE8D4513AC561EB78EC64D17646F0191991",
+        "SHA256:VocabFile": "07ECED375CEC144D27C900241F3E339478DEC958F92FDDBC551F295C992038A3"
     },
     "1MMC-EDP-V2.5-I01": {
         "OllamaModel": "llama3.2:3b"
     },
     "1MMC-ESI-V2.5-I01": {
-        "W2v2Model": "Models\\w2v2-emotion\\model.onnx"
+        "W2v2Model": "Models\\w2v2-emotion\\model.onnx",
+        "SHA256:W2v2Model": "9B6E449686C0DB86F5C607B8C9FA1D87468C27198A1F0A20280C4E258239763D"
     },
     "1MMC-EFI-V2.5-I01": {
-        "HseModel": "Models\\hsemotion_enet_b0_8_va_mtl.onnx"
+        "HseModel": "Models\\hsemotion_enet_b0_8_va_mtl.onnx",
+        "SHA256:HseModel": "C43E056AD388D4A8DC911832B8291435B2AF537F967E5870EBD731574EC7E812"
     }
 }

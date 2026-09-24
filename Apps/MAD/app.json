@@ -1,6 +1,29 @@
 ﻿{
-    "Name":  "Multimodal Conversation",
-    "Description":  "Hold a spoken conversation with the avatar. No identity is asked for or kept.",
-    "Icon":  "icon.svg",
-    "Pane":  "none"
+    "Name": "Multimodal Conversation",
+    "Description": "Hold a spoken conversation with the avatar. No identity is asked for or kept.",
+    "Icon": "icon.svg",
+    "Pane": "none",
+    "Version": "1.0",
+    "Standard": "MPAI-MMC V2.5",
+    "UseCase": "MAD",
+    "Module": "1MMC-MAD-V2.5-I01",
+    "Keywords": [
+        "conversation",
+        "chat",
+        "talk",
+        "dialogue",
+        "questions",
+        "assistant"
+    ],
+    "Categories": [
+        "Conversation"
+    ],
+    "Languages": [
+        "en"
+    ],
+    "Asks": [
+        "microphone",
+        "typed text"
+    ],
+    "Keeps": "The conversation's memory, for this conversation only; nothing once it ends."
 }

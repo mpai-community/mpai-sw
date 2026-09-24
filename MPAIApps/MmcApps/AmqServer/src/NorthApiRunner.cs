@@ -52,8 +52,20 @@ internal sealed class NorthApiRunner : IModuleRunner
     public string? Start(
         string moduleName)
     {
-        var error = north.StartFlow(moduleName);
-        return error == AifError.OK ? null : error.ToString();
+        // A MODULE'S OWN FAULT MUST NOT STOP THE OTHERS. Building an AIM can throw -
+        // a missing model file, for instance - and that exception is this one
+        // Module's problem alone: the Service still has four other Modules to try,
+        // and a machine that hosts only some AIMs (a remote Sub-AIM's own machine,
+        // say) should say which failed rather than never start at all.
+        try
+        {
+            var error = north.StartFlow(moduleName);
+            return error == AifError.OK ? null : error.ToString();
+        }
+        catch (Exception failure)
+        {
+            return failure.Message;
+        }
     }
 
     public void Stop(

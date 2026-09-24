@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
@@ -76,6 +77,59 @@ public sealed class MasServerConfig
     // Apps a person is offered, because an App that offered itself would be
     // chosen and would run inside itself.
     public string? Shell { get; init; }
+
+    // COLLECTIONS: the Apps offered together, each a descriptor in AppDirectory
+    // listing some of the Apps, and each served at /MPAI/AIFU/c/<name>/...
+    // Absent means none: the Apps above are the offer, as they always were.
+    public string[]? Collections { get; init; }
+
+    // Which collection an address that names none receives. Absent means the Apps above.
+    public string? DefaultCollection { get; init; }
+
+    // THE STORE. When named, an App is offered only if the Store has approved the
+    // L3 of its Module. Absent means no check, as before.
+    public string? StoreUrl { get; init; }
+
+    // WHERE THE L3s COME FROM. "Store": from the Store at StoreUrl (MPAI-MAS
+    // actions 8-9), fetched with their Sub-AIMs into L3Cache, which the Controller
+    // then reads. Absent, or anything else: from AmdDirectory, as before.
+    public string? L3Source { get; init; }
+
+    // Where L3s fetched from the Store are kept. Absent means
+    // <local application data>\MPAI\SCI\L3.
+    public string? L3Cache { get; init; }
+
+    // WHERE THE AIMs COME FROM. "Packages": from the package each AIM's L3 names
+    // (MPAI-MAS actions 10-13), loaded through the plug-in it carries; an AIM
+    // whose package is missing or built for another machine is built by the
+    // providers compiled into this Service, as they all are today. Absent: those
+    // providers alone, exactly as before.
+    public string? AimSource { get; init; }
+
+    // Where packages fetched for this Service are kept. Absent means
+    // <local application data>\MPAI\SCI\Packages.
+    public string? PackageCache { get; init; }
+
+    // WHERE THE MODELS COME FROM. "Fetch": a model a setting names and this machine
+    // does not have is obtained from the source the settings give (<setting>.Source)
+    // and checked against <setting>.SHA256. Absent: models must already be on disk,
+    // as before.
+    public string? ModelSource { get; init; }
+
+    // Where fetched models are kept. Absent means
+    // <local application data>\MPAI\SCI\Models.
+    public string? ModelCache { get; init; }
+
+    // SUB-AIMs THAT RUN ON ANOTHER MACHINE (MPAI-MAS: a Relation other than
+    // Internal). Each names the MAS Service that runs it:
+    //
+    //   "RemoteAims": { "1MMC-EDP-V2.5-I01": "https://other.machine:5005/" }
+    //
+    // An AIM not named here is built on this machine, as they all are today.
+    public Dictionary<string, string>? RemoteAims { get; init; }
+
+    // The bearer token this Service presents to those machines.
+    public string? RemoteToken { get; init; }
 
     // Required of every request as "Authorization: Bearer <token>". A server
     // reachable from anywhere but loopback will not start without one.

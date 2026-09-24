@@ -1,5 +1,31 @@
 ﻿{
-    "Name":  "Multimodal Affective Dialogue",
-    "Description":  "Hold a spoken conversation with the avatar, who reads your words, voice and face and answers with feeling.",
-    "Icon":  "icon.svg"
+    "Name": "Multimodal Affective Dialogue",
+    "Description": "Hold a spoken conversation with the avatar, who reads your words, voice and face and answers with feeling.",
+    "Icon": "icon.svg",
+    "Version": "1.0",
+    "Standard": "MPAI-MMC V2.5",
+    "UseCase": "MPD",
+    "Module": "1MMC-MPD-V2.5-I01",
+    "Keywords": [
+        "conversation",
+        "emotion",
+        "feeling",
+        "affective",
+        "mood",
+        "face",
+        "dialogue"
+    ],
+    "Categories": [
+        "Conversation",
+        "Affective"
+    ],
+    "Languages": [
+        "en"
+    ],
+    "Asks": [
+        "microphone",
+        "camera",
+        "typed text"
+    ],
+    "Keeps": "The conversation's memory, for this conversation only; nothing once it ends."
 }

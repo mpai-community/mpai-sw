@@ -55,7 +55,8 @@ public sealed class PortDataCodecs
             .Register(new FaceDescriptorsObjectCodec())
             .Register(new SimpleTimeCodec())
             .Register(new SelectorCodec())
-            .Register(new SummaryCodec());
+            .Register(new SummaryCodec())
+            .Register(new EntityPersonalStatusCodec());
 
     public PortDataCodecs Register(
         IPortDataCodec codec)

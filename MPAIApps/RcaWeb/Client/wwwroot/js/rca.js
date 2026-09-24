@@ -141,5 +141,18 @@ window.rca = (() => {
 
   function focus(id) { const e = document.getElementById(id); if (e) e.focus(); }
 
-  return { unlock, captureSpeech, abandonCapture, captureFrame, present, focus };
+  // PRESENT WHILE OPEN, GONE WHEN CLOSED. The Service counts this client while it
+  // hears from it: a request every 30 seconds keeps it counted, and closing or
+  // reloading the page says goodbye - with keepalive, so the request outlives the page.
+  let presenceTimer = null;
+  function presence(clientId) {
+    const headers = { 'MPAI-Client': clientId };
+    if (presenceTimer) clearInterval(presenceTimer);
+    presenceTimer = setInterval(() => fetch('MPAI/AIFU/Status', { headers }).catch(() => {}), 30000);
+    window.addEventListener('pagehide', () => {
+      try { fetch('MPAI/AIFU/Leave', { method: 'POST', headers, keepalive: true }); } catch (e) {}
+    });
+  }
+
+  return { unlock, captureSpeech, abandonCapture, captureFrame, present, focus, presence };
 })();

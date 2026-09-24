@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -49,6 +50,11 @@ public sealed class MasServer
     // application can be handed one.
     public AppCatalogue Catalogue { get; init; } = AppCatalogue.Scan(null);
 
+    // WHICH APPS EACH COLLECTION SHOWS. Unless set, the catalogue's Apps are the
+    // default collection and there are no others - today's behaviour exactly.
+    private AppOffer? offer;
+    public AppOffer Offer { get => offer ??= AppOffer.FromCatalogue(Catalogue); init => offer = value; }
+
     private readonly IModuleRunner runner;
     private readonly PortDataCodecs codecs;
     private readonly string listenUrl;
@@ -66,6 +72,16 @@ public sealed class MasServer
 
     // One SCI per Controller Instance created by the RCA.
     private readonly ConcurrentDictionary<string, Sci> instances = new();
+
+    // WHO IS USING THE SERVICE NOW. A client names itself with a random
+    // identifier, made when it starts, on every request (header MPAI-Client); one
+    // person's client uses several Controller Instances - one for MPAI-MAS, one
+    // per App - so they are counted by that identifier, not by instance. A client
+    // counts while it is open: it says goodbye when it closes (POST /Leave), and
+    // while open it makes a request at least every 30 seconds, so one that crashes
+    // or loses its connection drops out after 90.
+    private readonly ConcurrentDictionary<string, DateTimeOffset> clients = new();
+    private static readonly TimeSpan ActiveWindow = TimeSpan.FromSeconds(90);
 
     public MasServer(
         IModuleRunner runner,
@@ -163,6 +179,9 @@ public sealed class MasServer
             var path   = (ctx.Request.Path.Value ?? string.Empty).TrimEnd('/');
             var method = ctx.Request.Method;
 
+            var client = ctx.Request.Headers["MPAI-Client"].ToString();
+            if (client.Length is > 0 and <= 64) clients[client] = DateTimeOffset.UtcNow;
+
             if (!path.StartsWith(Prefix, StringComparison.Ordinal))
             {
                 await Write(ctx, 404, "text/plain", "Not an MPAI AIFU route.");
@@ -175,35 +194,29 @@ public sealed class MasServer
                 ? Array.Empty<string>()
                 : rest.Split('/');
 
-            // GET /Apps - the catalogue
-            if (method == "GET" && segs.Length == 1 && segs[0] == "Apps")
+            // POST /Leave - the caller is closing: it no longer counts
+            if (method == "POST" && segs.Length == 1 && segs[0] == "Leave")
             {
-                await Write(ctx, 200, "application/json", Catalogue.ToJson());
+                if (client.Length > 0) clients.TryRemove(client, out _);
+                await Write(ctx, 200, "text/plain", "Goodbye.");
                 return;
             }
 
-            // GET /Apps/{id} - the Workflow Description itself
-            if (method == "GET" && segs.Length == 2 && segs[0] == "Apps")
+            // GET /Status - how many clients are active now, the caller included
+            if (method == "GET" && segs.Length == 1 && segs[0] == "Status")
             {
-                var app = Catalogue.Find(segs[1]);
-                if (app is null) { await Write(ctx, 404, "text/plain", "No such App."); return; }
-                await Write(ctx, 200, "text/plain; charset=utf-8",
-                            await System.IO.File.ReadAllTextAsync(app.WorkflowPath));
+                var since = DateTimeOffset.UtcNow - ActiveWindow;
+                foreach (var old in clients.Where(c => c.Value < since).Select(c => c.Key).ToList())
+                    clients.TryRemove(old, out _);
+                await Write(ctx, 200, "application/json", $"{{\"activeClients\":{clients.Count}}}");
                 return;
             }
 
-            // GET /Apps/{id}/Icon
-            if (method == "GET" && segs.Length == 3 && segs[0] == "Apps" && segs[2] == "Icon")
-            {
-                var app = Catalogue.Find(segs[1]);
-                if (app?.IconFile is null) { await Write(ctx, 404, "text/plain", "No icon."); return; }
-                var bytes = await System.IO.File.ReadAllBytesAsync(
-                    System.IO.Path.Combine(app.Folder, app.IconFile));
-                ctx.Response.StatusCode  = 200;
-                ctx.Response.ContentType = IconType(app.IconFile);
-                await ctx.Response.Body.WriteAsync(bytes);
+            // THE APP ROUTES: /Apps, /Apps/{id}, /Apps/{id}/Icon as always, for the
+            // default collection; /Apps?q=&category=, /Apps/{id}/Descriptor,
+            // /Categories and /Collections; and all of them under /c/{collection}.
+            if (method == "GET" && await ServeApps(ctx, segs))
                 return;
-            }
 
             // POST /Controller
             if (method == "POST" && segs.Length == 1 && segs[0] == "Controller")
@@ -304,6 +317,75 @@ public sealed class MasServer
             Console.WriteLine($"[MAS] EXCEPTION: {ex}");
             await Write(ctx, 500, "text/plain", ex.Message);
         }
+    }
+
+    private async Task<bool> ServeApps(HttpContext ctx, string[] segs)
+    {
+        if (segs.Length == 1 && segs[0] == "Collections")
+        {
+            await Write(ctx, 200, "application/json", Offer.CollectionsJson());
+            return true;
+        }
+
+        // Which collection: named by /c/{id}/..., or the default.
+        AppOffer.Collection collection = Offer.Default;
+        string prefix = "";
+        var rest = segs;
+        if (segs.Length >= 3 && segs[0] == "c")
+        {
+            var named = Offer.Find(segs[1]);
+            if (named is null) { await Write(ctx, 404, "text/plain", "No such collection."); return true; }
+            collection = named; prefix = $"c/{named.Id}/"; rest = segs[2..];
+        }
+        if (rest.Length == 0) return false;
+
+        if (rest.Length == 1 && rest[0] == "Categories")
+        {
+            await Write(ctx, 200, "application/json", AppOffer.CategoriesJson(collection));
+            return true;
+        }
+        if (rest[0] != "Apps") return false;
+
+        // GET /Apps - the collection's Apps; with ?q= or ?category=, a search
+        if (rest.Length == 1)
+        {
+            var q = ctx.Request.Query["q"].ToString();
+            var category = ctx.Request.Query["category"].ToString();
+            await Write(ctx, 200, "application/json",
+                q.Length == 0 && category.Length == 0
+                    ? AppOffer.ListJson(collection.Apps, prefix)
+                    : AppOffer.ResultJson(AppOffer.Search(collection, q, category), prefix));
+            return true;
+        }
+
+        // An App of this collection - or the shell, which is served by name to any client.
+        var app = collection.Find(rest[1]) ??
+                  (string.Equals(rest[1], Catalogue.ShellId, StringComparison.OrdinalIgnoreCase) ? Catalogue.Find(rest[1]) : null);
+        if (app is null) { await Write(ctx, 404, "text/plain", "No such App."); return true; }
+
+        // GET /Apps/{id} - the Workflow Description itself
+        if (rest.Length == 2)
+        {
+            await Write(ctx, 200, "text/plain; charset=utf-8", await System.IO.File.ReadAllTextAsync(app.WorkflowPath));
+            return true;
+        }
+        // GET /Apps/{id}/Icon
+        if (rest.Length == 3 && rest[2] == "Icon")
+        {
+            if (app.IconFile is null) { await Write(ctx, 404, "text/plain", "No icon."); return true; }
+            var bytes = await System.IO.File.ReadAllBytesAsync(System.IO.Path.Combine(app.Folder, app.IconFile));
+            ctx.Response.StatusCode  = 200;
+            ctx.Response.ContentType = IconType(app.IconFile);
+            await ctx.Response.Body.WriteAsync(bytes);
+            return true;
+        }
+        // GET /Apps/{id}/Descriptor
+        if (rest.Length == 3 && rest[2] == "Descriptor")
+        {
+            await Write(ctx, 200, "application/json", AppOffer.DescriptorJson(app, prefix));
+            return true;
+        }
+        return false;
     }
 
     // The SLA chooses among BASIC, DIGEST and BEARER; this implements BEARER,

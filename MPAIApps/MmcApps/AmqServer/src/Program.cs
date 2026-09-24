@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 using AIF.Store;
@@ -61,6 +63,25 @@ internal static class Program
 
         var amdDir       = config.AmdDirectory ?? MpaiPaths.Amds;
         var settingsPath = config.SettingsPath ?? MpaiPaths.Settings;
+
+        // L3s FROM THE STORE, when so configured: the L3s of the Modules this
+        // Service serves, and of their Sub-AIMs, fetched into a cache - which is
+        // then the folder the Controller reads, in place of AmdDirectory.
+        if (string.Equals(config.L3Source, "Store", StringComparison.OrdinalIgnoreCase))
+        {
+            if (string.IsNullOrWhiteSpace(config.StoreUrl))
+            {
+                Console.WriteLine("FATAL: L3Source is Store, but no StoreUrl is configured.");
+                return 1;
+            }
+            amdDir = config.L3Cache ?? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MPAI", "SCI", "L3");
+            Console.WriteLine($"  L3s:           from the Store at {config.StoreUrl}, kept in {amdDir}");
+            var fetched = await StoreL3Source.FetchAsync(config.StoreUrl,
+                new[] { AmqModule, MadModule, MatModule, MpdModule, MasModule }, amdDir, Console.WriteLine);
+            Console.WriteLine($"  L3s:           {fetched.Fetched} from the Store, {fetched.FromCache} from the cache, " +
+                              $"{fetched.Missing.Count} missing{(fetched.Missing.Count > 0 ? ": " + string.Join(", ", fetched.Missing) : "")}");
+        }
 
         Console.WriteLine($"  Listen:        {config.ListenUrl}");
         Console.WriteLine($"  AMDs:          {amdDir}");
@@ -167,11 +188,48 @@ internal static class Program
         // A SERVICE OFFERS SEVERAL APPS, SO IT HOLDS SEVERAL PROVIDERS. Adding an
         // App to this Service is adding its provider here - the providers live
         // with the Modules they build, not with the windows that drive them.
-        using var north = new NorthApi(amdDir, settingsPath, s => new CompositeProvider(
-            new AmqProvider(s),
-            new MadProvider(s),
-            new MatProvider(s),
-            new MpdProvider(s)));
+        // SUB-AIMs ON ANOTHER MACHINE, when configured: the Controller asks for each
+        // AIM, and what is answered stands in for it - carrying its Ports over
+        // MPAI-MAS to the Service that runs it.
+        if (config.RemoteAims is { Count: > 0 } remote)
+        {
+            foreach (var (aim, where) in remote)
+                Console.WriteLine($"  Remote AIM:    {aim} at {where}");
+            AIF.Controller.Controller.RemoteAims = (aimName, relation) =>
+                remote.TryGetValue(aimName, out var where)
+                    ? new Mpai.Mas.Client.RemoteAim(aimName, store, where, config.RemoteToken, Console.WriteLine)
+                    : null;
+        }
+
+        // MODELS FROM THE PARTIES THAT PUBLISH THEM, when configured: a model a
+        // setting names and this machine does not have is fetched and checked.
+        if (string.Equals(config.ModelSource, "Fetch", StringComparison.OrdinalIgnoreCase))
+        {
+            var modelCache = config.ModelCache ?? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MPAI", "SCI", "Models");
+            Console.WriteLine($"  Models:        fetched when missing, kept in {modelCache}");
+            AimSettings.Resolve = (aim, values) =>
+                AIF.Store.ModelSource.Resolve(aim, values, MpaiPaths.Root, modelCache, Console.WriteLine);
+        }
+
+        // AIMs FROM PACKAGES, when configured: the package provider is asked first,
+        // and what it cannot build - a package missing, or for another machine - the
+        // providers compiled into this Service build, as they always have.
+        var fromPackages = string.Equals(config.AimSource, "Packages", StringComparison.OrdinalIgnoreCase);
+        var packageCache = config.PackageCache ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MPAI", "SCI", "Packages");
+        if (fromPackages) Console.WriteLine($"  AIMs:          from their packages, kept in {packageCache}");
+
+        using var north = new NorthApi(amdDir, settingsPath, s =>
+        {
+            var providers = new List<IAimProvider>();
+            if (fromPackages) providers.Add(new PackageAimProvider(s, packageCache, Console.WriteLine));
+            providers.Add(new AmqProvider(s));
+            providers.Add(new MadProvider(s));
+            providers.Add(new MatProvider(s));
+            providers.Add(new MpdProvider(s));
+            return new CompositeProvider(providers.ToArray());
+        });
         var runner = new NorthApiRunner(north, store);
 
         Console.WriteLine();
@@ -190,6 +248,16 @@ internal static class Program
 
         Console.WriteLine();
 
+        // WHAT IS OFFERED, AND TO WHOM. With collections or a Store configured, the
+        // offer is built from them; without, the Apps listed are the offer, as ever.
+        var offer = (config.Collections is { Length: > 0 } || !string.IsNullOrWhiteSpace(config.StoreUrl))
+            ? await AppOffer.BuildAsync(config.AppDirectory, config.Apps, config.Shell,
+                                        config.Collections, config.DefaultCollection, config.StoreUrl,
+                                        Console.WriteLine)
+            : null;
+        var catalogue = offer?.Catalogue ?? AppCatalogue.Scan(config.AppDirectory, config.Apps, config.Shell);
+        offer ??= AppOffer.FromCatalogue(catalogue);
+
         var server = new MasServer(
             runner,
             PortDataCodecs.Default(),
@@ -200,14 +268,18 @@ internal static class Program
         {
             // WHAT THIS SERVICE OFFERS. Empty unless a catalogue is configured, in
             // which case a client holding no application can ask what is here.
-            Catalogue = AppCatalogue.Scan(config.AppDirectory, config.Apps, config.Shell)
+            Catalogue = catalogue,
+            Offer     = offer
         };
 
         // WHAT THIS SERVICE CAN ACTUALLY RUN. An App is listed only if the Service
         // was told to offer it; whether its Modules can be built is a separate
         // question, and one worth answering at startup rather than at the click.
-        foreach (var app in server.Catalogue.Apps)
+        foreach (var app in server.Offer.Default.Apps)
             Console.WriteLine($"    {app.Id,-6} {app.Name}");
+        foreach (var collection in server.Offer.Named)
+            Console.WriteLine($"  Collection {collection.Id} (/MPAI/AIFU/c/{collection.Id}): " +
+                              string.Join(", ", collection.Apps.Select(a => a.Id)));
 
         Console.WriteLine(server.Catalogue.Root is null
             ? "  Apps:         none configured"

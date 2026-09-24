@@ -1,0 +1,10 @@
+{
+    "Name": "MPAI as a Service",
+    "Description": "Conversation, questions about pictures, translation and affective dialogue with a speaking avatar.",
+    "Apps": [
+        "MAD",
+        "AMQ",
+        "MAT",
+        "MPD"
+    ]
+}

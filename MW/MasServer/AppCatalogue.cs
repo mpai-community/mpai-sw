@@ -38,12 +38,24 @@ public sealed class AppCatalogue
         // HOW MUCH ROOM THE APP WANTS BESIDE THE AVATAR: none, normal or wide. The
         // App knows what it needs to show; a client that does not recognise the
         // value gives it the usual room.
-        string  Pane);
+        string  Pane)
+    {
+        // THE MODULE THE APP RUNS OVER: named by its descriptor ("Module"), or else
+        // read from its workflow's first line ("workflow X over <Module>").
+        public string? Module { get; init; }
+
+        // THE WHOLE DESCRIPTOR, as its app.json states it: what a person needs to
+        // find the App, understand it and consent to it. "{}" if it has none.
+        public string Descriptor { get; init; } = "{}";
+    }
 
     private readonly Dictionary<string, Entry> byId =
         new(StringComparer.OrdinalIgnoreCase);
 
     private string? shellId;
+
+    // The shell's identifier, if one is held: served by name, never offered.
+    public string? ShellId => shellId;
 
     // What a person is offered: everything held, but not the shell.
     public IReadOnlyCollection<Entry> Apps =>
@@ -90,7 +102,8 @@ public sealed class AppCatalogue
                 continue;
             }
 
-            string name = id, description = "", icon = "", pane = "normal";
+            string name = id, description = "", icon = "", pane = "normal", descriptor = "{}";
+            string? module = null;
             var manifest = Path.Combine(folder, "app.json");
             if (File.Exists(manifest))
             {
@@ -102,6 +115,8 @@ public sealed class AppCatalogue
                     if (r.TryGetProperty("Description", out var d)) description = d.GetString() ?? "";
                     if (r.TryGetProperty("Icon", out var i))        icon        = i.GetString() ?? "";
                     if (r.TryGetProperty("Pane", out var w))        pane        = w.GetString() ?? "normal";
+                    if (r.TryGetProperty("Module", out var m))      module      = m.GetString();
+                    descriptor = r.GetRawText();
                 }
                 catch
                 {
@@ -113,14 +128,33 @@ public sealed class AppCatalogue
             var iconPath = string.IsNullOrWhiteSpace(icon) ? null : Path.Combine(folder, icon);
             if (iconPath is not null && !File.Exists(iconPath)) iconPath = null;
 
+            module ??= ModuleOf(orch);
             catalogue.byId[id] = new Entry(id, name, description,
                                  iconPath is null ? null : Path.GetFileName(iconPath),
-                                 orch, folder, pane);
+                                 orch, folder, pane) { Module = module, Descriptor = descriptor };
         }
         return catalogue;
     }
 
     public Entry? Find(string id) => byId.TryGetValue(id, out var e) ? e : null;
+
+    // "workflow MMC-MAT over 1MMC-MAT-V2.5-I01" names the Module.
+    private static string? ModuleOf(string orch)
+    {
+        try
+        {
+            foreach (var line in File.ReadLines(orch))
+            {
+                var t = line.Trim();
+                if (!t.StartsWith("workflow ", StringComparison.Ordinal)) continue;
+                var parts = t.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var over = Array.IndexOf(parts, "over");
+                return over >= 0 && over + 1 < parts.Length ? parts[over + 1] : null;
+            }
+        }
+        catch { }
+        return null;
+    }
 
     // The catalogue as a client receives it. The icon is named, not embedded: a
     // client showing a list fetches only the few it displays.

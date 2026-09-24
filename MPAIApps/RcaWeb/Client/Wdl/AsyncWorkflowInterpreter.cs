@@ -213,12 +213,16 @@ public sealed class AsyncWorkflowInterpreter
                         json = await devices.AcquireAsync(port.DataType, step.ViaVad, counter);
                     }
                 }
+                // NOTHING ACQUIRED IS A PATH NOT TAKEN: 'branch on' the label is false.
                 if (json is null)
                 {
+                    data.Remove(port.Label);
+                    absent.Add(port.Label);
                     say($"acquire {port}: nothing");
                     break;
                 }
                 data[port.Label] = (port.DataType, json);
+                absent.Remove(port.Label);
                 say($"acquire {port}");
                 break;
             }

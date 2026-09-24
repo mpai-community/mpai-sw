@@ -14,13 +14,36 @@
     {
       <aside class="apps">
         <h2>Apps</h2>
-        @foreach (var app in apps)
+        @if (appPage is null)
         {
-          <button class="app" @onclick="() => ChooseApp(app.Id)">
-            @if (app.IconPath is not null) { <img src="@app.IconPath" alt="" /> }
-            <span class="name">@app.Name</span>
-            <span class="desc">@app.Description</span>
-          </button>
+          @* FINDING AN APP: words, a category, or both. Enter searches. *@
+          <div class="find">
+            <input placeholder="Search Apps" @bind="searchWords" @bind:event="oninput" @onkeydown="OnSearchKey" />
+            <select @onchange="OnCategory">
+              <option value="">All categories</option>
+              @foreach (var c in categories) { <option value="@c">@c</option> }
+            </select>
+          </div>
+          @foreach (var app in apps)
+          {
+            <button class="app" @onclick="() => ChooseApp(app.Id)">
+              @if (app.IconPath is not null) { <img src="@app.IconPath" alt="" /> }
+              <span class="name">@app.Name</span>
+              <span class="desc">@app.Description</span>
+            </button>
+          }
+        }
+        else
+        {
+          @* AN APP'S PAGE: what it does, what it will ask for, what it keeps. *@
+          <div class="page">
+            <div class="name">@appPage.Name</div>
+            <div class="desc">@appPage.Description</div>
+            <div class="facts">@(PageFacts(appPage))</div>
+            @if (appPage.Asks.Count > 0) { <div>It will ask for: @(string.Join(", ", appPage.Asks)).</div> }
+            @if (appPage.Keeps.Length > 0) { <div>What it keeps: @(appPage.Keeps)</div> }
+            <div class="actions"><button @onclick="OpenPage">Open</button> <button @onclick="ClosePage">Back</button></div>
+          </div>
         }
       </aside>
     }

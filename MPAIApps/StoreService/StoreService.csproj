@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- THE MPAI STORE, AS A SERVICE: actor A of MPAI-MAS V1.0, Architecture and
+       Operation. A repository of approved L3s, with a REST API over HTTPS.
+       Implementers submit L3s; Services' Controllers obtain them (actions 8-9).
+       A submitted L3 is VALIDATED against its L2, the standard-level instance of
+       the AIM it implements, and its package is looked for: what these find is
+       signalled, and does not stop publication. It is REFUSED if a Sub-AIM's L3
+       is found neither in the composite's package nor in the Store, or if the L3
+       cannot be identified. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Mpai.StoreService</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+</Project>

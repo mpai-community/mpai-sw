@@ -16,6 +16,15 @@ aside h2 { margin: 4px 0 10px; font-size: 16px; }
 .app img { grid-row: 1 / span 2; width: 48px; height: 48px; }
 .app .name { font-weight: 600; }
 .app .desc { font-size: 13px; color: #99A; }
+.find { display: flex; gap: 6px; margin-bottom: 10px; }
+.find input { flex: 1; padding: 5px 6px; background: #151A21; color: #EEE; border: 1px solid #2A323D; border-radius: 4px; }
+.find select { background: #151A21; color: #EEE; border: 1px solid #2A323D; border-radius: 4px; }
+.page { background: #1D232C; border: 1px solid #2A323D; border-radius: 6px; padding: 10px; font-size: 13px; }
+.page .name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.page .desc { color: #9FB0C6; margin-bottom: 8px; }
+.page .facts { color: #8899AA; font-size: 11px; margin-bottom: 8px; }
+.page .actions { margin-top: 12px; }
+.page .actions button { width: 80px; height: 28px; }
 .stage img { max-width: 100%; border-radius: 6px; }
 .instruction { font-size: 16px; margin: 4px 0; min-height: 1.4em; }
 .languages, .picture { display: flex; gap: 16px; align-items: end; }

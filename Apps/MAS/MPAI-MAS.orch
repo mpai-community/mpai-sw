@@ -1,0 +1,42 @@
+# =============================================================================
+#  MPAI-MAS.orch - MPAI as a Service
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  This is not an App: it is the container the Apps run in, and it belongs to
+#  the client. It welcomes a person, offers what the Service has, runs the App
+#  they choose, and asks whether they want another.
+#
+#  It runs over 1MAS-APP-V1.0-I01 and nothing else: it speaks, and the Apps it
+#  runs do the work. Each of those runs under a Controller of its own.
+# =============================================================================
+
+workflow MPAI-MAS over 1MAS-APP-V1.0-I01
+
+on Start:
+
+    ask Controller to start
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to MPAI as a Service.
+        Choose an App and enjoy."
+    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
+    present WelcomeSpeech, WelcomeFaceDescriptors
+
+    # With others using the Service now, she says so; alone, she says nothing.
+    acquire Company (OSD-BTO-V1.5) = { "Attributes": { "TextRole": "Concurrency" } }
+    branch on Company {
+        offer Company (OSD-BTO-V1.5:1)
+        ask   CompanySpeech (OSD-BSO-V1.5), CompanyFaceDescriptors (PAF-FDO-V1.6)
+        present CompanySpeech, CompanyFaceDescriptors
+    }
+
+    loop until Stop:
+
+        acquire Chosen (OSD-BTO-V1.5) = { "Attributes": { "TextRole": "AppName" } }
+        run Chosen
+
+        offer Again (OSD-BTO-V1.5:1) = "Do you want to try another App?"
+        ask   AgainSpeech (OSD-BSO-V1.5), AgainFaceDescriptors (PAF-FDO-V1.6)
+        present AgainSpeech, AgainFaceDescriptors
+
+on Stop:
+    ask Controller to stop

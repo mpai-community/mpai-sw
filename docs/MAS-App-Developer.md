@@ -2,7 +2,7 @@
 
 How MAS-App is built, and how to change it or add an App. For installing and
 using it, see the [User Guide](MAS-App-User.md); for an overview, see
-[MPAI Software](../README.md).
+[MPAI Software](MPAI-Software.md).
 
 ---
 
@@ -168,3 +168,132 @@ trace; never write to a folder of your own.
 - The browser client keeps an asynchronous copy of the interpreter; the two
   should become one.
 - The Service offers no access control to the browser client.
+- `1MMC-TTS-V2.5-I01`'s Spanish voice (`es_ES-davefx-medium`) is male; no
+  single-speaker female `es_ES` voice exists at medium or high quality in
+  Piper's own catalogue. `es_ES-sharvard-medium` has a female speaker, but as
+  speaker index 1 of a multi-speaker file, and `TtsFactory`/`PiperTtsAim` do not
+  yet support selecting a speaker index.
+
+## 10. The Store, and a Sub-AIM on another machine
+
+Phase 5 (see `M3xxx - Phase 5 - implementing the MPAI-MAS workflow`) let a
+Service take its L3s from the MPAI Store, its AIMs from packages, its models
+from third parties, and a Sub-AIM from another machine, over MPAI-MAS. Every
+piece is additive and off by default: a Service with none of the settings
+below runs exactly as it always has, reading `AmdDirectory` and building every
+AIM itself.
+
+### 10.1 The Store
+
+`MPAIApps/StoreService` is a separate program, a repository of approved L3s
+with a REST API (`MPAIApps/StoreService/README.md`). Run it once, and any
+number of Services can point at it:
+
+```powershell
+dotnet run --project D:\BI\MPAIApps\StoreService\StoreService.csproj -- --Urls https://localhost:5020 --Root D:\MPAI\Store --Packages D:\MPAI\Packages
+```
+
+Submit L3s with `MPAIApps/StoreService/Submit-L3s.ps1` or the `StoreApp`
+window; build packages with `AIMs/Build-Packages.ps1`.
+
+**A Service reachable from another machine cannot use HTTPS with the
+development certificate**, since a remote machine will not trust it without
+installing it first. For a private network (Tailscale, a LAN), the simplest
+working arrangement is plain HTTP throughout - the Store, and every Service
+that must be reached from elsewhere:
+
+```powershell
+dotnet run --project D:\BI\MPAIApps\StoreService\StoreService.csproj -- --Urls http://0.0.0.0:5020 --Root D:\MPAI\Store --Packages D:\MPAI\Packages
+```
+
+Every Service's `StoreUrl` (below) must then use `http://`, not `https://`,
+including a Service on the same machine as the Store - a scheme mismatch is a
+plain connection failure, not a certificate warning, and the Service falls
+back to its last-known L3 cache without saying why in those words.
+
+### 10.2 A Service's own configuration
+
+These settings go in a Service's `mas-server-*.json` (see
+`MasServerConfig.cs` for the full set):
+
+| Setting | Effect |
+|---|---|
+| `L3Source: "Store"`, `StoreUrl`, `L3Cache` | L3s come from the Store instead of `AmdDirectory`. |
+| `AimSource: "Packages"`, `PackageCache` | AIMs are built from the packages their L3s name, falling back to the compiled providers for any package missing or built for another machine. |
+| `ModelSource: "Fetch"`, `ModelCache` | A model a setting names and the machine lacks is fetched from `Source:<setting>` and checked against `SHA256:<setting>`. |
+| `Collections`, `DefaultCollection` | Which Apps this Service offers, and where (`/MPAI/AIFU/c/<name>`). |
+| `RemoteAims`, `RemoteToken` | A Sub-AIM this Service does not build itself; see 10.3. |
+| `BearerToken` | Required once `ListenUrl` is not loopback (`127.0.0.1` or `localhost`); the Service refuses to start without one, so that a machine reachable from outside cannot be used by an uninvited caller. |
+
+### 10.3 A Sub-AIM on another machine
+
+MPAI-MAS lets a Sub-AIM run on its own machine (`Identifier.Relation` other
+than `Internal`), reached over MPAI-MAS through a proxy
+(`Mpai.Mas.Client.RemoteAim`). What a Remote Client starts may itself be a
+basic AIM - action 6 starts "the AIM selected" - and the Controller and
+executor build and run that AIM directly, with no invented containing Module.
+
+**The machine that runs the Sub-AIM** (call it the Sub-AIM's Service) offers
+only that AIM, with a token, listening on every interface so it can be
+reached:
+
+```json
+{
+  "ListenUrl": "http://0.0.0.0:5006/",
+  "L3Source": "Store", "StoreUrl": "http://<main machine>:5020/",
+  "L3Cache": "D:\\MPAI\\SCI\\L3",
+  "SettingsPath": "D:\\BI\\AIMs\\aim-settings.json",
+  "AppDirectory": "D:\\BI\\Apps", "Apps": [],
+  "BearerToken": "<a shared secret>"
+}
+```
+
+`Apps` is empty: this machine's job is the one AIM, not a composite Module,
+and today's startup loop always tries to build all five hardcoded Modules
+regardless of `Apps` (see 10.4) - so a model this machine lacks for an
+unrelated Module (BLIP for AMQ, say) does not need to be present, only not
+fatal, which 10.4 now ensures.
+
+**The machine whose Module uses the Sub-AIM** names where it is:
+
+```json
+{
+  "RemoteAims": { "1MMC-EDP-V2.5-I01": "http://<Sub-AIM's machine>:5006/" },
+  "RemoteToken": "<the same shared secret>"
+}
+```
+
+**Every Data Type the Sub-AIM's Ports carry must have a wire translator** in
+`MW/PortData`, registered in `PortDataCodecs.Default()` - the same
+requirement as 7.3 for a new App. `MMC-SUM-V2.5` and `MMC-EPS-V2.5` (Entity
+Personal Status, needed for any AIM MPD uses remotely) exist today; a further
+AIM would need whatever its own Ports carry.
+
+**Firewall:** the Sub-AIM's port (`5006` above) must accept inbound
+connections from the other machine. On Windows, from an elevated PowerShell:
+
+```powershell
+New-NetFirewallRule -DisplayName "MPAI EDP 5006" -Direction Inbound -Protocol TCP -LocalPort 5006 -Action Allow
+```
+
+A firewall silently dropping the connection looks identical to the Sub-AIM's
+process being down: the caller's log shows a plain connection timeout
+(`AIF] <AIM>: threw, ... A connection attempt failed because the connected
+party did not properly respond ...`), not a refusal. Check the rule before
+suspecting the process.
+
+**Tested:** MAD and MPD, each with EDP as a remote AIM - locally (two
+Services on one machine) and, for MAD, across two physical machines over
+Tailscale - with the conversation's memory (`MMC-SUM-V2.5`) correctly
+accumulating turn over turn on the machine that does not hold it locally.
+
+### 10.4 One Module's fault does not stop the Service
+
+The Service's start-up loop (`Program.cs`) always tries all five hardcoded
+Modules, regardless of `Apps`. Building an AIM can throw - most often a
+missing model file - and `NorthApiRunner.Start` catches that exception and
+reports it as that one Module's failure (`<Module>: FAILED - <message>`)
+rather than letting it end the process: every other Module still starts. This
+matters most for a machine that hosts only some AIMs, as 10.3's Sub-AIM
+machine does.
+

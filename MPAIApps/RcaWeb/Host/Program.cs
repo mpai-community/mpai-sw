@@ -101,6 +101,8 @@ app.Map("/MPAI/AIFU/{**rest}", async (HttpContext http) =>
     {
         request.Content = new ByteArrayContent(Array.Empty<byte>());
     }
+    if (http.Request.Headers.TryGetValue("MPAI-Client", out var clientId))
+        request.Headers.TryAddWithoutValidation("MPAI-Client", clientId.ToString());
     if (http.Request.Headers.Authorization.Count > 0)
         request.Headers.TryAddWithoutValidation("Authorization", http.Request.Headers.Authorization.ToString());
 

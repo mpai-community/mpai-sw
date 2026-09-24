@@ -24,6 +24,13 @@ public sealed class DescriptorNode
     public List<RuntimePort> Ports { get; } =
         new();
 
+    // WHERE THIS SUB-AIM RUNS, as the composite that contains it declares
+    // (Identifier.Relation in its SubAIMs entry): "Internal" - within the machine
+    // provisioned for the Module, as every AIM does today - or "External",
+    // "Private", "Public": on its own machine, reached over MPAI-MAS. Empty when
+    // the L3 does not say.
+    public string Relation { get; set; } = string.Empty;
+
     // InternalType name -> DataType identifier.
     // Populated from the "InternalTypes" array in the composite's AMD.
     public Dictionary<string, string> InternalTypes { get; } =

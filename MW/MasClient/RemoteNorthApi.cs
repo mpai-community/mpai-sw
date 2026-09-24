@@ -12,6 +12,14 @@ using Mpai.Mas.PortData;
 
 namespace Mpai.Mas.Client;
 
+// THIS CLIENT, AS THE SERVICE COUNTS IT. A random identifier, made when the program
+// starts and sent with every request, so that a Service can tell how many people
+// are using it. It says nothing about the person.
+public static class MasClientIdentity
+{
+    public static string Id { get; } = Guid.NewGuid().ToString("N");
+}
+
 // The North API over MPAI-MAS.
 //
 // SAME THREE METHODS, ACROSS A NETWORK. The User Agent holds an INorthApi and
@@ -50,6 +58,7 @@ public sealed class RemoteNorthApi : INorthApi, IDisposable
         };
 
         codecs = PortDataCodecs.Default();
+        http.DefaultRequestHeaders.Add("MPAI-Client", MasClientIdentity.Id);
 
         if (!string.IsNullOrWhiteSpace(bearerToken))
             http.DefaultRequestHeaders.Authorization =

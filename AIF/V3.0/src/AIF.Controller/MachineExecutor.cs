@@ -96,6 +96,13 @@ public sealed class MachineExecutor
         Dictionary<string, string> boundary,
         Message message)
     {
+        // WHAT WAS STARTED MAY BE A BASIC AIM. A Remote Client may start any AIM
+        // (MPAI-MAS action 6), and a Service that offers one AIM runs that AIM. It
+        // is not a composite and nothing contains it: its own Ports are the
+        // boundary, so there is no Topology to walk and no routing to do.
+        if (node.Children.Count == 0)
+            return await ExecuteAimAsync(node, boundary, message);
+
         var children =
             node.Children.ToDictionary(
                 child => child.AIMName,
@@ -227,6 +234,84 @@ public sealed class MachineExecutor
                 Ports       = CollectOutputs(node, outputs, last)
             });
     }
+
+    // THE AIM ITSELF, ASKED DIRECTLY. What the boundary carries is keyed by Data
+    // Type and Port Number; an AIM reads its Message by its own Port names, and
+    // answers by them. Here is the one place the two are matched, for an AIM that
+    // was started on its own.
+    private async Task<ExecutionResult> ExecuteAimAsync(
+        DescriptorNode aim,
+        IReadOnlyDictionary<string, string> boundary,
+        Message message)
+    {
+        var inbox = new Dictionary<string, string>();
+        foreach (var supplied in boundary)
+        {
+            var parts    = supplied.Key.Split('#');
+            var dataType = parts[0];
+            var number   = parts.Length > 1 && int.TryParse(parts[1], out var n) ? n : 1;
+            if (InputPortForDataType(aim, dataType, number) is { } port)
+                inbox[port] = supplied.Value;
+        }
+
+        Console.WriteLine($"[AIF] {aim.AIMName}: started on its own, Ports={inbox.Count}");
+
+        Message result;
+        try
+        {
+            result = await host.ProcessAsync(
+                aim.AIMName,
+                new Message
+                {
+                    MessageId   = message.MessageId,
+                    MessageType = message.MessageType,
+                    Ports       = inbox
+                });
+        }
+        catch (OperationCanceledException cancelled)
+        {
+            return ExecutionResult.Complete(Message.Cancelled(message.MessageId, aim.AIMName, cancelled.Message));
+        }
+        catch (Exception failure)
+        {
+            Console.WriteLine($"[AIF] {aim.AIMName}: threw, produced no output: {failure.Message}");
+            return ExecutionResult.Complete(Empty(message));
+        }
+
+        if (result.IsCancelled) return ExecutionResult.Complete(result);
+        if (result.IsError)
+        {
+            Console.WriteLine($"[AIF] {aim.AIMName}: error, produced no output: {result.Payload}");
+            return ExecutionResult.Complete(Empty(message));
+        }
+
+        // Its outputs, back on the boundary they belong to.
+        var produced = new Dictionary<string, string>();
+        foreach (var output in result.Ports)
+        {
+            if (aim.Ports.FirstOrDefault(p => p.Direction == "Output" && p.Name == output.Key) is not { } port) continue;
+            var sameType = aim.Ports.Where(p => p.Direction == "Output" && p.DataType == port.DataType).ToList();
+            var number   = port.PortNumber ?? (sameType.IndexOf(port) + 1);
+            produced[new Endpoint(null, port.DataType, number).Key] = output.Value;
+            Console.WriteLine($"[COLLECT] {aim.AIMName}.{port.DataType} -> {port.DataType}#{number}");
+        }
+
+        return ExecutionResult.Complete(new Message
+        {
+            MessageId   = message.MessageId,
+            MessageType = result.MessageType,
+            DataType    = result.DataType,
+            Payload     = result.Payload,
+            Ports       = produced
+        });
+    }
+
+    private static Message Empty(Message message) => new()
+    {
+        MessageId   = message.MessageId,
+        MessageType = message.MessageType,
+        Ports       = new Dictionary<string, string>()
+    };
 
     private async Task<Message> RunCompositeChildAsync(
         DescriptorNode child,

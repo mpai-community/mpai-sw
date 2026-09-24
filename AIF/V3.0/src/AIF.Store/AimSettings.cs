@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 
 namespace AIF.Store;
@@ -50,11 +51,18 @@ public sealed class AimSettings
         return loaded;
     }
 
+    // WHAT AN AIM'S SETTINGS SAY, ONCE WHATEVER THEY NAME IS THERE. A Service may
+    // set this - see ModelSource - to obtain a model a setting names and the
+    // machine does not have. Unset, settings are handed over exactly as written.
+    public static Func<string, IReadOnlyDictionary<string, string>, IReadOnlyDictionary<string, string>>? Resolve { get; set; }
+
     public IReadOnlyDictionary<string, string> For(
         string aimName)
     {
-        return settings.TryGetValue(aimName, out var values)
-            ? values
+        var values = settings.TryGetValue(aimName, out var found)
+            ? found
             : new Dictionary<string, string>();
+
+        return Resolve is null ? values : Resolve(aimName, values);
     }
 }
