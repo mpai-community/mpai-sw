@@ -88,3 +88,5 @@ certificates, server configurations or personal data.
 - **Nothing a person says or shows is written to disk** unless diagnostics are
   switched on by the person running the software (`MPAI_DIAG=1`), and then only
   under the system's temporary folder.
+- **Who uses a public Thalia** can be counted, but only if whoever runs it switches the usage log on: it then keeps the IP address,
+  the country and the time of each visit and session, and nothing else (section 11 of the [Technical Guide](docs/Thalia-Technical-Guide.md)).

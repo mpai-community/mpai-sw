@@ -6,7 +6,7 @@ following files, made by others, are included under their own licences.
 | Files | What | Licence |
 |---|---|---|
 | `UserAgent/Assets/cav-avatar.glb` | Thalia's avatar, made with Ready Player Me | Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0), https://creativecommons.org/licenses/by-nc-sa/4.0/ |
-| `Models/BLIP/onnx/*` | The ONNX export of Salesforce's BLIP VQA base, which AMQ uses | See the model card of `Salesforce/blip-vqa-base`, https://huggingface.co/Salesforce/blip-vqa-base |
+| `Models/BLIP/onnx/*` | The ONNX export of Salesforce's BLIP VQA base (https://huggingface.co/Salesforce/blip-vqa-base), which AMQ uses. Converted by MPAI; the model is unchanged. | BSD 3-Clause License, Copyright (c) 2022, Salesforce.com, Inc. All rights reserved. The licence text is in https://github.com/salesforce/BLIP/blob/main/LICENSE.txt and is kept in `docs/licences/BLIP-LICENSE.txt`. |
 
 **Thalia's avatar is used for demonstration.** The face is a Ready Player Me avatar. CC BY-NC-SA 4.0 allows
 non-commercial use, with attribution to Ready Player Me, and adaptations under the same

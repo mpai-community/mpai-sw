@@ -37,6 +37,14 @@ var assets  = Path.Combine(root, "UserAgent", "Assets");
 var masOrch = Path.Combine(root, "UserAgent", "Orchestration", "MPAI-MAS.orch");
 
 var app = builder.Build();
+// WHO USES THE SERVICE, when it is reached through a proxy whose own addresses are all a host sees:
+// off unless Usage:Enabled in appsettings.json (UsageLog.cs). It sits before everything else.
+var usage = UsageLog.Create(app.Configuration, root);
+if (usage is not null)
+{
+    app.Use(usage.Invoke);
+    app.MapGet("/MPAI/Usage", usage.Summary);
+}
 // WHAT A PUBLIC SITE SENDS (M3248 3.1): HTTPS only from now on; content types as
 // declared; no referrer to other sites; framed by this origin only (the avatar's
 // page is); the camera and the microphone for this origin alone.

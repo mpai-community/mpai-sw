@@ -224,3 +224,27 @@ reports it as that one Module's failure (`<Module>: FAILED - <message>`)
 rather than letting it end the process: every other Module still starts. This
 matters most for a machine that hosts only some AIMs.
 
+## 11. Who uses a public Thalia
+
+Behind a proxy (RunPod's, for one) the client's host sees every request as coming from the proxy, and the person's
+own address is only in a header the proxy adds. `UserAgent/Clients/Browser/Host/UsageLog.cs` writes, for each person
+who opens the client (`visit`) and each session they start (`session`), a line in
+`<root>/logs/usage-YYYY-MM-DD.jsonl` with the address (read from `CF-Connecting-IP`, `True-Client-IP`, `X-Real-IP` or
+`X-Forwarded-For`, in that order), the country the proxy states, and the time; and `GET /MPAI/Usage?days=7` gives the
+numbers - visits, sessions, distinct addresses, per day, per address and per country - to whoever presents the
+bearer token.
+
+It is **off** unless `appsettings.Production.json` beside the host says so:
+
+```json
+{ "Usage": { "Enabled": true, "IpMode": "full", "RetentionDays": 30, "SummaryToken": "<a secret>", "Probe": false } }
+```
+
+- `IpMode`: `full`, `truncated` (IPv4 to /24, IPv6 to /48) or `hashed` (a keyed hash: addresses can be counted, not read).
+- `RetentionDays`: how long a file is kept; the host deletes older ones.
+- `Probe`: for the first 20 requests, writes every header that may hold an address to `usage-probe.log`, to see which one
+  the proxy sets. A header a person can send themselves (`X-Forwarded-For`) can be forged; the proxy's own cannot.
+
+**An IP address is personal data.** Whoever runs a public Thalia and switches this on must say so in their privacy
+notice: what is kept (the address, the country, the time, that a visit or a session happened), why, and for how long.
+Nothing a person says or shows is looked at.
