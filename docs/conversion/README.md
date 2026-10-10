@@ -1,7 +1,7 @@
 # docs/conversion
 
 Scripts that turn the published form of a model into the ONNX file Thalia uses. Two models are not published as ONNX
-by their authors; see [Thalia - Models](../Thalia-Models.md) for all the others.
+by their authors; MPAI publishes the files in use, at <https://huggingface.co/mpai-community>. See [Thalia - Models](../Thalia-Models.md) for all the others.
 
 | Script | Model | Status |
 |---|---|---|

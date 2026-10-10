@@ -19,9 +19,10 @@ Chrome). A GPU is not required. The Linux installation, as a service, is describ
    a folder.
 2. **Get the models.** Download each model listed in [Thalia - Models](Thalia-Models.md),
    place it under `Models/` at the path named in `AIMs/aim-settings.json`, and check its SHA-256.
-   Install Ollama and run `ollama pull llama3.2:3b`. The speaker model (ECAPA-TDNN, used by the Apps MAC
-   and ACR) is not published as ONNX: convert it with `docs/conversion/export_ecapa_tdnn.py`, or leave
-   MAC and ACR out of `Apps` in the configuration.
+   Install Ollama and run `ollama pull llama3.2:3b`. The two ONNX files that the models' authors do not
+   publish - the speaker model (ECAPA-TDNN, used by MAC and ACR) and BLIP (used by AMQ) - are published by MPAI at
+   <https://huggingface.co/mpai-community>; BLIP is also in this repository. To make the speaker file yourself,
+   see `docs/conversion/export_ecapa_tdnn.py`.
 3. **Trust the development certificate:** `dotnet dev-certs https --trust`.
 4. **Configure the Service.** Copy `MAS/Service/mas-server.example.json` to `MAS/Service/mas-server.json`.
    The example names no folder; a path you add to it may be relative to the folder of the software.

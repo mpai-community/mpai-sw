@@ -22,12 +22,12 @@ Licences differ and some forbid commercial use: **read each licence before you u
 | Whisper small (whisper.cpp) | Speech recognition | MAD, AMQ, MAT, MPD | <https://huggingface.co/ggerganov/whisper.cpp> (`ggml-small.bin`) and <https://github.com/ggml-org/whisper.cpp/releases> (program) | model **verified**; program version not identified |
 | Piper and 8 voices | Speech synthesis | all | <https://github.com/rhasspy/piper/releases/tag/2023.11.14-2> (program), <https://huggingface.co/rhasspy/piper-voices> (voices) | voices **verified**; program: release as named |
 | M2M100 418M | Translation | MAT | <https://huggingface.co/Xenova/m2m100_418M> | **verified** (one small file differs, see below) |
-| BLIP VQA base | Questions about a picture | AMQ | ONNX files: in this repository; vocabulary: <https://huggingface.co/Salesforce/blip-vqa-base> | ONNX are MPAI's own export; vocabulary **verified** |
+| BLIP VQA base | Questions about a picture | AMQ | ONNX files: <https://huggingface.co/mpai-community/blip-vqa-base-onnx> (and in this repository); vocabulary: <https://huggingface.co/Salesforce/blip-vqa-base> | ONNX are MPAI's own export, published by MPAI; vocabulary **verified** |
 | wav2vec2 emotion | Emotion in the voice | MPD | <https://zenodo.org/records/6221127> (audeering's own ONNX export) | **verified** |
 | HSEmotion `enet_b0_8_va_mtl` | Emotion in the face | MPD | <https://github.com/HSE-asavchenko/face-emotion-recognition/tree/main/models/affectnet_emotions/onnx> | **verified** |
 | SCRFD 10G | Face detection | MAC, ACR | <https://github.com/deepinsight/insightface/releases/tag/v0.7> (`buffalo_l.zip`, `antelopev2.zip`) | **verified** |
 | ArcFace R100 (`glintr100`) | Face identity | MAC, ACR | <https://github.com/deepinsight/insightface/releases/tag/v0.7> (`antelopev2.zip`) | **a variant**: not the same file |
-| ECAPA-TDNN (3D-Speaker) | Voice identity | MAC, ACR | <https://www.modelscope.cn/models/iic/speech_ecapa-tdnn_sv_zh-cn_3dspeaker_16k> and the script in `docs/conversion/` | **close** |
+| ECAPA-TDNN (3D-Speaker) | Voice identity | MAC, ACR | the file in use, published by MPAI: <https://huggingface.co/mpai-community/ecapa-tdnn-3dspeaker-onnx>; the source model: <https://www.modelscope.cn/models/iic/speech_ecapa-tdnn_sv_zh-cn_3dspeaker_16k> and the script in `docs/conversion/` | MPAI's own conversion, **published**; a new export is **close**, not identical |
 | Llama 3.2 3B | Dialogue | MAD, MPD | <https://ollama.com/library/llama3.2> | `ollama pull llama3.2:3b` |
 
 Total: the files below are about 7.6 GB, plus the Whisper and Piper program folders and the language model that Ollama keeps.
@@ -94,7 +94,7 @@ Every file is **verified** except `special_tokens_map.json`: the file now publis
 
 ## Picture question answering - BLIP VQA base, ONNX
 
-Used by AMQ. Source: Salesforce `Salesforce/blip-vqa-base`, <https://huggingface.co/Salesforce/blip-vqa-base>. MPAI exported it to ONNX; the three ONNX files and the weights file are **in this repository**, in `Models/BLIP/onnx/`. The recipe is docs/conversion/export_blip_vqa_to_onnx.py.
+Used by AMQ. Source: Salesforce `Salesforce/blip-vqa-base`, <https://huggingface.co/Salesforce/blip-vqa-base>. MPAI exported it to ONNX; the three ONNX files and the weights file are **in this repository**, in `Models/BLIP/onnx/`, and are also published, with a model card, at <https://huggingface.co/mpai-community/blip-vqa-base-onnx>. The recipe is docs/conversion/export_blip_vqa_to_onnx.py.
 The vocabulary comes from the source model: <https://huggingface.co/Salesforce/blip-vqa-base/resolve/main/vocab.txt> - **verified**. `blip_vision_model.onnx` keeps its weights in `blip_vision_model.onnx.data`, which must sit beside it.
 
 | File under `Models\` | Size | SHA-256 |
@@ -145,7 +145,7 @@ Used by MAC and ACR. The model is the ECAPA-TDNN of the 3D-Speaker project of Al
 Licence **Apache-2.0** for both.
 
 **Close, not identical.** Nobody publishes this model as ONNX. Thalia's `ecapa-tdnn.onnx` is a conversion with a fixed input of 360 frames
-(1 x 360 x 80). `docs/conversion/export_ecapa_tdnn.py` converts the published checkpoint the same way; the result gives embeddings that are
+(1 x 360 x 80). **MPAI publishes that file**, with its licence and a model card, at <https://huggingface.co/mpai-community/ecapa-tdnn-3dspeaker-onnx> (the SHA-256 below is the one of the published file). `docs/conversion/export_ecapa_tdnn.py` converts the published checkpoint the same way; the result gives embeddings that are
 nearly the same as those of the file in use (cosine similarity 0.998 to 0.9999 on test inputs) but it is **not the same file**, and the exact
 checkpoint used before is not recorded. If you use the new one, check it with your own speakers before you rely on it.
 
