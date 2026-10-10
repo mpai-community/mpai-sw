@@ -11,8 +11,8 @@ Get-FileHash <file> -Algorithm SHA256
 A different hash means a different file. A different version or export of the same model may work, but has not been tested with Thalia.
 
 **How each source was checked.** Where an address is marked **verified**, the SHA-256 published by (or computed from) that address is
-identical to the one in the table, so the file is the same. Where it says **source model only**, the address is the origin of the model
-but the ONNX file Thalia uses is a conversion that nobody has published: you will have to convert it yourself, or ask MPAI.
+identical to the one in the table, so the file is the same. Where it says **close**, the address publishes the model but not the ONNX file Thalia uses; the file is a conversion,
+a script that does the conversion is given in `docs/conversion/`, and its result is close to the file in use but not identical.
 Licences differ and some forbid commercial use: **read each licence before you use or pass on a file.**
 
 ## Summary
@@ -23,11 +23,11 @@ Licences differ and some forbid commercial use: **read each licence before you u
 | Piper and 8 voices | Speech synthesis | all | <https://github.com/rhasspy/piper/releases/tag/2023.11.14-2> (program), <https://huggingface.co/rhasspy/piper-voices> (voices) | voices **verified**; program: release as named |
 | M2M100 418M | Translation | MAT | <https://huggingface.co/Xenova/m2m100_418M> | **verified** (one small file differs, see below) |
 | BLIP VQA base | Questions about a picture | AMQ | ONNX files: in this repository; vocabulary: <https://huggingface.co/Salesforce/blip-vqa-base> | ONNX are MPAI's own export; vocabulary **verified** |
-| wav2vec2 emotion | Emotion in the voice | MPD | <https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim> | **source model only** |
+| wav2vec2 emotion | Emotion in the voice | MPD | <https://zenodo.org/records/6221127> (audeering's own ONNX export) | **verified** |
 | HSEmotion `enet_b0_8_va_mtl` | Emotion in the face | MPD | <https://github.com/HSE-asavchenko/face-emotion-recognition/tree/main/models/affectnet_emotions/onnx> | **verified** |
 | SCRFD 10G | Face detection | MAC, ACR | <https://github.com/deepinsight/insightface/releases/tag/v0.7> (`buffalo_l.zip`, `antelopev2.zip`) | **verified** |
 | ArcFace R100 (`glintr100`) | Face identity | MAC, ACR | <https://github.com/deepinsight/insightface/releases/tag/v0.7> (`antelopev2.zip`) | **a variant**: not the same file |
-| ECAPA-TDNN | Voice identity | MAC, ACR | <https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb> | **source model only** |
+| ECAPA-TDNN (3D-Speaker) | Voice identity | MAC, ACR | <https://www.modelscope.cn/models/iic/speech_ecapa-tdnn_sv_zh-cn_3dspeaker_16k> and the script in `docs/conversion/` | **close** |
 | Llama 3.2 3B | Dialogue | MAD, MPD | <https://ollama.com/library/llama3.2> | `ollama pull llama3.2:3b` |
 
 Total: the files below are about 7.6 GB, plus the Whisper and Piper program folders and the language model that Ollama keeps.
@@ -94,7 +94,7 @@ Every file is **verified** except `special_tokens_map.json`: the file now publis
 
 ## Picture question answering - BLIP VQA base, ONNX
 
-Used by AMQ. Source: Salesforce `Salesforce/blip-vqa-base`, <https://huggingface.co/Salesforce/blip-vqa-base>. MPAI exported it to ONNX; the three ONNX files and the weights file are **in this repository**, in `Models/BLIP/onnx/`.
+Used by AMQ. Source: Salesforce `Salesforce/blip-vqa-base`, <https://huggingface.co/Salesforce/blip-vqa-base>. MPAI exported it to ONNX; the three ONNX files and the weights file are **in this repository**, in `Models/BLIP/onnx/`. The recipe is docs/conversion/export_blip_vqa_to_onnx.py.
 The vocabulary comes from the source model: <https://huggingface.co/Salesforce/blip-vqa-base/resolve/main/vocab.txt> - **verified**. `blip_vision_model.onnx` keeps its weights in `blip_vision_model.onnx.data`, which must sit beside it.
 
 | File under `Models\` | Size | SHA-256 |
@@ -107,12 +107,14 @@ The vocabulary comes from the source model: <https://huggingface.co/Salesforce/b
 
 ## Emotion in the voice - wav2vec2
 
-Used by MPD. Source: audeering, <https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim> (PyTorch and safetensors weights; licence **CC BY-NC-SA 4.0**, non-commercial).
-**Source model only:** that page publishes no ONNX file. The `model.onnx` Thalia uses is a conversion of it that has not been published; convert the model with a standard PyTorch-to-ONNX export, or ask MPAI.
+Used by MPD. Source: audeering, <https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim>. audeering itself
+publishes the ONNX export, and it is the file Thalia uses: <https://zenodo.org/records/6221127> (DOI 10.5281/zenodo.6221127),
+`w2v2-L-robust-12.6bc4a7fd-1.1.0.zip` (610 MB), whose `model.onnx` is **verified**: its SHA-256 is identical to the one below.
+Licence **CC BY-NC-SA 4.0** (non-commercial; share alike; credit audeering).
 
-| File under `Models\` | Size | SHA-256 |
-|---|---|---|
-| `w2v2-emotion\model.onnx` | 661.4 MB | `9B6E449686C0DB86F5C607B8C9FA1D87468C27198A1F0A20280C4E258239763D` |
+| File under `Models\` | Size | SHA-256 | Download |
+|---|---|---|---|
+| `w2v2-emotion\model.onnx` | 661.4 MB | `9B6E449686C0DB86F5C607B8C9FA1D87468C27198A1F0A20280C4E258239763D` | the `model.onnx` in <https://zenodo.org/api/records/6221127/files/w2v2-L-robust-12.6bc4a7fd-1.1.0.zip/content> |
 
 ## Emotion in the face - HSEmotion
 
@@ -135,10 +137,17 @@ InsightFace's pretrained models are for **non-commercial research**: read their 
 | `scrfd_10g_bnkps.onnx` | 16.1 MB | `5838F7FE053675B1C7A08B633DF49E7AF5495CEE0493C7DCF6697200B85B5B91` |
 | `glintr100.onnx` | 248.6 MB | `A7933EA5330113B01C9B60351D8F4C33003F145D8470AC5F0E52EE2EFFE25C60` |
 
-## Voice identity - ECAPA-TDNN
+## Voice identity - ECAPA-TDNN (3D-Speaker)
 
-Used by MAC and ACR. Source: SpeechBrain, <https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb> (PyTorch checkpoints).
-**Source model only:** no published ONNX file has the same hash as the one Thalia uses, which is a conversion of that model. Convert the model, or ask MPAI.
+Used by MAC and ACR. The model is the ECAPA-TDNN of the 3D-Speaker project of Alibaba's speech lab (embedding of 192 numbers from
+80 log-Mel filterbank features at 16 kHz), most probably the Chinese-trained `iic/speech_ecapa-tdnn_sv_zh-cn_3dspeaker_16k`:
+<https://www.modelscope.cn/models/iic/speech_ecapa-tdnn_sv_zh-cn_3dspeaker_16k> (checkpoint `ecapa-tdnn.ckpt`). Code: <https://github.com/modelscope/3D-Speaker>.
+Licence **Apache-2.0** for both.
+
+**Close, not identical.** Nobody publishes this model as ONNX. Thalia's `ecapa-tdnn.onnx` is a conversion with a fixed input of 360 frames
+(1 x 360 x 80). `docs/conversion/export_ecapa_tdnn.py` converts the published checkpoint the same way; the result gives embeddings that are
+nearly the same as those of the file in use (cosine similarity 0.998 to 0.9999 on test inputs) but it is **not the same file**, and the exact
+checkpoint used before is not recorded. If you use the new one, check it with your own speakers before you rely on it.
 
 | File under `Models\` | Size | SHA-256 |
 |---|---|---|
@@ -152,4 +161,4 @@ Another Ollama model can be named in `AIMs/aim-settings.json` (`OllamaModel`).
 ## Before you redistribute any of these
 
 The addresses above were checked on 2026-10-10: the hash of each file listed as **verified** matches the published one. Check the licence of each model before you use it commercially or pass it on:
-several are research or non-commercial licences (wav2vec2 emotion: CC BY-NC-SA 4.0; InsightFace models: non-commercial research), and each Piper voice has its own licence.
+several are research or non-commercial licences (wav2vec2 emotion: CC BY-NC-SA 4.0; InsightFace models: non-commercial research; Apache-2.0 for 3D-Speaker), and each Piper voice has its own licence.
