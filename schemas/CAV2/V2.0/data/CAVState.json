@@ -1,0 +1,48 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/CAV2/V2.0/data/CAVState.json",
+  "title":                      "CAV State V2.0",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "CAVStateID", "CAVState" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "CAV-CST-V2.0", "description": "CAV State Header – Standard CAV-CST-Vx.y" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this CAV State." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this CAV State." },
+    "CAVStateID":               { "type": "string", "description": "Unique identifier of this CAV State instance." },
+    "CAVStateTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this CAV State was produced." },
+
+    "CAVStateSpaceTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this CAV State was generated." },
+
+    "CAVState":                 { "type": "object", "additionalProperties": false, "description": "Set of data describing the operational condition of the CAV.", "properties": {
+
+      "BatteryState":           { "type": "object", "additionalProperties": false, "description": "Battery condition including capacity, temperature, and abnormal discharge indicators.", "properties": {
+        "MeasureType":          { "type": "string", "enum": [ "mAh", "Wh" ], "description": "Unit of battery capacity measurement." },
+        "Value":                { "type": "number", "description": "Battery capacity value in the specified MeasureType." },
+        "Percentage":           { "type": "number", "minimum": 0, "maximum": 100, "description": "Remaining battery capacity as a percentage." } } },
+
+      "BrakeResponsiveness":    { "type": "object", "additionalProperties": false, "description": "Brake performance based on effective deceleration relative to UNECE braking regulations.",
+                                  "properties": {
+        "MeasuredDeceleration": { "type": "number", "description": "Measured vehicle deceleration (m/s²)." },
+        "ExpectedDeceleration": { "type": "number", "description": "Expected deceleration per UNECE reference (m/s²)." },
+        "Delta":                { "type": "number", "description": "Difference between measured and expected deceleration (m/s²)." },
+        "UNECEReferenceUsed":   { "type": "string", "description": "Identifier of the UNECE braking regulation used as reference." } } },
+
+      "MotorResponsiveness":    { "type": "object", "additionalProperties": false, "description": "Effective acceleration derived from available motor torque, gear ratio, wheel radius, and vehicle mass.",
+                                  "properties": {
+        "MeasuredAcceleration": { "type": "number", "description": "Measured vehicle acceleration (m/s²)." },
+        "ExpectedAcceleration": { "type": "number", "description": "Expected vehicle acceleration (m/s²)." },
+        "MotorTorque":          { "type": "number", "description": "Available motor torque (N·m)." },
+        "GearRatio":            { "type": "number", "description": "Current gear ratio." },
+        "WheelRadius":          { "type": "number", "description": "Wheel radius (m)." },
+        "VehicleMass":          { "type": "number", "description": "Vehicle mass (kg)." } } },
+
+      "WheelResponsiveness":    { "type": "object", "additionalProperties": false, "description": "Traction effectiveness, slip behaviour, rotational anomalies, and mechanical integrity.",
+                                  "properties": {
+        "SlipRatio":            { "type": "number", "description": "Wheel slip ratio derived from wheel-speed sensors." },
+        "RotationalAnomaly":    { "type": "boolean", "description": "Indicates whether a rotational anomaly is detected." },
+        "MechanicalStatus":     { "type": "string", "description": "Description of wheel mechanical integrity status." } } } } },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this CAV State in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the CAV State (plain text, max 2048 characters)." } } }

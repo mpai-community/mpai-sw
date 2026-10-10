@@ -7,6 +7,7 @@
   "additionalProperties":     false,
   "properties":               {
 
+    "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Emotion is the one the Entity has; Degree is its intensity." },
     "Header":                 { "type": "string", "const": "MMC-EEM-V2.5" },
     "MInstanceID":            { "type": "string" },
     "UEnvironmentID":         { "type": "string" },
@@ -53,7 +54,7 @@
           "sad":              { "type": "string", "enum": ["lonely", "grief-stricken", "depressed/gloomy", "disappointed"] } } } } } } },
 
     "Degree":                 { "type": "number", "minimum": 0, "maximum": 1,
-                                "description": "Optional intensity/confidence of the chosen Emotion label, in [0,1]." },
+                                "description": "Optional intensity of the chosen Emotion label, in [0,1]; how likely the label is right is its Confidence." },
 
     "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
     "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

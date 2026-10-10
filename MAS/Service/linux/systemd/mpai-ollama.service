@@ -1,0 +1,16 @@
+# Ollama, for EDP (MAD, MPD), on this machine's loopback only.
+[Unit]
+Description=MPAI-MAS - Ollama (llama3.2:3b)
+After=network.target
+
+[Service]
+User=mpai
+Environment=OLLAMA_HOST=127.0.0.1:11434
+Environment=OLLAMA_MODELS=/opt/mpai/ollama-models
+# The model kept loaded between turns (the Service also asks for it with every request).
+Environment=OLLAMA_KEEP_ALIVE=-1
+ExecStart=/opt/mpai/ollama/bin/ollama serve
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

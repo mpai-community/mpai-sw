@@ -1,0 +1,31 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/AIH1/V1.0/data/EEGObject.json",
+  "title":                  "EEG Object V1.0",
+  "type":                   "object",
+  "additionalProperties":   false,
+  "unevaluatedProperties":  false,
+  "required":               [ "Header", "EEGObjectID", "EEGObjectTime", "EEGData" ],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "AIH-EEO-V1.0" },
+    "EEGObjectID":          { "type": "string" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironment":         { "type": "string" },
+    "EndUserID":            { "type": "string" },
+    "EndDeviceID":          { "type": "string" },
+
+    "EEGObjectTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Time.json" },
+
+    "EEGData":              { "type": "array", "items": { "anyOf": [
+                            { "type": "object", "properties": {
+      "DataLength":         { "type": "integer" },
+      "DataURI":            { "type": "string", "format": "uri" } } },
+                            { "type": "object", "properties": {
+      "Data":               { "type": "string" } } },
+                            { "type": "object", "properties": {
+      "DataID":             { "type": "string" } } } ] } },
+
+    "EEGDataQualifier":     { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/EEGQualifier.json" },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string" } } }

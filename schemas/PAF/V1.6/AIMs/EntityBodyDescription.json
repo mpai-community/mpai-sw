@@ -1,0 +1,32 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/PAF/V1.6/AIMs/EntityBodyDescription.json",
+  "title":                "Entity Body Description V1.6",
+
+  "Identifier":           {"ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-EBD-V1.6"},
+  "Header":               "PAF-EBD-V1.6",
+
+  "APIProfile":           "Basic",
+  "Description":          "This AIM receives a Body Object and produces its Body Descriptors Object: a 3D body pose/mocap representation (joints and posture of a human or humanoid body) expressing the body's semantics for Personal Status use.",
+
+  "InternalTypes":        [ ],
+
+  "ExternalPorts":        [{"Name": "BodyObject",        "Direction": "Input",  "DataType": "OSD-VIO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BodyDescriptorsObject",    "Direction": "Output", "DataType": "PAF-BDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [ ],
+  "Topology":             [ ],
+
+  "Implementations":      [{"ImplementationURI": "/* URI storing Implementation */",
+                            "BinaryName":       "/* BinaryName */",
+                            "Architecture":     "/* x86 | x86-64 | ARM | ARM64 | MIPS | RISC-V */",
+                            "OperatingSystem":  "/* Windows | Linux | MacOS | Debian | Ubuntu | RedHat | Android | Zephyr | RTOS | Oniro | iOS */",
+                            "Version":          "/* Version */",
+                            "Source":           "/* AIMStorage | MPAIStore | AIMURL */",
+                            "Destination":      "/* Destination URI */"}],
+
+  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "/* number GB */", "Maximum": "/* number GB */", "Request": "/* number GB */"},
+                           {"Name": "CPU:Class",  "Minimum": "/* Low | Medium | High */", "Maximum": "/* Low | Medium | High */", "Request": "/* Low | Medium | High */"}],
+
+  "DataXMData":           { },
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

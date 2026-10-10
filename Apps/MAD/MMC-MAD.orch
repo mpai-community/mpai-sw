@@ -15,17 +15,23 @@ on Start:
 
     ask Controller to start
 
+    # The Avatar this client holds and draws: every utterance animates it.
+    acquire Avatar (PAF-AVT-V1.6)
+
     offer Welcome (OSD-BTO-V1.5:1) = "Welcome to the MPAI Conversation Service.
         Please wait a few seconds while the models load."
-    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
-    present WelcomeSpeech, WelcomeFaceDescriptors
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   WelcomeSpeakingAvatar (XRV-SAV-V1.0)
+    present WelcomeSpeakingAvatar
 
     offer Ready (OSD-BTO-V1.5:1) = "I am ready. Tell me what is on your mind."
-    ask   ReadySpeech (OSD-BSO-V1.5), ReadyFaceDescriptors (PAF-FDO-V1.6)
-    present ReadySpeech, ReadyFaceDescriptors
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   ReadySpeakingAvatar (XRV-SAV-V1.0)
+    present ReadySpeakingAvatar
 
     offer Farewell (OSD-BTO-V1.5:1) = "Thank you for the conversation. Goodbye."
-    ask   FarewellSpeech (OSD-BSO-V1.5), FarewellFaceDescriptors (PAF-FDO-V1.6)
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   FarewellSpeakingAvatar (XRV-SAV-V1.0)
 
     loop until Stop:
 
@@ -36,9 +42,9 @@ on Start:
         } else {
             offer UserSpeech (OSD-BSO-V1.5:1)
         }
-        ask   MachineSpeech (OSD-BSO-V1.5), MachineFaceDescriptors (PAF-FDO-V1.6),
-              Memory (MMC-SUM-V2.5)
-        present MachineSpeech, MachineFaceDescriptors
+        offer Avatar (PAF-AVT-V1.6:1)
+        ask   Memory (MMC-SUM-V2.5), MachineSpeakingAvatar (XRV-SAV-V1.0)
+        present MachineSpeakingAvatar
 
         # The conversation's memory goes back with the next turn and nowhere
         # else: it starts empty with this conversation and ends with it.
@@ -46,6 +52,6 @@ on Start:
 
 on Stop:
 
-    present FarewellSpeech, FarewellFaceDescriptors
+    present FarewellSpeakingAvatar
 
     ask Controller to stop

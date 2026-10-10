@@ -36,8 +36,8 @@ Used by all four Apps. The program: `piper_windows_amd64.zip` from <https://gith
 | `Piper\voices\de_DE-eva_k-x_low\de_DE-eva_k-x_low.onnx.json` | 4.2 KB | `EF14B3DCB279AB4B18422A7A132877BEE7A148821BD91152FB7AE9C4B3D79625` |
 | `Piper\voices\en_US-amy-medium\en_US-amy-medium.onnx` | 63.2 MB | `B3A6E47B57B8C7FBE6A0CE2518161A50F59A9CDD8A50835C02CB02BDD6206C18` |
 | `Piper\voices\en_US-amy-medium\en_US-amy-medium.onnx.json` | 4.9 KB | `95A23EB4D42909D38DF73BB9AC7F45F597DBFCDE2D1BF9526FDEAF5466977D77` |
-| `Piper\voices\es_ES-mls_10246-low\es_ES-mls_10246-low.onnx` | 63.1 MB | `3F9D76D2778778942297AAB052AA7B2E67248D3F43614C889EE82901A230E197` |
-| `Piper\voices\es_ES-mls_10246-low\es_ES-mls_10246-low.onnx.json` | 4.2 KB | `A865944D7F6972AF347263B0B8152466DABBA3B78B8FE5A6985F7D3B19FD06A1` |
+| `Piper\voices\es_ES-davefx-medium\es_ES-davefx-medium.onnx` | 63.2 MB | `6658B03B1A6C316EE4C265A9896ABC1393353C2D9E1BCA7D66C2C442E222A917` |
+| `Piper\voices\es_ES-davefx-medium\es_ES-davefx-medium.onnx.json` | 4.8 KB | `0E0DDA87C732F6F38771FF274A6380D9252F327DCA77AA2963D5FBDF9EC54842` |
 | `Piper\voices\fr_FR-siwis-medium\fr_FR-siwis-medium.onnx` | 63.2 MB | `641D1AB097DA2B81128C076810EDB052B385DECC8BE3381814802A64A73BAF99` |
 | `Piper\voices\fr_FR-siwis-medium\fr_FR-siwis-medium.onnx.json` | 4.9 KB | `39479916C2DB192B5AC9764DADDD0C744D83E023AD890C6976C0633AE4DF8959` |
 | `Piper\voices\it_IT-paola-medium\it_IT-paola-medium.onnx` | 63.5 MB | `6FC918B5A0EA6137382833DDDFA567BFFBE6A5060C02043C87192EE59C04210C` |

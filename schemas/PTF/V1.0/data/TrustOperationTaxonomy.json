@@ -1,0 +1,20 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/PTF/V1.0/data/TrustOperationTaxonomy.json",
+  "title":                "Trust Operation Taxonomy V1.0",
+  "description":          "Taxonomy of trust-related operations in the PTF framework.",
+  "type":                 "object",
+  "additionalProperties": false,
+  "properties":           {
+
+    "OperationType":      { "type": "string",
+                            "enum": [ "VerifySignature",
+                                      "VerifyHash",
+                                      "ValidateCredential",
+                                      "ValidateEvidence",
+                                      "EvaluatePolicy",
+                                      "BindPolicy",
+                                      "IssueCredential",
+                                      "RevokeCredential",
+                                      "UpdateLifecycleState" ],
+                            "description": "Type of trust-related operation." } } }
+

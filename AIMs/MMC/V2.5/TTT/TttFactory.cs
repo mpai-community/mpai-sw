@@ -85,10 +85,12 @@ public static class TttFactory
             });
     }
 
+    // A relative path is resolved against the application's root, as every other
+    // model path is, not against the folder the process happened to start in.
     private static string? Value(
         IReadOnlyDictionary<string, string> settings,
         string key) =>
         settings.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value)
-            ? value
+            ? MpaiPaths.Resolve(value)
             : null;
 }

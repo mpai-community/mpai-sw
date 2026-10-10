@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using SixLabors.ImageSharp;
@@ -33,11 +34,11 @@ public class TIQEngine : IDisposable
         string decoderModel,
         string vocabFile)
     {
-        visionSession = new InferenceSession(visionModel);
+        visionSession = OnnxSessions.Create(visionModel);
 
-        encoderSession = new InferenceSession(encoderModel);
+        encoderSession = OnnxSessions.Create(encoderModel);
 
-        decoderSession = new InferenceSession(decoderModel);
+        decoderSession = OnnxSessions.Create(decoderModel);
 
         tokenizer = new BlipTokenizer(vocabFile);    }
 

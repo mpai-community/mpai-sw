@@ -1,0 +1,83 @@
+# =============================================================================
+#  MMC-AMQ.orch - MPAI Picture Question Answering Service
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  One Controller, one Module. The User Agent offers the Controller data
+#  identified by Data Type and Port Number, and asks for data identified the
+#  same way. It names no AIM.
+#
+#  A step completes before the next begins.
+# =============================================================================
+
+workflow MMC-AMQ over 1MMC-AMQ-V2.5-I01
+
+on Start:
+
+    ask Controller to start
+
+    # The Avatar this client holds and draws: every utterance animates it.
+    acquire Avatar (PAF-AVT-V1.6)
+
+    # --- the welcome, in two parts with a pause between them ---
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to the MPAI Picture Question
+        Answering Service."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   WelcomeSpeakingAvatar (XRV-SAV-V1.0)
+    present WelcomeSpeakingAvatar
+
+    wait 1s
+
+    offer Invitation (OSD-BTO-V1.5:1) = "Do you want to ask a question about a
+        picture?"
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   InvitationSpeakingAvatar (XRV-SAV-V1.0)
+    present InvitationSpeakingAvatar
+
+    # --- what the person answers decides what follows ---
+
+    loop until Stop:
+
+        acquire Reply (OSD-BSO-V1.5) via VAD
+        offer Reply (OSD-BSO-V1.5:2)
+        ask   ReplyText (OSD-BTO-V1.5:2)
+
+        branch on ReplyText contains "yes" {
+
+            offer Choose (OSD-BTO-V1.5:1) = "Please select a picture."
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   ChooseSpeakingAvatar (XRV-SAV-V1.0)
+            present ChooseSpeakingAvatar
+
+            acquire Picture (OSD-BVO-V1.5) = { "Formats": { "Content": { "2D": { "Static": "JPEG" } } } }
+            present Picture
+
+            acquire UserQuestion (OSD-BSO-V1.5) via VAD
+
+            offer Picture      (OSD-BVO-V1.5)
+            offer UserQuestion (OSD-BSO-V1.5:1)
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   Answer (OSD-BTO-V1.5:1), MachineSpeakingAvatar (XRV-SAV-V1.0)
+            present MachineSpeakingAvatar
+            display Answer
+
+            wait 2s
+
+            offer Again (OSD-BTO-V1.5:1) = "Do you want to ask a question about
+                another picture?"
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   AgainSpeakingAvatar (XRV-SAV-V1.0)
+            present AgainSpeakingAvatar
+
+        } else {
+
+            offer Farewell (OSD-BTO-V1.5:1) = "Maybe another time."
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   FarewellSpeakingAvatar (XRV-SAV-V1.0)
+            present FarewellSpeakingAvatar
+            end
+
+        }
+
+on Stop:
+    ask Controller to stop

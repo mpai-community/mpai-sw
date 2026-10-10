@@ -1,0 +1,24 @@
+{ "$id":                              "https://schemas.mpai.community/TFA/V1.5/data/TextDescriptorsQualifier.json",
+  "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "title":                            "Text Descriptors Qualifier V1.5",
+  "description":                      "Qualifier describing subtypes, formats, and attributes of text descriptors.",
+  "type":                             "object",
+  "required":                         [ "Header", "TextDescriptorsQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":             false,
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "TFA-TDQ-V1.5" },
+    "MInstanceID":                    { "type": "string" },
+    "UEnvironmentID":                 { "type": "string" },
+    "TextDescriptorsQualifierID":     { "type": "string" },
+    "TextDescriptorsQualifierTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":                       { "type": "object", "additionalProperties": false },
+
+    "Formats":                        { "type": "object", "additionalProperties": false, "properties": {
+      "OtherTextDescriptorsFormats":  { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/TextDescriptorsFormats.json" } } },
+
+    "Attributes":                     { "type": "object", "additionalProperties": false },
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048 } } }

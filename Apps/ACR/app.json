@@ -1,0 +1,31 @@
+﻿{
+    "Name": "Access Registration",
+    "Description": "Register your face and your voice, so that Access Control can recognise you.",
+    "Icon": "icon.svg",
+    "Pane": "none",
+    "Version": "1.0",
+    "Standard": "MPAI-MMC V2.5",
+    "UseCase": "ACR",
+    "Module": "1MMC-ACR-V2.5-I01",
+    "Keywords": [
+        "register",
+        "registration",
+        "enrol",
+        "face",
+        "voice",
+        "access",
+        "identity"
+    ],
+    "Categories": [
+        "Identity"
+    ],
+    "Languages": [
+        "en"
+    ],
+    "Asks": [
+        "typed text",
+        "camera",
+        "microphone"
+    ],
+    "Keeps": "Your name with the descriptors of your face and your voice - not the pictures or the sound - so that Access Control recognises you; on the server, until you close the session."
+}

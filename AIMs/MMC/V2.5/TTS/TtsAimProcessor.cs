@@ -40,7 +40,9 @@ public sealed class TtsAimProcessor : IAimProcessor
             sps = MpaiJson.FromJson<SpeechPersonalStatus>(spsJson);
         }
 
-        var speech = await _tts.ProcessAsync(text, ProsodyArgs(sps));
+        var prosody = ProsodyArgs(sps);
+        MpaiDiag.Emotion("TTS", $"{sps?.SpeechEmotion?.Category ?? "no emotion"} {sps?.SpeechEmotion?.Degree:0.0} -> Piper {(prosody.Length == 0 ? "defaults" : prosody.Trim())}");
+        var speech = await _tts.ProcessAsync(text, prosody);
         var json   = MpaiJson.ToJson(speech);
         return new Message
         {

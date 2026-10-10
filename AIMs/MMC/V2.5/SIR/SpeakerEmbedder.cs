@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Mpai.Mmc.Sir;
@@ -18,7 +19,7 @@ public sealed class SpeakerEmbedder : IDisposable
 
     public SpeakerEmbedder(string modelPath, int frames = 360)
     {
-        _session = new InferenceSession(modelPath);
+        _session = OnnxSessions.Create(modelPath);
         _inputName = _session.InputMetadata.Keys.First();
         _frames = frames;
     }

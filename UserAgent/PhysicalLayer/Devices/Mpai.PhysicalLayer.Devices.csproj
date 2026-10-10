@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- THE PORTABLE DEVICES OF THE PHYSICAL LAYER: the acquisition devices that need no
+       Windows - audio from a file, from ALSA (Linux), from a microphone array, and
+       images from a file. The Microphone and Camera Units use them; tests and headless
+       User Agents use them directly. They are not AIMs. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Mpai.PhysicalLayer</RootNamespace>
+    <AssemblyName>Mpai.PhysicalLayer.Devices</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\AIMs\Core\Mpai.Core.csproj" />
+  </ItemGroup>
+
+</Project>

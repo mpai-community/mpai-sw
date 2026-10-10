@@ -6,16 +6,22 @@
   "additionalProperties": false,  
   "properties":           {
 
-    "Header":             { "type": "string", "const": "AIF-AIN-V3.0" },
+    "Header":             { "type": "string", "const": "AIF-AMI-V3.0" },
     "AIMInstanceID":      { "type": "string" },
 
     "AIMInstance":        { "type": "array", "minItems": 1, "items": { "oneOf": [
                           { "type": "object", "required": [ "AIMType" ], "additionalProperties": false, "properties": {
-      "AIMType":          { "type": "string", "pattern": "^[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}$" } } },
+      "AIMType":          { "$ref": "#/$defs/AIMType" } } },
                           { "type": "object", "required": [ "AIMID" ], "additionalProperties": false, "properties": {
       "AIMID":            { "type": "string" } } },
                           { "type": "object", "required": [ "ImplementerAIMID" ], "additionalProperties": false, "properties": {
       "ImplementerAIMID": { "type": "string" } } } ] } },
 
     "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
-    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                {
+    "AIMType":            { "type": "string", "pattern": "^[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}$",
+                            "description": "The AIM Type as a Standard names it, e.g. MMC-MAD-V2.5." },
+    "AIMInstanceIdentifier": { "type": "string", "pattern": "^[0-9A-Za-z]+[A-Z]{3}-[A-Z]{3}-V[0-9]{1,2}[.][0-9]{1,2}-I[0-9]+$",
+                            "description": "An AIM Instance identifier: the ImplementerID, the AIM Type and -I with the Instance number, e.g. 1MMC-MAD-V2.5-I01." } } }

@@ -1,0 +1,30 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-FIR-V1.6-I01", "AIMName": "1PAF-FIR-V1.6-I01"},
+  "Header":           "PAF-FIR-V1.6",
+
+  "APIProfile":       "Basic",
+  "Description":      "Face Identity Recognition: receives a Basic Visual Object, which carries the time it was acquired, and, optionally, the Basic Visual Scene Descriptors of the scene it was isolated from; detects the face, matches it against the Subject Gallery held in Shared Storage; and returns the face identity as an Instance Identifier - the coarse \"face\" layer when nobody matches, so that an identity is always returned for the face received - with the Bounding Box locating the face. The visual counterpart of Speaker Identity Recognition.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "VisualObject",           "Direction": "Input",  "DataType": "OSD-BVO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "VisualSceneDescriptors", "Direction": "Input",  "DataType": "OSD-BVS-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceID",                 "Direction": "Output", "DataType": "OSD-IID-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "BoundingBox",            "Direction": "Output", "DataType": "OSD-BBX-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/PAF/V1.6/FIR",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Fir",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.5 GB", "Request": "1 GB",   "Maximum": "2 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/"}]}

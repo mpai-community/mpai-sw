@@ -67,7 +67,7 @@ public sealed class NluAimProcessor : IAimProcessor
 
         string refined = Refine(text);
         var basic = Analyse(refined);
-        var textDescriptors = TextDescriptorsObject.FromBasic(basic);
+        var textDescriptors = TextDescriptorsObject.FromTaggings(basic);
         var refinedObject = BasicTextObject.FromText(refined);
         var textPersonalStatus = EstimatePersonalStatus(refined);
 
@@ -99,14 +99,13 @@ public sealed class NluAimProcessor : IAimProcessor
         return collapsed.Trim();
     }
 
-    // Produce the Basic Text Descriptors (the four taggings) for the text. POS and
-    // NE are filled by the simple tagger; dependency and SRL are left null.
-    private static BasicTextDescriptors Analyse(string text)
+    // Produce the four taggings for the text. POS and NE are filled by the simple
+    // tagger; dependency and SRL are left null.
+    private static TextTaggings Analyse(string text)
     {
         var tokens = Tokenise(text);
-        return new BasicTextDescriptors
+        return new TextTaggings
         {
-            BasicTextDescriptorsID = Guid.NewGuid().ToString(),
             TextDescriptorsData = new TextDescriptorsData
             {
                 POS_tagging = new Tagging { Set = PosSet, Result = PosTag(tokens) },
@@ -154,6 +153,7 @@ public sealed class NluAimProcessor : IAimProcessor
         // Ensure at least one Factor is present: default to a calm Emotion.
         if (emotion is null && cognitiveState is null && socialAttitude is null)
             emotion = Emotion.Of(FactorLabel.Of("CALMNESS", "calm", null, 0.5));
+        MpaiDiag.Emotion("NLU", $"positive {pos} negative {neg} -> {emotion?.Category ?? "no emotion"}; \"{text}\"");
 
         return new TextPersonalStatus
         {

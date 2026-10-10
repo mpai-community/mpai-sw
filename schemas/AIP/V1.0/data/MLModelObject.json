@@ -1,0 +1,26 @@
+{ "$schema":            "https://json-schema.org/draft/2020-12/schema",
+  "$id":                "https://schemas.mpai.community/AIP/V1.0/data/MLModelObject.json",
+  "title":              "ML Model Object V1.0",
+  "type":               "object",
+  "required":           [ "Header", "MLModelObjectID", "MLModelData" ],
+  "additionalProperties": false,
+  "properties":         {
+
+    "Header":           { "type": "string", "const": "AIP-MLO-V1.0" },
+    "MInstanceID":      { "type": "string" },
+    "MLModelObjectID":  { "type": "string" },
+    "MLModelObjectTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "MLModelData":      { "type": "array", "items": { "anyOf": [
+                        { "type": "object", "required": [ "DataLength", "DataURI" ], "additionalProperties": false, "properties": {
+      "DataLength":     { "type": "integer" },
+      "DataURI":        { "type": "string", "format": "uri" } } },
+                        { "type": "object", "required": [ "Data" ], "additionalProperties": false, "properties": {
+      "Data":           { "type": "string" } } },
+                        { "type": "object", "required": [ "DataID" ], "additionalProperties": false, "properties": {
+      "DataID":         { "type": "string" } } } ] } },
+
+    "MLModelQualifier": { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/MLModelQualifier.json" },
+
+    "DataXMData":       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":    { "type": "string", "maxLength": 2048 } } }

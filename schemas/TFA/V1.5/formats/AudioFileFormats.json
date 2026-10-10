@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/TFA/V1.5/formats/AudioFileFormats.json",
+  "title": "Audio File Formats V1.5",
+  "type": "string",
+  "enum": [ "AAC", "AIFF", "ALAC", "FLAC", "MP3", "MP4", "OGG", "Opus", "WAV"  ] }
+

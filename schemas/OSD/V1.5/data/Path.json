@@ -1,0 +1,25 @@
+{ "$schema":          "https://json-schema.org/draft/2020-12/schema",
+  "$id":              "https://schemas.mpai.community/OSD/V1.5/data/Path.json",
+  "title":            "Path V1.5",
+  "type":             "object",
+  "additionalProperties": false,
+  "required":         [ "Header", "PathID", "Path" ],
+  "properties":       {
+
+    "Header":         { "type": "string", "const": "OSD-PAT-V1.5", "description": "Path Header â€“ Standard OSD-PAT-Vx.y" },
+    "MInstanceID":    { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Path is defined." },
+    "UEnvironmentID": { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Path is defined." },
+    "PathID":         { "type": "string", "description": "Unique identifier of this Path instance." },
+    "PathTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Path was produced." },
+
+    "PathSpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Path applies." },
+
+    "OfflineMapID":   { "type": "string", "description": "Identifier of the Offline Map against which this Path is defined." },
+
+    "Path":           { "type": "array", "minItems": 1, "description": "Ordered sequence of Points of View defining the Path.", "items": { 
+                        "type": "object", "additionalProperties": false, "required": [ "PointOfView" ], "properties": {
+      "PointOfView":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "A Point of View in the Path." } } } },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                        "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Path in a trusted data exchange context." },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Path (plain text, max 2048 characters)." } } }

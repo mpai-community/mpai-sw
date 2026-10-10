@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Mpai.Aif.PortData</RootNamespace>
+    <AssemblyName>Mpai.Aif.PortData</AssemblyName>
+  </PropertyGroup>
+
+  <!-- The internal Object types the codecs read and write. Nothing else: no
+       Controller, no AIMs, no application. This library knows Data Types. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\AIMs\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\Metadata\AIF.Metadata.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" Version="9.4.0" />
+  </ItemGroup>
+
+</Project>

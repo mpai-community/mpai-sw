@@ -1,0 +1,77 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/CAE3/V1.0/data/UserCommand.json",
+  "title":                      "User Command V1.0",
+  "description":                "Audio or Visual Scene Editing Commands, in two halves: the command (UserCommandData), input to the AIM that executes it, and the report on its execution (UserCommandReport), output by that AIM under the same UserCommandID. At least one half is present; a report may repeat the command's data.",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "UserCommandID", "UserCommandTime" ],
+  "anyOf":                      [ { "required": [ "UserCommandData" ] }, { "required": [ "UserCommandReport" ] } ],
+  "properties":                 {
+
+    "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the User Command is what the User asked for - for instance, when it is interpreted from what the User says." },
+    "Header":                   { "type": "string", "const": "CAE-UCM-V1.0" },
+    "MInstanceID":              { "type": "string" },
+    "UEnvironmentID":           { "type": "string" },
+    "UserCommandID":            { "type": "string" },
+    "UserCommandTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "UserCommandData":          { "type": "object", "additionalProperties": false, "properties": {
+      "UserPoV":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+      "LUFS":                   { "type": "number" },
+
+      "AcquiredObject":         { "$ref": "#/$defs/ManagedObject" },
+      "DeliveredObject":        { "$ref": "#/$defs/ManagedObject" },
+
+      "AddedObjects":           { "type": "object", "additionalProperties": false, "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "SpatialAttitude":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" } } } } } },
+
+      "RemovedObjects":         { "type": "object", "additionalProperties": false, "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "SpatialAttitude":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" } } } } } },
+
+      "MovedObjects":           { "type": "object", "additionalProperties": false, "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "AcousticProfile":    { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Object" },
+          "OldSpatialAttitude": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" },
+          "NewSpatialAttitude": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" } } } } } },
+
+      "ChangedObjects":         { "type": "object", "additionalProperties": false, "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "SpatialAttitude":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" },
+          "Qualifier":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/AnyQualifier.json" } } } } } },
+
+      "ModifiedObjects":        { "type": "object", "additionalProperties": false, "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "AcousticProfile":    { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Object" },
+          "SpatialAttitude":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json" } } } } } },
+
+      "TranslatedObjects":      { "type": "object", "additionalProperties": false, "description": "Speech Objects to translate into another language, with Text and Speech Translation (MMC-TST). The source language is the one the Speech Object's own Qualifier states. The translated Speech Object replaces the original in the Scene, at its place: there is no Object in two versions, nor two Objects at one place.", "properties": {
+        "Objects":              { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": [ "ObjectID", "SpeechQualifier" ], "properties": {
+          "ObjectID":           { "$ref": "#/$defs/ManagedObject" },
+          "SpeechQualifier":    { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/SpeechQualifier.json", "description": "The Qualifier of the translated Speech Object: its Attributes.Metadata.Language states the target language." } } } } } } } },
+
+    "UserCommandReport":        { "type": "object", "additionalProperties": false, "required": [ "Outcome" ], "description": "How the User Command was executed: output by the AIM that executed it.", "properties": {
+      "ReportTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+      "Outcome":                { "type": "string", "enum": [ "Done", "Partly", "Failed", "Ignored" ], "description": "Done: every action done; Partly: some; Failed: none; Ignored: the command names nothing this AIM executes." },
+      "Actions":                { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": [ "Action", "Outcome" ], "properties": {
+        "Action":               { "type": "string", "enum": [ "UserPoV", "LUFS", "AcquiredObject", "DeliveredObject", "AddedObjects", "RemovedObjects", "MovedObjects", "ChangedObjects", "ModifiedObjects", "TranslatedObjects" ], "description": "The field of UserCommandData the action comes from." },
+        "ObjectID":             { "type": "string", "description": "The Object or Scene acted on." },
+        "Outcome":              { "type": "string", "enum": [ "Done", "Failed", "NotSupported" ] },
+        "ResultID":             { "type": "string", "description": "The identifier of what the action produced: every edit is a new version." },
+        "Reason":               { "type": "string", "maxLength": 1024, "description": "Why the action was not done." } } } } } },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048 } },
+
+  "$defs": {
+  "ManagedObject":              { "anyOf": [
+                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ObjectOrID.json#/$defs/3DModelObjectOrID" },
+                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ObjectOrID.json#/$defs/AudioObjectOrID" },
+                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ObjectOrID.json#/$defs/SpeechObjectOrID" },
+                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ObjectOrID.json#/$defs/VisualObjectOrID" } ] } } }

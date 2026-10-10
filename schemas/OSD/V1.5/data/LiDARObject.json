@@ -1,0 +1,60 @@
+{ "$schema":                                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                      "https://schemas.mpai.community/OSD/V1.5/data/LiDARObject.json",
+  "title":                                    "LiDAR Object V1.5",
+  "type":                                     "object",
+  "additionalProperties":                     false,
+  "required":                                 [ "Header", "MInstanceID", "LiDARObjectID", "LiDARObjectSpaceTime" ],
+  "properties":                               {
+
+    "Header":                                 { "type": "string", "const": "OSD-LIO-V1.5",
+                                                "description": "LiDAR Object Header â€“ Standard OSD-LIO-Vx.y" },
+    "MInstanceID":                            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this LiDAR Object is or is intended to be located." },
+    "UEnvironmentID":                         { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this LiDAR Object is or is intended to be located." },
+    "LiDARObjectID":                          { "type": "string", "description": "Unique identifier of this LiDAR Object." },
+    "LiDARObjectTime":                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this LiDAR Object was produced." },
+
+    "LiDARObjectSpaceTime":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this LiDAR Object is located." },
+
+    "UserPoV":                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "ParentLiDARObjectIDs":                   { "type": "array", "minItems": 0, "items": { "type": "string" },
+                                                "description": "IDs of LiDAR Objects at a preceding time step that spawned this object. Empty if the object has no known parent at a previous time step." },
+
+    "BasicLiDARObjectCount":                  { "type": "integer", "minimum": 0, "description": "Number of Basic LiDAR Objects contained in this LiDAR Object." },
+
+    "BasicLiDARObjects":                      { "type": "array", "minItems": 0, "description": "Set of Basic LiDAR Objects contained in this LiDAR Object.",
+                                                "items": { "type": "object", "additionalProperties": false, "required": [ "BLObjectIDOrBLObject" ], "properties": {
+      "BasicLiDARObjectSpaceTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                                "description": "Space/Time where/when this Basic LiDAR Object is located within the containing LiDAR Object. If absent, the Space/Time of the containing object applies." },
+      "BLObjectIDOrBLObject":                 { "$ref": "#/$defs/BLObjectIDOrBLObject",
+                                                "description": "Either the ID of a Basic LiDAR Object or the Basic LiDAR Object itself." } } } },
+
+    "SubLiDARObjectCount":                    { "type": "integer", "minimum": 0, "description": "Number of child LiDAR Objects contained in this LiDAR Object." },
+
+    "SubLiDARObjects":                        { "type": "array", "minItems": 0, "description": "Set of child LiDAR Objects contained in this LiDAR Object.",
+                                                "items": { "type": "object", "additionalProperties": false,
+                                                           "required": [ "SubLObjectIDOrSubLObject" ], "properties": {
+      "SubLiDARObjectSpaceTime":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                                "description": "Space/Time where/when this child LiDAR Object is located within the containing LiDAR Object. If absent, the Space/Time of the containing object applies." },
+      "SubLObjectIDOrSubLObject":             { "$ref": "#/$defs/SubLObjectIDOrSubLObject", "description": "Either the ID of a child LiDAR Object or the child LiDAR Object itself." } } } },
+
+    "BLObjectOrLObject":                      { "$ref": "#/$defs/BLObjectOrLObject",
+                                                "description": "A mixed array of Basic LiDAR Objects and child LiDAR Objects contained in this LiDAR Object." },
+
+    "DataXMData":                             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                                "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this LiDAR Object in a trusted data exchange context." },
+    "DescrMetadata":                          { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the LiDAR Object (plain text, max 2048 characters)." } },
+
+  "$defs":                                    {
+
+    "BLObjectOrLObject":                      { "type": "array", "items": { "oneOf": [
+                                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicLiDARObject.json" },
+                                              { "$ref": "#/$defs/BLObjectOrLObject" } ] } },
+
+    "BLObjectIDOrBLObject":                   { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicLiDARObject.json" },
+                                              { "type": "string" } ] } },
+
+    "SubLObjectIDOrSubLObject":               { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/LiDARObject.json" },
+                                              { "type": "string" } ] } } } }

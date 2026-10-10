@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- AIF.RootOfTrust - the simulated root of trust of Phase 13, Step 6 (M3223 3.5):
+       a TPM 2.0 - Microsoft's reference simulator, reached over TCP through TSS.Net -
+       for the Controller and for each AIM host. It holds their keys, measures the code
+       they run, quotes the measurements and seals secrets to them. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TSS" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trust\AIF.Trust.csproj" />
+  </ItemGroup>
+
+</Project>

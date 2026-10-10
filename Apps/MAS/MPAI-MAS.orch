@@ -4,7 +4,8 @@
 #
 #  This is not an App: it is the container the Apps run in, and it belongs to
 #  the client. It welcomes a person, offers what the Service has, runs the App
-#  they choose, and asks whether they want another.
+#  they choose, and asks whether they want another: yes, the list again; else
+#  it says goodbye and ends. Its welcome says what becomes of the person's data.
 #
 #  It runs over 1MAS-APP-V1.0-I01 and nothing else: it speaks, and the Apps it
 #  runs do the work. Each of those runs under a Controller of its own.
@@ -16,17 +17,26 @@ on Start:
 
     ask Controller to start
 
-    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to MPAI as a Service.
-        Choose an App and enjoy."
-    ask   WelcomeSpeech (OSD-BSO-V1.5), WelcomeFaceDescriptors (PAF-FDO-V1.6)
-    present WelcomeSpeech, WelcomeFaceDescriptors
+    # The Avatar this client holds and draws: every utterance animates it.
+    acquire Avatar (PAF-AVT-V1.6)
+
+    # Said once, at the start, and written in the text window: what becomes of
+    # the person's data.
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to MPAI as a Service. My name is
+        Thalia. Any text, audio, and visual data of yours that I may have captured
+        will be removed at the end of this session."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   WelcomeSpeakingAvatar (XRV-SAV-V1.0)
+    display Welcome
+    present WelcomeSpeakingAvatar
 
     # With others using the Service now, she says so; alone, she says nothing.
     acquire Company (OSD-BTO-V1.5) = { "Attributes": { "TextRole": "Concurrency" } }
     branch on Company {
         offer Company (OSD-BTO-V1.5:1)
-        ask   CompanySpeech (OSD-BSO-V1.5), CompanyFaceDescriptors (PAF-FDO-V1.6)
-        present CompanySpeech, CompanyFaceDescriptors
+        offer Avatar (PAF-AVT-V1.6:1)
+        ask   CompanySpeakingAvatar (XRV-SAV-V1.0)
+        present CompanySpeakingAvatar
     }
 
     loop until Stop:
@@ -35,8 +45,37 @@ on Start:
         run Chosen
 
         offer Again (OSD-BTO-V1.5:1) = "Do you want to try another App?"
-        ask   AgainSpeech (OSD-BSO-V1.5), AgainFaceDescriptors (PAF-FDO-V1.6)
-        present AgainSpeech, AgainFaceDescriptors
+        offer Avatar (PAF-AVT-V1.6:1)
+        ask   AgainSpeakingAvatar (XRV-SAV-V1.0)
+        present AgainSpeakingAvatar
+
+        # --- what the person answers decides what follows ---
+
+        # spoken, it goes to the Module to be recognised; typed, it is already text
+        acquire Reply (OSD-BSO-V1.5) via VAD
+             or ReplyText (OSD-BTO-V1.5)
+        branch on Reply {
+            offer Reply (OSD-BSO-V1.5:1)
+            ask   ReplyText (OSD-BTO-V1.5:1)
+        }
+
+        branch on ReplyText contains "yes" {
+
+            offer Choose (OSD-BTO-V1.5:1) = "Please choose an App."
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   ChooseSpeakingAvatar (XRV-SAV-V1.0)
+            present ChooseSpeakingAvatar
+
+        } else {
+
+            offer Farewell (OSD-BTO-V1.5:1) = "Thank you for using MPAI as a
+                Service. Goodbye."
+            offer Avatar (PAF-AVT-V1.6:1)
+            ask   FarewellSpeakingAvatar (XRV-SAV-V1.0)
+            present FarewellSpeakingAvatar
+            end
+
+        }
 
 on Stop:
     ask Controller to stop

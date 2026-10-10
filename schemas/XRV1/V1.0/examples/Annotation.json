@@ -2,7 +2,7 @@
   "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/Annotation.json",
   "title":                    "Annotation V1.5", "type": "object", "required": [ "Header", "AnnotationID", "AnnotationSpaceTime" ],
                               "additionalProperties": false, "properties": {
-    "Header":                 { "type": "string", "pattern": "^OSD-ANN-V[0-9],{1,2},[.][0-9],{1,2}$" },
+    "Header":                 { "type": "string", "const": "OSD-ANN-V1.5" },
     "MInstanceID":            { "type": "string" },
     "AnnotationID":           { "type": "string" },
     "AnnotationSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },

@@ -1,7 +1,10 @@
 { "$schema":                        "https://json-schema.org/draft/2020-12/schema",
   "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/RightParallelepiped.json",
   "title":                          "Right Parallelepiped V1.5",
+  "description":                    "A rectangle (2D) given by 3 of its vertices not on a straight line, or a right parallelepiped (3D) given by 4 of its vertices not on a plane: a vertex, then the three vertices adjacent to it. From the first vertex, the second gives the parallelepiped's Right, the third its Front and the fourth its Up; its faces are named accordingly: Floor (through the first, second and third vertices) and Ceiling opposite; Back (through the first, second and fourth) and Front opposite; Left (through the first, third and fourth) and Right opposite.",
   "type":                           "object",
+  "required":                       [ "Header", "Dimensions", "CartPositions" ],
+  "additionalProperties":           false,
   "properties":                     {
 
     "Header":                       { "type": "string", "const": "OSD-RPP-V1.5" },
@@ -11,9 +14,14 @@
 
     "RightParallelepipedSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
 
-    "RightParallelepiped":          { "type": "array", "minItems": 1, "maxItems": 4, "items": {
-                                      "type": "object", "properties": {
-      "Point":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Point.json" } } } },
+    "Dimensions":                   { "type": "string", "enum": [ "2D", "3D" ] },
+    "Precision":                    { "type": "string", "enum": [ "Single", "Double" ], "description": "Precision of the coordinates." },
+    "CartPositions":                { "type": "array", "minItems": 3, "maxItems": 4, "description": "The Positions of the selected vertices of the rectangle (3) or parallelepiped (4), in metres.",
+                                      "items": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } } },
 
     "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
-    "DescrMetadata":                { "type": "string", "maxLength": 2048 } } }
+    "DescrMetadata":                { "type": "string", "maxLength": 2048 } },
+
+  "allOf":                          [
+    { "if": { "properties": { "Dimensions": { "const": "2D" } } }, "then": { "properties": { "CartPositions": { "maxItems": 3 } } } },
+    { "if": { "properties": { "Dimensions": { "const": "3D" } } }, "then": { "properties": { "CartPositions": { "minItems": 4 } } } } ] }

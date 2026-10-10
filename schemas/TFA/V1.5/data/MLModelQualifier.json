@@ -22,13 +22,13 @@
       "Framework":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelFrameworks.json" },
       "Exchange":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/NNModelExchange.json" } } },
 
-    "Attributes":           { "$ref": "#/$defs/MLAttributes" },
+    "Attributes":           { "$ref": "#/$defs/Attributes" },
 
     "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
     "DescrMetadata":        { "type": "string", "maxLength": 2048 } },
 
   "$defs":                  {
-    "MLAttributes":         { "type": "object", "additionalProperties":  false, "properties": {
+    "Attributes":           { "type": "object", "additionalProperties":  false, "properties": {
       "ModelAssets":        { "type": "array", "items": { "type": "object", "required": ["AssetType"], "additionalProperties": false, "properties": {
         "AssetType":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/types/MLModelAssetTypes.json" } } } },
       "MLModelManifest":    { "$ref": "https://schemas.mpai.community/AIP/V1.0/data/MLModelManifest.json" },

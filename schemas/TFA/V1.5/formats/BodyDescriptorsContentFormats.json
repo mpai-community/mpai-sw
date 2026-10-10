@@ -1,0 +1,6 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/BodyDescriptorsContentFormats.json",
+  "title":   "Body Descriptors Content Formats V1.5",
+  "type":    "string",  "enum": [ "BVH", "FBX", "glTF", "MHX2", "Mixamo FBX", "Reallusion CC3", "Reallusion CC4", "SMPL",
+                                  "SMPL-X", "STAR", "USD", "USDZ", "VRML (ISO/IEC 14772)", "X3D (ISO/IEC 19775-1)" ] }
+

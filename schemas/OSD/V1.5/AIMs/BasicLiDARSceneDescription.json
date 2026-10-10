@@ -2,13 +2,15 @@
   "Header":            "OSD-BLS-V1.5",
 
   "APIProfile":       "Basic",
-  "Description":      "This AIM implements the Basic LiDAR Scene Description function.",
+  "Description":      "Basic LiDAR Scene Description: describes the acquired BasicLiDARObject as BasicLiDARSceneDescriptors. It raises an Alert when what it describes warrants one, without waiting for integration. Two of its inputs are optional, so that the same AIM serves applications that have something to connect to them and applications that do not: an application holding an ego Spatial Attitude receives descriptors already expressed in that frame, and one that maintains a running environment description returns it as a prior. Both are wired in EnvironmentSensingSubsystem.json and neither is wired in MMC-HCI.",
 
   "InternalTypes":   [ ],
 
-  "ExternalPorts":   [{"Name": "SpaceTime",                  "Direction": "Input",  "DataType": "OSD-SPT-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "BasicLiDARObject",           "Direction": "Input",  "DataType": "OSD-BLO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "BasicLiDARSceneDescriptors", "Direction": "Output", "DataType": "OSD-BLS-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+  "ExternalPorts":   [{"Name": "BasicLiDARObject",            "Direction": "Input",  "DataType": "OSD-BLO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpatialAttitude",             "Direction": "Input",  "DataType": "OSD-OSA-V1.5", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicEnvironmentDescriptors", "Direction": "Input",  "DataType": "CAV-BED-V2.0", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BasicLiDARSceneDescriptors",  "Direction": "Output", "DataType": "OSD-BLS-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "Alert",                       "Direction": "Output", "DataType": "CAV-ALT-V2.0", "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""}],
 
   "SubAIMs":         [ ],
 
@@ -24,11 +26,11 @@
                         "Source":           "/* AIMStorage | MPAIStore */",
                         "Destination":      "/* provided by implementer */" }],
 
-  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
-                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
-                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+  "ResourcePolicies":[{ "Name": "Memory",               "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class",            "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class",       "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
                       { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
                       { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
 

@@ -2,8 +2,7 @@
 
 How MAS-App is built, and how to change it or add an App. For installing and
 using it, see the [User Guide](MAS-App-User.md); for an overview, see
-[MPAI Software](MPAI-Software.md); for running one AIM on a machine of its
-own, see [Remote Deployment](MAS-App-Remote-Deployment.md).
+[MPAI Software](MPAI-Software.md).
 
 ---
 
@@ -11,16 +10,16 @@ own, see [Remote Deployment](MAS-App-Remote-Deployment.md).
 
 | Part | Project | Role |
 |---|---|---|
-| Service | `MPAIApps/MmcApps/AmqServer/src` | Hosts the Controller and the Modules; speaks MPAI-MAS over HTTPS; offers the Apps. |
-| Desktop client | `MPAIApps/RcaApp/src` | WPF. The User Agent: interprets workflows, captures, renders the avatar (WebView2). |
-| Browser client | `MPAIApps/RcaWeb/Client` | Blazor WebAssembly. The same User Agent, in a browser. |
-| Browser host | `MPAIApps/RcaWeb/Host` | Serves the browser client and the avatar page, and forwards `/MPAI/AIFU/...` to the Service, so the browser sees one origin. |
+| Service | `MAS/Service/src` | Hosts the Controller and the Modules; speaks MPAI-MAS over HTTPS; offers the Apps. |
+| Desktop client | `UserAgent/Clients/Desktop/src` | WPF. The User Agent: interprets workflows, captures, renders the avatar (WebView2). |
+| Browser client | `UserAgent/Clients/Browser/Client` | Blazor WebAssembly. The same User Agent, in a browser. |
+| Browser host | `UserAgent/Clients/Browser/Host` | Serves the browser client and the avatar page, and forwards `/MPAI/AIFU/...` to the Service, so the browser sees one origin. |
 | Apps | `Apps/MAD`, `AMQ`, `MAT`, `MPD` | Each: a workflow (`.orch`), `app.json`, an icon. |
-| MPAI-MAS | `UAs/Orchestration/MPAI-MAS.orch` | The client's own workflow: the container the Apps run in. Not an App. |
+| MPAI-MAS | `UserAgent/Orchestration/MPAI-MAS.orch` | The client's own workflow: the container the Apps run in. Not an App. |
 
 Shared software: the Controller (`AIF/`), the AIMs and their L3s (`AIMs/`), the
-middleware (`MW/`), the desktop avatar library (`UAs/Lib/UaKit`), the avatar
-assets (`UAs/Assets`), the schemas (`schemas/`).
+User Agent (`UserAgent/`: the WDL reader, the interpreter, the remote Controller API,
+the desktop avatar library `UaKit` and the avatar assets), the schemas (`schemas/`).
 
 ## 2. How a turn travels
 
@@ -106,13 +105,13 @@ on Stop:
 
 ## 5. The Service
 
-`AmqServer` reads its configuration (`mas-server*.json`, path as first argument;
+`MasService` (formerly `AmqServer`) reads its configuration (`mas-server*.json`, path as first argument;
 see the User Guide) and builds one Controller whose AIMs come from a composite
 of providers - `AmqProvider`, `MadProvider`, `MatProvider`, `MpdProvider` in
 `AIMs/Providers`. It preloads `1MMC-AMQ`, `MAD`, `MAT`, `MPD` and `1MAS-APP` so
 the first exchange of each App is fast.
 
-The Data Types it carries are those `MW/PortData` can translate between their
+The Data Types it carries are those `AIF/PortData` can translate between their
 internal form and their wire form: `OSD-BSO`, `OSD-BTO`, `OSD-BVO`, `PAF-FDO`,
 `OSD-STM`, `OSD-SEL`, `MMC-SUM`. A datum of another Data Type cannot cross.
 
@@ -122,18 +121,20 @@ the desktop client sends the one in the environment variable `MPAI_MAS_TOKEN`.
 ## 6. The clients
 
 Both clients register **sources** (acquire) and **presenters** (present) with a
-`DeviceRegistry`, and run workflows with the interpreter.
+`DeviceRegistry`, and run workflows with the one interpreter, `UserAgent/Rca`.
+Every call it makes on the Controller API is awaited (`IAsyncControllerApi`),
+because a browser never lets WebAssembly block.
 
 - **Desktop** (`RcaApp`): sources are the microphone with voice activity
-  detection (via UaKit), the text box, the App list, the language picker, a
-  file or the webcam; the avatar is `UAs/Assets/cav-webview.html` in WebView2.
+  detection (the Microphone Unit of `UserAgent/PhysicalLayer`, via UaKit), the text box, the App list, the language picker, a
+  file or the webcam; the avatar is `UserAgent/Assets/cav-webview.html` in WebView2.
   `MPAI_MAS_SERVER` sets the Service address (default `https://localhost:5005/`).
+  It hands the interpreter `RemoteControllerApi` through `.Async()`, which makes
+  each call on a thread of the pool, so the window is never blocked.
 - **Browser** (`RcaWeb/Client`): the same sources and presenters, with the
   capture in `wwwroot/js/rca.js` (the microphone runs from Start and keeps the
-  last second heard; typing ends listening). A browser never lets WebAssembly
-  block, so this client has its own asynchronous North API client
-  (`Mas/AsyncNorthApi.cs`) and an asynchronous copy of the interpreter
-  (`Wdl/AsyncWorkflowInterpreter.cs`), otherwise identical to `MW/Rca`'s.
+  last second heard; typing ends listening). It hands the interpreter
+  `RemoteControllerApiAsync` (`UserAgent/Remote`), which awaits the network.
 - **Host** (`RcaWeb/Host`): serves the avatar page with its asset addresses and
   messaging adapted for a browser as it is sent, and forwards `/MPAI/AIFU/...`.
 
@@ -144,10 +145,10 @@ Both clients register **sources** (acquire) and **presenters** (present) with a
 2. **Its AIMs:** if it needs AIMs no provider builds, add a provider in
    `AIMs/Providers` and add it to the Service's composite.
 3. **Its Data Types:** any Data Type that must cross MPAI-MAS needs a translator
-   in `MW/PortData`, registered in `PortDataCodecs.Default()`.
+   in `AIF/PortData`, registered in `PortDataCodecs.Default()`.
 4. **The App:** a folder in `Apps/` with its workflow, `app.json` and `icon.svg`.
 5. **The Service:** add the App to `Apps` in the configuration, and its Module to
-   the preload list in `AmqServer/src/Program.cs`.
+   the preload list in `MAS/Service/src/Program.cs`.
 6. **Test:** the `Test` program loads every composite L3 and reports which load;
    then run the App through both clients.
 
@@ -166,8 +167,11 @@ trace; never write to a folder of your own.
   personal questions, and EDP accepts only strictly valid JSON from it.
 - The desktop client's speech capture cannot be cancelled once started; when the
   person types instead, it ends on its own and its words are dropped.
-- The browser client keeps an asynchronous copy of the interpreter; the two
-  should become one.
+- The desktop client opens the microphone afresh for each capture and waits
+  400 ms for it to settle, so a word spoken at once is lost: a prompt "yes,
+  please" reaches the recogniser as "Please", and AMQ answers "Maybe another
+  time". The browser client keeps the microphone open and the last second
+  heard, and does not lose it.
 - The Service offers no access control to the browser client.
 - `1MMC-TTS-V2.5-I01`'s Spanish voice (`es_ES-davefx-medium`) is male; no
   single-speaker female `es_ES` voice exists at medium or high quality in
@@ -186,127 +190,100 @@ AIM itself.
 
 ### 10.1 The Store
 
-`MPAIApps/StoreService` is a separate program, a repository of approved L3s
-with a REST API (`MPAIApps/StoreService/README.md`). Run it once, and any
-number of Services can point at it:
-
-```powershell
-dotnet run --project D:\BI\MPAIApps\StoreService\StoreService.csproj -- --Urls https://localhost:5020 --Root D:\MPAI\Store --Packages D:\MPAI\Packages
-```
-
-Submit L3s with `MPAIApps/StoreService/Submit-L3s.ps1` or the `StoreApp`
-window; build packages with `AIMs/Build-Packages.ps1`.
+The Store is a separate program, a repository of approved L3s with a REST API.
+It is not part of this repository; a Service reads its L3s from the folder
+`AIMs/AMDs`, unless it is configured to read them from a Store as below.
 
 **A Service reachable from another machine cannot use HTTPS with the
 development certificate**, since a remote machine will not trust it without
 installing it first. For a private network (Tailscale, a LAN), the simplest
 working arrangement is plain HTTP throughout - the Store, and every Service
-that must be reached from elsewhere:
-
-```powershell
-dotnet run --project D:\BI\MPAIApps\StoreService\StoreService.csproj -- --Urls http://0.0.0.0:5020 --Root D:\MPAI\Store --Packages D:\MPAI\Packages
-```
-
-Every Service's `StoreUrl` (below) must then use `http://`, not `https://`,
+that must be reached from elsewhere. Every Service's `StoreUrl` (below) must then use `http://`, not `https://`,
 including a Service on the same machine as the Store - a scheme mismatch is a
 plain connection failure, not a certificate warning, and the Service falls
 back to its last-known L3 cache without saying why in those words.
 
 ### 10.2 A Service's own configuration
 
-Every setting a Service reads, from `MasServerConfig.cs`, in a
-`mas-server-*.json` named as the Service's first argument:
+These settings go in a Service's `mas-server-*.json` (see
+`MasServerConfig.cs` for the full set):
 
 | Setting | Effect |
 |---|---|
-| `ListenUrl` | Where the Service listens. Default `https://localhost:5005/`. Loopback is the only address for which a missing certificate and a missing `BearerToken` are tolerated. |
-| `CertificatePath`, `PrivateKeyPath`, `CertificatePassword` | A real certificate for a non-loopback `ListenUrl`: a PEM certificate and its PEM private key, or a PFX (`CertificatePath` alone, with `CertificatePassword` if it is encrypted). A path, not a certificate-store thumbprint, so the same configuration works on Windows or Linux. |
-| `AuthorityPath` | Intermediate certificates to present alongside the Service's own, concatenated into one PEM file, so a client can build the chain to a root it already trusts. Omitting this when it is needed makes a client refuse the connection before sending anything - the Service sees no request and logs nothing. |
-| `AppDirectory`, `Apps` | Where Apps live, and which of them this Service offers. Absent `Apps`: none offered as plain Apps (a Service may still offer Collections). |
-| `Shell` | The workflow a client runs to offer the others (MPAI-MAS); served like any App but never itself among the Apps offered. |
-| `Collections`, `DefaultCollection` | Named subsets of the Apps, each served at `/MPAI/AIFU/c/<name>/...`; which one an address naming none receives. Absent `Collections`: the plain `Apps` list is the only offer, as before this mechanism existed. |
-| `StoreUrl` | The MPAI Store an App's L3 must be approved by before the App is offered. Absent: no check. |
-| `L3Source: "Store"`, `L3Cache` | L3s come from the Store at `StoreUrl` instead of `AmdDirectory`, fetched with their Sub-AIMs into `L3Cache` (default `<local application data>\MPAI\SCI\L3`). |
-| `AimSource: "Packages"`, `PackageCache` | AIMs are built from the packages their L3s name, cached at `PackageCache` (default `<local application data>\MPAI\SCI\Packages`), falling back to the compiled providers for any package missing or built for another machine. |
-| `ModelSource: "Fetch"`, `ModelCache` | A model a setting names and the machine lacks is fetched from `Source:<setting>` and checked against `SHA256:<setting>`, cached at `ModelCache` (default `<local application data>\MPAI\SCI\Models`). |
-| `RemoteAims`, `RemoteToken` | A Sub-AIM this Service does not build itself, and the token it presents to the machine that does; see 10.3. |
-| `BearerToken` | Required of every caller as `Authorization: Bearer <token>`, and required once `ListenUrl` is not loopback - the Service refuses to start without one, so that a machine reachable from outside cannot be used by an uninvited caller. |
-| `AmdDirectory` | Where L3s live when `L3Source` is absent or anything but `"Store"`. |
-| `SettingsPath` | The settings file naming AIMs' models and configuration. |
-| `OutputFolder` | Where delivered output is written. |
-
-For a machine that hosts one AIM for a Service elsewhere - real certificates,
-firewall rules, and the failures a first attempt tends to hit - see
-[Remote Deployment](MAS-App-Remote-Deployment.md), which walks through 10.3
-below end to end.
+| `L3Source: "Store"`, `StoreUrl`, `L3Cache` | L3s come from the Store instead of `AmdDirectory`. |
+| `AimSource: "Packages"`, `PackageCache` | AIMs are built from the packages their L3s name, falling back to the compiled providers for any package missing or built for another machine. |
+| `ModelSource: "Fetch"`, `ModelCache` | A model a setting names and the machine lacks is fetched from `Source:<setting>` and checked against `SHA256:<setting>`. |
+| `Collections`, `DefaultCollection` | Which Apps this Service offers, and where (`/MPAI/AIFU/c/<name>`). |
+| `AimHosts`, `AimHostKey` | Where a Sub-AIM whose L3 Relation is not `Internal` runs: an AIM host; see 10.3. |
+| `BearerToken` | Required once `ListenUrl` is not loopback (`127.0.0.1` or `localhost`); the Service refuses to start without one, so that a machine reachable from outside cannot be used by an uninvited caller. |
 
 ### 10.3 A Sub-AIM on another machine
 
-MPAI-MAS lets a Sub-AIM run on its own machine (`Identifier.Relation` other
-than `Internal`), reached over MPAI-MAS through a proxy
-(`Mpai.Mas.Client.RemoteAim`). What a Remote Client starts may itself be a
-basic AIM - action 6 starts "the AIM selected" - and the Controller and
-executor build and run that AIM directly, with no invented containing Module.
+A Sub-AIM whose `Identifier.Relation` in its composite's L3 is not `Internal`
+runs on another machine, on an **AIM host** (M3217). The Module stays one
+Module under one Controller - this Service's: the Controller places the AIM
+on the host, starts, pauses, resumes and stops it there, and asks its
+status; its Ports travel over the Remote transport (TLS on TCP, the host's
+key). A composite Sub-AIM that is not `Internal` has all its AIMs on its host.
 
-**The machine that runs the Sub-AIM** (call it the Sub-AIM's Service) offers
-only that AIM, with a token, listening on every interface so it can be
-reached:
+The L3 says *that* an AIM runs elsewhere; the Service's configuration says
+*where*. The Relation is written by the L3's developer, or changed at
+deployment time by whoever deploys the Module: the L3s of this repository
+have every Sub-AIM `Internal`, and to run Entity Dialogue Processing of MAD
+elsewhere, the deployer sets `"Relation": "External"` on `1MMC-EDP-V2.5-I01`
+in the MAD L3 this Service loads - its `AmdDirectory`, or its L3 cache. A
+Module with such a Sub-AIM and no host named for it is refused, and says why.
 
-```json
-{
-  "ListenUrl": "http://0.0.0.0:5006/",
-  "L3Source": "Store", "StoreUrl": "http://<main machine>:5020/",
-  "L3Cache": "D:\\MPAI\\SCI\\L3",
-  "SettingsPath": "D:\\BI\\AIMs\\aim-settings.json",
-  "AppDirectory": "D:\\BI\\Apps", "Apps": [],
-  "BearerToken": "<a shared secret>"
-}
-```
-
-`Apps` is empty: this machine's job is the one AIM, not a composite Module,
-and today's startup loop always tries to build all five hardcoded Modules
-regardless of `Apps` (see 10.4) - so a model this machine lacks for an
-unrelated Module (BLIP for AMQ, say) does not need to be present, only not
-fatal, which 10.4 now ensures.
-
-**The machine whose Module uses the Sub-AIM** names where it is:
-
-```json
-{
-  "RemoteAims": { "1MMC-EDP-V2.5-I01": "http://<Sub-AIM's machine>:5006/" },
-  "RemoteToken": "<the same shared secret>"
-}
-```
-
-**Every Data Type the Sub-AIM's Ports carry must have a wire translator** in
-`MW/PortData`, registered in `PortDataCodecs.Default()` - the same
-requirement as 7.3 for a new App. `MMC-SUM-V2.5` and `MMC-EPS-V2.5` (Entity
-Personal Status, needed for any AIM MPD uses remotely) exist today; a further
-AIM would need whatever its own Ports carry.
-
-**Firewall:** the Sub-AIM's port (`5006` above) must accept inbound
-connections from the other machine. On Windows, from an elevated PowerShell:
+**The machine that runs the Sub-AIM** runs the AIM host, given the L3s of
+the AIMs it may build, their settings, the provider that builds them and a
+key:
 
 ```powershell
-New-NetFirewallRule -DisplayName "MPAI EDP 5006" -Direction Inbound -Protocol TCP -LocalPort 5006 -Action Allow
+dotnet AIF\AimHost\bin\Debug\net10.0\AIF.AimHost.dll --port 5207 --key "<a shared secret>" `
+    --amds AIMs\AMDs --settings AIMs\aim-settings.json `
+    --provider AIMs\Providers\bin\Debug\net10.0\Mpai.Providers.dll:Mpai.Providers.MadProvider
 ```
 
-A firewall silently dropping the connection looks identical to the Sub-AIM's
-process being down: the caller's log shows a plain connection timeout
-(`AIF] <AIM>: threw, ... A connection attempt failed because the connected
-party did not properly respond ...`), not a refusal. Check the rule before
-suspecting the process.
+It prints `[AIM host] listening on 5207`. Anything the AIM needs on that
+machine - for EDP, the LLM its settings name - must be there.
 
-**Tested:** MAD and MPD, each with EDP as a remote AIM - locally (two
-Services on one machine) and, for MAD, across two physical machines over
-Tailscale - with the conversation's memory (`MMC-SUM-V2.5`) correctly
-accumulating turn over turn on the machine that does not hold it locally.
+**The machine whose Module uses the Sub-AIM** names the host in its
+`mas-server-*.json`:
+
+```json
+{
+  "AimHosts":   { "1MMC-EDP-V2.5-I01": "tcp+tls://<Sub-AIM's machine>:5207" },
+  "AimHostKey": "<the same shared secret>"
+}
+```
+
+The name may be an AIM Instance or a composite that contains it. No wire
+translators are needed: the Remote transport carries the Port data as it is.
+
+**Firewall:** the host's port (`5207` above) must accept inbound connections
+from the Controller's machine. On Windows, from an elevated PowerShell:
+
+```powershell
+New-NetFirewallRule -DisplayName "MPAI AIM host 5207" -Direction Inbound -Protocol TCP -LocalPort 5207 -Action Allow
+```
+
+A firewall silently dropping the connection looks identical to the host
+being down: the Module is refused with a connection timeout. Check the rule
+before suspecting the host.
+
+**If the host goes** during a run, its AIMs are DEGRADED and the composite's
+`OnDegraded` applies, as for an AIM that fails locally.
+
+The earlier arrangement - `RemoteAims` naming a MAS Service that ran the
+Sub-AIM as a Module of its own, reached through `Mpai.Mas.Client.RemoteAim` -
+is removed (M3217 3.5). MPAI-MAS remains how an App or a remote client uses
+a Service.
 
 ### 10.4 One Module's fault does not stop the Service
 
 The Service's start-up loop (`Program.cs`) always tries all five hardcoded
 Modules, regardless of `Apps`. Building an AIM can throw - most often a
-missing model file - and `NorthApiRunner.Start` catches that exception and
+missing model file - and `ControllerApiRunner.Start` catches that exception and
 reports it as that one Module's failure (`<Module>: FAILED - <message>`)
 rather than letting it end the process: every other Module still starts. This
 matters most for a machine that hosts only some AIMs, as 10.3's Sub-AIM

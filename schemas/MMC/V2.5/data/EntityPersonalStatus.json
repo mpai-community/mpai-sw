@@ -49,9 +49,9 @@
       "type": "string",
       "maxLength": 2048
     },
-    "GesturePersonalStatus": {
-      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/GesturePersonalStatus.json",
-      "description": "Personal Status of the Gesture modality (optional)."
+    "BodyPersonalStatus": {
+      "$ref": "https://schemas.mpai.community/MMC/V2.5/data/BodyPersonalStatus.json",
+      "description": "Personal Status of the Body modality (optional)."
     }
   }
 }

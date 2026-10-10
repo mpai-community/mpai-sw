@@ -1,0 +1,40 @@
+{ "$schema":                                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                        "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json",
+  "title":                                      "Speech Object V1.5",
+  "description":                                "A Data Type including a collection of Basic Speech Objects, with optional hierarchical structure where Speech Objects contain Basic Speech Objects and Speech Objects.",
+  "type":                                       "object",
+  "additionalProperties":                       false,
+  "required":                                   [ "Header", "SpeechObjectID", "SpeechObjectSpaceTime" ],
+  "properties":                                 {
+
+    "Header":                                   { "type": "string", "const": "OSD-SPO-V1.5", "description": "Speech Object Header â€“ Standard OSD-SPO-Vx.y." },
+    "MInstanceID":                              { "type": "string", "description": "Identifier of M-Instance." },
+    "SpeechObjectID":                           { "type": "string", "description": "Identifier of the Speech Object." },
+    "SpeechObjectSpaceTime":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space-Time of Speech Object." },
+
+    "UserPoV":                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicSpeechObjectCount":                   { "type": "integer", "minimum": 0, "description": "Set of Parent Speech Objects." },
+    "BasicSpeechObjects":                       { "type": "array", "description": "Set of Basic Speech Objects.", "items": { "type": "object", "required": [ "BSObjectIDOrBSObject" ],
+                                                    "additionalProperties": false, "properties": {
+      "BasicSpeechObjectSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Basic Speech Object in the Speech Object." },
+      "BSObjectIDOrBSObject":                   { "$ref": "#/$defs/BSObjectIDOrBSObject", "description": "A Basic Speech Object in the Speech Object." } } } },
+
+    "SubSpeechObjectCount":                     { "type": "integer", "minimum": 0, "description": "Number of Speech Objects." },
+    "SubSpeechObjects":                         { "type": "array", "description": "Set of Speech Objects.", "items": { 
+                                                  "type": "object", "required": [ "SubSObjectIDOrSubSObject" ], "additionalProperties": false, "properties": {
+      "SubSpeechObjectSpaceTime":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Speech Object in the Speech Object." },
+      "SubSObjectIDOrSubSObject":               { "$ref": "#/$defs/SubSObjectIDOrSubSObject", "description": "A Speech Object in the Speech Object." } } } },
+
+    "DataXMData":                               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json", "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Speech Object instance in a trusted data exchange context." },
+    "DescrMetadata":                            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Speech Object instance (plain text, max 2048 characters)." } },
+
+  "$defs":                                      {
+
+    "BSObjectIDOrBSObject":                     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" },
+                                                { "type": "string" } ] } },
+
+    "SubSObjectIDOrSubSObject":                 { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json" },
+                                                { "type": "string" } ] } } } }

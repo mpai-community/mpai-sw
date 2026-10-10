@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CAV — 3D Visual Delivery (FACS)</title>
+<style>
+  :root { --bg:#141a24; --panel:#1e2632; --ink:#e8ecf2; --accent:#3b82f6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  #app { display:flex; flex-direction:column; height:100%; }
+  #stage { position:relative; flex:1 1 auto; min-height:0; }
+  #canvas { width:100%; height:100%; display:block; }
+  #status { position:absolute; top:14px; left:0; right:0; text-align:center;
+    font-size:20px; font-weight:600; letter-spacing:.3px; pointer-events:none;
+    text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  /* The avatar's licence, under her (Ready Player Me, CC BY-NC-SA 4.0: attribution
+     required, non-commercial use only). */
+  #notice { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:max-content;
+    max-width:calc(100% - 16px); text-align:center; font-size:11px; color:#c9d3df; pointer-events:none;
+    background:rgba(20,26,36,.78); padding:3px 10px; border-radius:4px; }
+  #loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:#9fb0c6; }
+  #panel { flex:0 0 auto; background:var(--panel); padding:12px; }
+  #emotions { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  button { font-size:14px; padding:9px 14px; border:none; border-radius:8px;
+    background:#e8ecf2; color:#1e242e; cursor:pointer; }
+  button:hover { background:#fff; }
+  #speak { background:var(--accent); color:#fff; font-size:16px; padding:11px 26px;
+    display:block; margin:0 auto 10px; }
+  .hint { text-align:center; color:#7f8ca0; font-size:12px; margin-top:8px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+    <div id="notice">Avatar by Ready Player Me (CC BY-NC-SA 4.0), used for demonstration. Other uses are subject to restrictions.</div>
+    <div id="loading">Loading the CAV's face…</div>
+  </div>
+  <div id="panel">
+  <audio id="responseAudio" preload="auto"></audio>
+    <div class="hint">The realistic 3D face is driven by our FACS Action Units (emotion -> EM-FACS -> AU -> ARKit blendshapes). Drag to rotate.</div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
+
+// A realistic ReadyPlayerMe head with full ARKit blendshapes + Oculus visemes
+// (the avatar used by the open-source TalkingHead project). Served from the RPM CDN.
+// The avatar GLB is served locally, from beside this page (UserAgent/Assets), so no
+// external CDN is fetched at view time.
+// It is a realistic ReadyPlayerMe head with ARKit blendshapes + Oculus visemes.
+const AVATAR_URL = 'https://cavapp.local/cav-avatar.glb';
+
+// ---- EM-FACS: emotion -> FACS Action Units (the same model as our C# core) ----
+const EMFACS = {
+  HAPPINESS: ['AU6','AU12'],
+  SADNESS:   ['AU1','AU4','AU15'],
+  ANGER:     ['AU4','AU5','AU7','AU23'],
+  FEAR:      ['AU1','AU2','AU4','AU5','AU20','AU26'],
+  DISGUST:   ['AU9','AU15','AU17'],
+  SURPRISE:  ['AU1','AU2','AU5','AU26'],
+  CALMNESS:  []
+};
+
+// ---- FACS Action Unit -> ARKit blendshape (morph target) mapping ----
+// Each AU activates the anatomically-corresponding ARKit blendshape(s), so the
+// realistic face is driven by the FACS descriptor, not by presets.
+const AU_TO_ARKIT = {
+  AU1:  [['browInnerUp',1.0]],
+  AU2:  [['browOuterUpLeft',1.0],['browOuterUpRight',1.0]],
+  AU4:  [['browDownLeft',1.0],['browDownRight',1.0]],
+  AU5:  [['eyeWideLeft',1.0],['eyeWideRight',1.0]],
+  AU6:  [['cheekSquintLeft',1.0],['cheekSquintRight',1.0],['mouthSmileLeft',0.15],['mouthSmileRight',0.15]],
+  AU7:  [['eyeSquintLeft',1.0],['eyeSquintRight',1.0]],
+  AU9:  [['noseSneerLeft',1.0],['noseSneerRight',1.0]],
+  AU12: [['mouthSmileLeft',0.5],['mouthSmileRight',0.5]],
+  AU15: [['mouthFrownLeft',1.0],['mouthFrownRight',1.0]],
+  AU17: [['mouthShrugLower',1.0]],
+  AU20: [['mouthStretchLeft',1.0],['mouthStretchRight',1.0]],
+  AU23: [['mouthPressLeft',1.0],['mouthPressRight',1.0]],
+  AU25: [['jawOpen',0.4]],
+  AU26: [['jawOpen',1.0]]
+};
+
+const EMOTIONS = ['Happy','Sad','Angry','Fearful','Disgusted','Surprised','Calm'];
+const CAT = { Happy:'HAPPINESS', Sad:'SADNESS', Angry:'ANGER', Fearful:'FEAR',
+              Disgusted:'DISGUST', Surprised:'SURPRISE', Calm:'CALMNESS' };
+
+// ---- three.js scene ----
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x141a24);
+// Image-based lighting: essential for realistic PBR skin. RoomEnvironment is
+// built into three.js (no external HDR file needed, so it works offline/VPN).
+const pmrem = new THREE.PMREMGenerator(renderer);
+// Fallback synthetic environment (instant), replaced by the real HDR when it loads.
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+// Real photographic studio HDR - the biggest realism gain for PBR skin.
+new RGBELoader().load('https://cavapp.local/studio.hdr', (hdr) => {
+  hdr.mapping = THREE.EquirectangularReflectionMapping;
+  const env = pmrem.fromEquirectangular(hdr).texture;
+  scene.environment = env;
+  hdr.dispose();
+}, undefined, (err) => console.warn('HDR not loaded, using RoomEnvironment fallback', err));
+const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+const controls = new OrbitControls(camera, canvas);
+controls.enablePan = false;
+controls.minDistance = 0.45; controls.maxDistance = 1.8;
+
+// lighting for a flattering, realistic look
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 0.6));
+const key  = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(1.5, 2.0, 2.5); scene.add(key);
+const fill = new THREE.DirectionalLight(0xbcd0ff, 0.9); fill.position.set(-2.0, 0.5, 1.5); scene.add(fill);
+const rim  = new THREE.DirectionalLight(0xffffff, 1.4); rim.position.set(-1.0, 1.5, -2.5); scene.add(rim);
+
+// ---- the environment and the user's Point of View ----
+// A basic Visual Delivery: the environment the CAV sees - Basic Mixed Scene
+// Descriptors (OSD-BMS-V1.5), each entry an object placed by its BXSSpaceTime -
+// drawn around the avatar as simple shapes (a vehicle a box at its position), and
+// the camera where the user declares to see the scene from (OSD-OPV-V1.5).
+// Positions are in metres in the CAV's frame, as the CAV code uses it: X ahead,
+// Y left, Z up, the avatar (the CAV) at the origin; Orientation is (alpha, beta,
+// gamma) in degrees - roll, pitch, yaw. three.js is y-up, -z ahead: (-Y, Z, -X).
+camera.far = 500; camera.updateProjectionMatrix();
+const environment = new THREE.Group();
+scene.add(environment);
+const toThree = ([x, y, z]) => new THREE.Vector3(-y, z, -x);
+let groundY = 0;                                   // the road: at the avatar's feet, once it is loaded
+const SIZES = {                                    // length (along X), width (Y), height (Z), in metres
+  vehicle: [4.5, 1.8, 1.5], car: [4.5, 1.8, 1.5], truck: [8.0, 2.5, 3.2], bus: [11.0, 2.5, 3.2],
+  bicycle: [1.8, 0.6, 1.6], motorcycle: [2.2, 0.8, 1.4], person: [0.5, 0.5, 1.7], pedestrian: [0.5, 0.5, 1.7]
+};
+const COLOURS = { vehicle: 0x3b82f6, car: 0x3b82f6, truck: 0x8b5cf6, bus: 0x8b5cf6, bicycle: 0x10b981,
+                  motorcycle: 0x10b981, person: 0xf59e0b, pedestrian: 0xf59e0b };
+function classOf(entry) {
+  const id = entry.BXSOrBXSID;
+  const text = typeof id === 'string' ? id : JSON.stringify(id || {});
+  const lower = text.toLowerCase();
+  return Object.keys(SIZES).find(k => lower.includes(k)) || 'object';
+}
+function setEnvironment(bms) {
+  if (typeof bms === 'string') bms = JSON.parse(bms);
+  environment.clear();
+  const grid = new THREE.GridHelper(200, 40, 0x3a4658, 0x252e3b);
+  grid.position.y = groundY;
+  environment.add(grid);
+  let drawn = 0;
+  for (const entry of (bms && bms.BasicAVSceneDescriptorsData) || []) {
+    const attitude = entry.BXSSpaceTime && entry.BXSSpaceTime.SpatialAttitude1;
+    const position = attitude && attitude.Position && attitude.Position.CartPosition;
+    if (!position) continue;
+    const kind = classOf(entry);
+    const [l, w, h] = SIZES[kind] || [1, 1, 1];
+    const box = new THREE.Mesh(new THREE.BoxGeometry(w, h, l),
+                               new THREE.MeshStandardMaterial({ color: COLOURS[kind] || 0x9ca3af, roughness: 0.6 }));
+    const p = toThree(position);
+    box.position.set(p.x, grid.position.y + h / 2, p.z);   // standing on the road
+    const yaw = attitude.Orientation && attitude.Orientation.Orientation ? attitude.Orientation.Orientation[2] : 0;
+    box.rotation.y = THREE.MathUtils.degToRad(yaw || 0);
+    environment.add(box);
+    drawn++;
+  }
+  (document.getElementById('status') || {}).textContent = `environment: ${drawn} object(s)`;
+}
+function setPointOfView(pov) {
+  if (typeof pov === 'string') pov = JSON.parse(pov);
+  if (!pov || !pov.CartPosition) return;
+  const [roll, pitch, yaw] = (pov.Orientation || [0, 0, 0]).map(THREE.MathUtils.degToRad);
+  camera.position.copy(toThree(pov.CartPosition));
+  camera.rotation.set(-pitch, yaw, -roll, 'YXZ');         // pitch about the left axis is nose-down positive
+  const ahead = new THREE.Vector3(0, 0, -5).applyEuler(camera.rotation);
+  controls.target.copy(camera.position).add(ahead);
+  controls.minDistance = 0.1; controls.maxDistance = 400;
+  controls.update();
+}
+// ---- a 3D Model Scene (OSD-B3S-V1.5), as 3D Model Object Delivery (OSD-3OD) gives it ----
+// Each object of the scene is a 3D Model - inline (a Basic 3D Model Object's Data,
+// GLB in base64) or by identifier (fetched as <identifier>, or <identifier>.glb) -
+// placed by its Space-Time (SpatialAttitude1: Position, Orientation) in the same frame
+// as the environment. Models made in 3ds Max (Microsoft Rocketbox) are prepared as
+// the MMM viewer prepares them: their opacity material transparent, their arms down.
+const modelScene = new THREE.Group();
+scene.add(modelScene);
+const sceneModels = new Map();                     // source -> Promise<gltf>
+function modelOf(item) {
+  const what = (item['3ObjectIDOr3Object'] || [])[0];
+  if (!what) return null;
+  if (typeof what === 'string') return { key: what, url: /\.(glb|gltf)$/i.test(what) ? what : what + '.glb' };
+  const inline = what.Data || (what.Basic3DModelObjects && what.Basic3DModelObjects[0] && (what.Basic3DModelObjects[0].BAObjectIDOrBAObject || what.Basic3DModelObjects[0]).Data);
+  if (inline) return { key: (what['3DModelObjectID'] || what.Basic3DModelObjectID || inline.slice(0, 32)), data: inline };
+  const id = what['3DModelObjectID'] || what.Basic3DModelObjectID;
+  return id ? { key: id, url: /\.(glb|gltf)$/i.test(id) ? id : id + '.glb' } : null;
+}
+function loadModel(src) {
+  if (!sceneModels.has(src.key)) sceneModels.set(src.key, src.data
+    ? new Promise((ok, ko) => loader.parse(Uint8Array.from(atob(src.data), c => c.charCodeAt(0)).buffer, '', ok, ko))
+    : loader.loadAsync(src.url));
+  return sceneModels.get(src.key);
+}
+function prepare(root) {
+  root.traverse(o => {
+    if (o.isMesh) { o.frustumCulled = false; for (const m of [].concat(o.material)) if (/opacity/i.test(m.name)) { m.transparent = true; m.alphaTest = 0.35; m.side = THREE.DoubleSide; } }
+    if (o.isBone && /L.?UpperArm$/i.test(o.name)) o.rotateX(THREE.MathUtils.degToRad(78));
+    if (o.isBone && /R.?UpperArm$/i.test(o.name)) o.rotateX(THREE.MathUtils.degToRad(-78));
+  });
+  root.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(root, true);
+  const holder = new THREE.Group(); holder.add(root);
+  root.position.y -= box.min.y;                    // standing on the ground
+  return holder;
+}
+// The speaking avatar is a member too (Scene and Avatar Rendering places it, naming its
+// 3D Model): the animated avatar this page has is moved there, not loaded again.
+let speakingAvatar = null;                         // the animated avatar, once loaded
+const avatarName = AVATAR_URL.split('/').pop();
+function attitudeOf(item) {
+  const attitude = item['3DModelObjectSpaceTime'] && item['3DModelObjectSpaceTime'].SpatialAttitude1;
+  const position = attitude && attitude.Position && attitude.Position.CartPosition;
+  const yaw = attitude && attitude.Orientation && attitude.Orientation.Orientation ? attitude.Orientation.Orientation[2] : 0;
+  return { position, yaw };
+}
+async function setModelScene(b3d) {
+  if (typeof b3d === 'string') b3d = JSON.parse(b3d);
+  const items = (b3d && b3d.Basic3DModelSceneDescriptors) || [];
+  const placed = [];
+  for (const item of items) {
+    const src = modelOf(item); if (!src) continue;
+    if (speakingAvatar && src.key.split('/').pop() === avatarName) {
+      const { position, yaw } = attitudeOf(item);
+      if (position) { const p = toThree(position); speakingAvatar.position.set(p.x, p.y, p.z); }
+      speakingAvatar.rotation.y = THREE.MathUtils.degToRad(yaw || 0);
+      placed.push(null);
+      continue;
+    }
+    try {
+      const holder = prepare(cloneSkinned((await loadModel(src)).scene));
+      const { position, yaw } = attitudeOf(item);
+      if (position) { const p = toThree(position); holder.position.set(p.x, groundY + p.y, p.z); }
+      holder.rotation.y = THREE.MathUtils.degToRad(yaw || 0);
+      placed.push(holder);
+    } catch (e) { console.warn('3D Model not loaded', src.key, e); }
+  }
+  modelScene.clear(); for (const h of placed) if (h) modelScene.add(h);
+  (document.getElementById('status') || {}).textContent = `3D Model Scene: ${placed.length} of ${items.length} object(s)`;
+  return placed.length;
+}
+window.cavScene = { setEnvironment, setPointOfView, setModelScene };
+// ---- the body: Body Descriptors (PAF-BDO-V1.6), BVH, as Generative Body Description gives them ----
+// The BVH's skeleton is named as the common humanoid rigs and its rotations are
+// angles about the body's axes - Y up, Z ahead, X to the avatar's left - from an
+// arms-down rest pose (PAF-GBD, BodyMotion). The avatar is modelled in a T-pose: its
+// arms are first brought down, by rotating each upper arm until it points down, and
+// the rest pose of every joint is recorded. A rotation r of the BVH is then applied
+// to a bone as rest * (restWorld^-1 * r * restWorld): r turned from the body's axes
+// into the bone's own. Between utterances the body breathes.
+const BODY_JOINTS = ['Hips','Spine','Spine1','Spine2','Neck','Head','LeftShoulder','LeftArm','LeftForeArm','LeftHand',
+                     'RightShoulder','RightArm','RightForeArm','RightHand'];
+const body = { bones: {}, rest: {}, restWorld: {}, motion: null };
+function setupBody(avatar) {
+  avatar.updateMatrixWorld(true);
+  avatar.traverse(o => { if (o.isBone && BODY_JOINTS.includes(o.name) && !body.bones[o.name]) body.bones[o.name] = o; });
+  for (const side of ['Left', 'Right']) {
+    const arm = body.bones[side + 'Arm'], fore = body.bones[side + 'ForeArm'];
+    if (!arm || !fore) continue;
+    const a = arm.getWorldPosition(new THREE.Vector3()), f = fore.getWorldPosition(new THREE.Vector3());
+    const turn = new THREE.Quaternion().setFromUnitVectors(f.sub(a).normalize(), new THREE.Vector3(0, -1, 0));
+    const world = turn.multiply(arm.getWorldQuaternion(new THREE.Quaternion()));
+    const parent = arm.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+    arm.quaternion.copy(parent.multiply(world));
+    avatar.updateMatrixWorld(true);
+  }
+  for (const [name, bone] of Object.entries(body.bones)) {
+    body.rest[name] = bone.quaternion.clone();
+    body.restWorld[name] = bone.getWorldQuaternion(new THREE.Quaternion());
+  }
+}
+function applyBody(angles) {                       // name -> [z, x, y] degrees
+  const d = THREE.MathUtils.degToRad;
+  for (const [name, [z, x, y]] of Object.entries(angles)) {
+    const bone = body.bones[name]; if (!bone) continue;
+    const r = new THREE.Quaternion().setFromEuler(new THREE.Euler(d(x), d(y), d(z), 'ZXY'));
+    const w = body.restWorld[name], local = w.clone().invert().multiply(r).multiply(w);
+    bone.quaternion.copy(body.rest[name]).multiply(local);
+  }
+}
+function parseBvh(text) {
+  const lines = text.split(/\r?\n/); const joints = []; let i = 0;
+  for (; i < lines.length && !/^MOTION/.test(lines[i].trim()); i++) {
+    const m = /^\s*(ROOT|JOINT)\s+(\S+)/.exec(lines[i]); if (m) joints.push({ name: m[2], channels: [] });
+    const c = /^\s*CHANNELS\s+\d+\s+(.*)$/.exec(lines[i]); if (c) joints[joints.length - 1].channels = c[1].trim().split(/\s+/);
+  }
+  const frames = +(/Frames:\s*(\d+)/.exec(lines[i + 1]) || [0, 0])[1];
+  const dt = +(/Frame Time:\s*([\d.]+)/.exec(lines[i + 2]) || [0, 1 / 30])[1];
+  const data = lines.slice(i + 3, i + 3 + frames).map(l => l.trim().split(/\s+/).map(Number));
+  return { joints, dt, data };
+}
+function bodyFrame(motion, t) {
+  const f = Math.min(motion.data.length - 1, Math.max(0, Math.floor(t / motion.dt)));
+  const row = motion.data[f], angles = {}; let k = 0;
+  for (const j of motion.joints) {
+    const v = { Zrotation: 0, Xrotation: 0, Yrotation: 0 };
+    for (const ch of j.channels) v[ch] = row[k++];
+    angles[j.name] = [v.Zrotation, v.Xrotation, v.Yrotation];
+  }
+  return angles;
+}
+function breathe(t) {
+  return { Spine1: [0, 1.2 * Math.sin(2 * Math.PI * 0.25 * t), 0],
+           Head: [0, 1.5 * Math.sin(2 * Math.PI * 0.17 * t + 1), 2.0 * Math.sin(2 * Math.PI * 0.11 * t)],
+           Hips: [1.5 * Math.sin(2 * Math.PI * 0.08 * t), 0, 0],
+           LeftForeArm: [0, -6, 0], RightForeArm: [0, -6, 0] };
+}
+function setBodyMotion(bdoJson) {
+  body.motion = null;
+  try {
+    const bdo = typeof bdoJson === 'string' ? JSON.parse(bdoJson) : bdoJson;
+    const bvh = bdo && ((bdo.BodyDescriptorsData || []).find(d => d.Data) || {}).Data;
+    if (bvh) body.motion = parseBvh(bvh);
+  } catch (e) { console.warn('Body Descriptors unreadable', e); }
+}
+window.cavBody = { setBodyMotion, applyBody, body };
+
+
+let morphMeshes = [];   // meshes with morph targets
+let currentAUs = {};    // AU -> weight
+let speaking = false;
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+// Apply the current AU weights (+ optional viseme) to every morph mesh.
+function applyMorphs(visemeJaw = 0) {
+  // Accumulate ARKit target weights from active AUs.
+  const targets = {};
+  for (const [au, w] of Object.entries(currentAUs)) {
+    const map = AU_TO_ARKIT[au];
+    if (!map) continue;
+    for (const [name, scale] of map)
+      targets[name] = Math.min(1, (targets[name]||0) + w*scale);
+  }
+  // Lip-sync overrides the jaw while speaking.
+  if (visemeJaw > 0) targets['jawOpen'] = Math.max(targets['jawOpen']||0, visemeJaw);
+
+  for (const mesh of morphMeshes) {
+    const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences;
+    // reset the ones we touch (leave others at 0)
+    for (let i=0;i<infl.length;i++) infl[i] = 0;
+    for (const [name, val] of Object.entries(targets)) {
+      const idx = dict[name];
+      if (idx !== undefined) infl[idx] = val;
+    }
+  }
+}
+
+function setEmotion(category, intensity=0.9) {
+  currentAUs = {};
+  for (const au of (EMFACS[category]||[])) currentAUs[au] = intensity;
+  applyMorphs();
+}
+
+// ---- load the avatar ----
+const loader = new GLTFLoader();
+loader.load(AVATAR_URL, (gltf) => {
+  const avatar = gltf.scene;
+  speakingAvatar = avatar;
+  avatar.traverse(o => {
+    if (o.isMesh && o.morphTargetDictionary) morphMeshes.push(o);
+  });
+  scene.add(avatar);
+
+  setupBody(avatar);
+
+  // Frame the camera on the head - or, ?view=full, on the whole figure.
+  const box = new THREE.Box3().setFromObject(avatar, true);
+  groundY = box.min.y;
+  const size = box.getSize(new THREE.Vector3());
+  const headY = box.max.y - size.y*0.085;         // eye/upper-head height
+  if (new URLSearchParams(location.search).get('view') === 'full') {
+    const midY = box.min.y + size.y * 0.52;
+    camera.fov = 26; camera.updateProjectionMatrix();
+    camera.position.set(0.0, midY + 0.1, (size.y * 0.62) / Math.tan(THREE.MathUtils.degToRad(13)));
+    controls.target.set(0, midY, 0);
+    controls.minDistance = 0.45; controls.maxDistance = 12;
+  } else {
+    camera.position.set(0.0, headY, 0.72);        // closer, portrait framing
+    camera.fov = 26; camera.updateProjectionMatrix();
+    controls.target.set(0, headY, 0);
+  }
+  controls.update();
+
+  document.getElementById('loading').style.display = 'none';
+  setEmotion('CALMNESS', 0);
+  resize();
+  avatarLoaded(true);
+}, (e) => {
+  const pct = e.total ? Math.round(e.loaded/e.total*100) : 0;
+  document.getElementById('loading').textContent = `Loading the CAV's face… ${pct}%`;
+}, (err) => {
+  document.getElementById('loading').textContent =
+    'Could not load the avatar (network?). Check the console.';
+  console.error(err);
+});
+
+// ---- lip-sync: animate the jaw/mouth in a talking rhythm for ~2.5s ----
+async function speak() {
+  if (speaking) return; speaking = true;
+  const t0 = performance.now();
+  return new Promise(resolve => {
+    function step(now) {
+      const t = (now - t0)/1000;
+      if (t > 2.5) { applyMorphs(0); speaking = false; resolve(); return; }
+      // syllable-like envelope with jitter
+      const env = Math.abs(Math.sin(t*11)) * (0.5 + 0.5*Math.random()) * 0.7;
+      applyMorphs(env);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// ---- Smile decay: when speech ends, the raised lips should not snap to zero.
+// Ease them down over ~1s to a small residual, so a trace of happiness remains.
+const SMILE_TARGETS = ['mouthSmileLeft','mouthSmileRight','cheekSquintLeft','cheekSquintRight'];
+let smileFadeRAF = null;
+function fadeSmileToTrace(durationMs = 1000, traceFrac = 0.3) {
+  if (smileFadeRAF) { cancelAnimationFrame(smileFadeRAF); smileFadeRAF = null; }
+  // snapshot the smile influences at speech end, per mesh
+  const snap = morphMeshes.map(mesh => {
+    const s = {};
+    for (const name of SMILE_TARGETS) {
+      const i = mesh.morphTargetDictionary[name];
+      if (i !== undefined) s[name] = mesh.morphTargetInfluences[i];
+    }
+    return s;
+  });
+  // mouth/jaw return to rest immediately; only the smile lingers and eases down
+  for (const mesh of morphMeshes) {
+    const infl = mesh.morphTargetInfluences;
+    for (let i = 0; i < infl.length; i++) infl[i] = 0;
+  }
+  currentAUs = {};   // emotion cleared; the trace is driven directly below
+  const t0 = performance.now();
+  function step(now) {
+    const k = Math.min(1, (now - t0) / durationMs);
+    const ease = 1 - Math.pow(1 - k, 2);          // ease-out
+    const f = 1 + (traceFrac - 1) * ease;          // 1.0 -> traceFrac
+    morphMeshes.forEach((mesh, mi) => {
+      const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences, s = snap[mi];
+      for (const name of SMILE_TARGETS) {
+        const i = dict[name];
+        if (i !== undefined && s[name] !== undefined) infl[i] = s[name] * f;
+      }
+    });
+    smileFadeRAF = (k < 1) ? requestAnimationFrame(step) : null;
+  }
+  smileFadeRAF = requestAnimationFrame(step);
+}
+
+// ---- UI ----
+const status = document.getElementById('status');
+
+
+
+
+// ---- FDO timeline playback: load the FDO (response-fdo.json) + speech (response-speech.wav),
+//      play the audio, and animate the face through the timeline frames synced to audio time. ----
+let responseFrames = null;   // [{ t, targets: {arkitName: weight} }]
+
+// Receive the CAV response (FDO timeline + speech WAV) from the host app via a
+// WebView message (window.chrome.webview), instead of fetching files.
+function receiveResponse(fdoJson, speechWavBase64, bdoJson) {
+  setBodyMotion(bdoJson);
+  // THE VOICE DOES NOT DEPEND ON THE FACE. A Module that returns speech and no
+  // Face Descriptors - AMQ is one - gave JSON.parse(null), which threw, and the
+  // audio lines below were never reached: the avatar was silent because her
+  // mouth had nothing to move to. The speech is set up first and plays whether
+  // or not a face came with it; a still mouth saying the answer is better than
+  // a moving one saying nothing.
+  const audio = document.getElementById('responseAudio');
+  if (speechWavBase64) audio.src = 'data:audio/wav;base64,' + speechWavBase64;
+
+  responseFrames = faceFrames(fdoJson);
+  playResponse();
+}
+
+// The Face Descriptors as a timeline of ARKit blendshape targets.
+function faceFrames(fdoJson) {
+  let responseFrames = [];
+  try {
+    const fdo = fdoJson ? JSON.parse(fdoJson) : null;
+    const items = (fdo && fdo.FaceDescriptorsData) || [];
+    responseFrames = items.map(item => {
+      // frame time (seconds) from SimpleTime.SimpleTimeData[0].StartTime
+      let t = 0;
+      try { t = item.Time.SimpleTimeData[0].StartTime; } catch(e) {}
+      // per-frame AU weights (FaceActionUnits JSON in Data)
+      let aus = {};
+      try { aus = JSON.parse(item.Data).ActionUnits || {}; } catch(e) {}
+      // map AU names -> ARKit blendshape targets (reuse AU_TO_ARKIT)
+      const targets = {};
+      for (const [au, w] of Object.entries(aus)) {
+        // au like "AU12_LipCornerPull" -> key "AU12"
+        const key = au.split('_')[0];
+        const map = AU_TO_ARKIT[key];
+        if (!map) continue;
+        for (const [name, scale] of map) targets[name] = Math.min(1, (targets[name]||0) + w*scale);
+      }
+      return { t, targets };
+    }).sort((a,b) => a.t - b.t);
+  } catch(e) {
+    // A face that cannot be read is not a reason to stay silent.
+    (document.getElementById('status')||{}).textContent = 'face descriptors unreadable; speaking without them';
+    console.error(e);
+  }
+  return responseFrames;
+}
+
+window.cavReceive = receiveResponse;   // what a 'render' message does, for a host that calls it directly
+
+// Listen for messages from the host app (the C# WebView3DModelDelivery device).
+if (window.chrome && window.chrome.webview) {
+  window.chrome.webview.addEventListener('message', ev => {
+    const m = ev.data;
+    if (m && m.Kind === 'render') receiveResponse(m.FaceDescriptors, m.SpeechWavBase64, m.BodyDescriptors);
+    if (m && m.Kind === 'environment') setEnvironment(m.Descriptors);
+    if (m && m.Kind === 'pointOfView') setPointOfView(m.PointOfView);
+    if (m && m.Kind === 'scene') { setModelScene(m.Scene); if (m.PointOfView) setPointOfView(m.PointOfView); }
+  });
+}
+
+// Apply the timeline frame nearest the audio's current time (with linear interpolation).
+function applyResponseFrame(timeSec) {
+  if (!responseFrames || responseFrames.length === 0) return;
+  // find surrounding frames
+  let i = 0; while (i < responseFrames.length-1 && responseFrames[i+1].t <= timeSec) i++;
+  const a = responseFrames[i], b = responseFrames[Math.min(i+1, responseFrames.length-1)];
+  const span = Math.max(1e-3, b.t - a.t);
+  const k = Math.min(1, Math.max(0, (timeSec - a.t)/span));
+  // interpolate targets
+  const targets = {};
+  for (const [name, w] of Object.entries(a.targets)) targets[name] = w*(1-k);
+  for (const [name, w] of Object.entries(b.targets)) targets[name] = (targets[name]||0) + w*k;
+  // apply to the meshes
+  for (const mesh of morphMeshes) {
+    const dict = mesh.morphTargetDictionary, infl = mesh.morphTargetInfluences;
+    for (let j=0;j<infl.length;j++) infl[j] = 0;
+    for (const [name, val] of Object.entries(targets)) { const idx = dict[name]; if (idx !== undefined) infl[idx] = val; }
+  }
+}
+
+let playing = false;
+async function playResponse() {
+  if (!responseFrames) return;
+  const audio = document.getElementById('responseAudio');
+  playing = true;
+  (document.getElementById('status')||{}).textContent = 'CAV speaking...';
+  audio.currentTime = 0;
+  await audio.play();
+  audio.onended = () => { playing = false; fadeSmileToTrace(1000, 0.3); (document.getElementById('status')||{}).textContent = 'CALMNESS / calm'; };
+}
+
+
+// ---- frame by frame, for a renderer that makes a video of the scene ----
+// Scene and Avatar Rendering (PAF-SAR) draws what the viewer sees with this page,
+// off screen: it gives the scene, the Point of View and the utterance's Face and
+// Body Descriptors, then asks for the frame at each time - the clock is its own,
+// not the screen's, and no sound is played.
+let offline = false;
+let avatarLoaded; const avatarReady = new Promise(r => avatarLoaded = r);
+window.cavFrames = {
+  ready: avatarReady,
+  async load(sceneJson, povJson, fdoJson, bdoJson, width = 640, height = 480) {
+    offline = true;
+    renderer.setSize(width, height, false);              // the video's size, not the window's
+    camera.aspect = width / height; camera.fov = 60;     // a room, not a portrait
+    camera.updateProjectionMatrix();
+    if (sceneJson) await setModelScene(sceneJson);
+    if (povJson) setPointOfView(povJson);
+    responseFrames = faceFrames(fdoJson);
+    setBodyMotion(bdoJson);
+    return true;
+  },
+  at(t) {
+    applyResponseFrame(t);
+    if (Object.keys(body.bones).length) applyBody(body.motion ? bodyFrame(body.motion, t) : breathe(t));
+    renderer.render(scene, camera);
+    return canvas.toDataURL('image/jpeg', 0.9);
+  }
+};
+
+// ---- render loop ----
+function loop() {
+  requestAnimationFrame(loop);
+  if (offline) return;
+  if (playing) { const audio = document.getElementById('responseAudio'); applyResponseFrame(audio.currentTime); }
+  // The body: the utterance's motion while she speaks, breathing otherwise.
+  if (Object.keys(body.bones).length) {
+    const audio = document.getElementById('responseAudio');
+    applyBody(playing && body.motion ? bodyFrame(body.motion, audio.currentTime) : breathe(performance.now() / 1000));
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+resize(); loop();
+</script>
+</body>
+</html>

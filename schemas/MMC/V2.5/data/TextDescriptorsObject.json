@@ -1,0 +1,32 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/MMC/V2.5/data/TextDescriptorsObject.json",
+  "title":                      "Text Descriptors Object V2.5",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "TextDescriptorsObjectID", "TextDescriptorsData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "MMC-TDO-V2.5",
+                                  "description": "Text Descriptors Object Header - Standard MMC-TDO-Vx.y" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Text is or is intended to be located." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Text is or is intended to be located." },
+    "TextDescriptorsObjectID":  { "type": "string", "description": "Unique identifier of this Text Descriptors Object instance." },
+    "TextDescriptorsObjectTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Text Descriptors Object was produced." },
+
+    "TextDescriptorsObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Text is located." },
+
+    "TextDescriptorsData":      { "type": "array", "minItems": 0, "description": "Text Descriptors Data representing the linguistic analysis of a Text.", "items": { "anyOf": [
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "DataLength":             { "type": "integer", "description": "Length of the Text Descriptors Data." },
+      "DataURI":                { "type": "string", "format": "uri", "description": "URI reference to the Text Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Data":                   { "type": "string", "description": "Inline Text Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "DataID":                 { "type": "string", "description": "Identifier referencing Text Descriptors Data stored elsewhere." } } } ] } },
+
+    "TextDescriptorsQualifier": { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/TextDescriptorsQualifier.json",
+                                  "description": "Qualifier providing information on Sub-Types, Formats, and Attributes of Text Descriptors Data." },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Text Descriptors Object in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Text Descriptors Object (plain text, max 2048 characters)." } } }

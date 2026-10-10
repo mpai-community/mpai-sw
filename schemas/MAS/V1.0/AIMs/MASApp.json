@@ -1,0 +1,40 @@
+{
+  "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MAS-APP-V1.0"},
+
+  "Header":           "MAS-APP-V1.0",
+
+  "APIProfile":       "Basic",
+
+  "Description":      "MPAI as a Service App: the Module over which the MPAI-MAS workflow runs, letting a User Agent that has not yet chosen an App speak to the person through a Speaking Avatar. Response and Scene Rendering renders the Text the User Agent supplies into Machine Speech and Machine Face Descriptors; Automatic Speech Recognition gives as Text the person's spoken reply to a question the Module asked.",
+
+  "ExternalPorts":    [{"Name": "UAText", "Direction": "Input", "DataType": "OSD-BTO-V1.5", "Output": 1, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "UAPersonalStatus", "Direction": "Input", "DataType": "MMC-EPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "ReplySpeech", "Direction": "Input", "DataType": "OSD-BSO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "ReplyText", "Direction": "Output", "DataType": "OSD-BTO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "Avatar",         "Direction": "Input",  "DataType": "PAF-AVT-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "SpeakingAvatar", "Direction": "Output", "DataType": "XRV-SAV-V1.0", "Technology": "Software", "Protocol": "", "IsRemote": ""}],
+
+  "SubAIMs":          [{"Identifier": {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-RSR-V1.6", "Relation": "Internal"}},
+                       {"Identifier": {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-ASR-V2.5", "Relation": "Internal"}}],
+
+  "Topology":             [{"Output": {"AIMName": "", "DataType": "OSD-BTO-V1.5"}, "Input": {"AIMName": "PAF-RSR-V1.6", "DataType": "OSD-BTO-V1.5", "PortNumber": 1}},
+                          {"Output": {"AIMName": "", "DataType": "MMC-EPS-V2.5"}, "Input": {"AIMName": "PAF-RSR-V1.6", "DataType": "MMC-EPS-V2.5"}},
+                          {"Output": {"AIMName": "PAF-RSR-V1.6", "DataType": "XRV-SAV-V1.0"}, "Input": {"AIMName": "", "DataType": "XRV-SAV-V1.0"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BSO-V1.5"}, "Input": {"AIMName": "MMC-ASR-V2.5", "DataType": "OSD-BSO-V1.5", "PortNumber": 2}},
+                          {"Output": {"AIMName": "MMC-ASR-V2.5", "DataType": "OSD-BTO-V1.5", "PortNumber": 2}, "Input": {"AIMName": "", "DataType": "OSD-BTO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "PAF-AVT-V1.6"}, "Input": {"AIMName": "PAF-RSR-V1.6", "DataType": "PAF-AVT-V1.6"}}],
+
+  "Implementations":  [{"ImplementationURI": "/* absolute URI locating the Implementation */", "BinaryName": "/* provided by implementer */", "Architecture": "/* x86-64 | ARM64 */", "MASPort": 443, "Firewall": [{"Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0"}], "OperatingSystem": "/* Windows | Linux | MacOS */", "Version": "/* implementer version */", "Source": "/* AIMStorage | MPAIStore */", "Destination": "/* provided by implementer */"}],
+
+  "ResourcePolicies": [{"Name": "Memory", "Minimum": "/* GB */", "Maximum": "/* GB */", "Request": "/* GB */"},
+                       {"Name": "CPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */"},
+                       {"Name": "CPU:Class", "Minimum": "/* string */", "Maximum": "/* string */", "Request": "/* string */"},
+                       {"Name": "GPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */"},
+                       {"Name": "GPU:CUDA:Class", "Minimum": "/* string */", "Maximum": "/* string */", "Request": "/* string */"},
+                       {"Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */", "Maximum": "/* GB */", "Request": "/* GB */"},
+                       {"Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */", "Maximum": "/* GB/s */", "Request": "/* GB/s */"}],
+
+  "DataXMData":       {},
+
+  "Documentation":    [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-mas/v1-0/"}]
+}

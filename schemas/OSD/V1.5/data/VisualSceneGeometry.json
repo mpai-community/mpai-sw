@@ -1,0 +1,52 @@
+{ "$schema":                                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                      "https://schemas.mpai.community/OSD/V1.5/data/VisualSceneGeometry.json",
+  "title":                                    "VisualScene Geometry V1.5",
+  "description":                              "Includes Objects, Basic Scene geom. & Scene geom.",
+  "type":                                     "object",
+  "required":                                 [ "Header", "VisualSceneGeometryID", "VisualSceneGeometrySpaceTime" ],
+  "additionalProperties":                     false,
+  "properties":                               {
+
+    "Header":                                 { "type": "string", "const": "OSD-VSG-V1.5" },
+    "MInstanceID":                            { "type": "string" },
+    "UEnvironmentID":                         { "type": "string" },
+    "VisualSceneGeometryID":                  { "type": "string" },
+    "VisualSceneGeometrySpaceTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "ObjectCount":                            { "type": "integer", "minimum": 0 },
+    "Objects":                                { "type": "array", "items": { "type": "object", "additionalProperties": false,
+      "properties":                           {
+        "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Object is where the Scene Geometry places it." },
+        "ObjectSpaceTime":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+        "ObjectIDOrGeometry":                 { "$ref": "#/$defs/ObjectIDOrGeometry" } } } },
+
+    "SubVisualSceneCount":                    { "type": "integer", "minimum": 0 },
+    "SubVisualScenes":                        { "type": "array", "items": { "type": "object", "additionalProperties": false,
+                                                "properties": {
+        "SubVisualSceneSpaceTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+        "SubVSceneIDOrSubVScene":             { "$ref": "#/$defs/SubVSceneIDOrSubVScene" } } } },
+
+    "BasicVisualSceneOrVisualScene":          { "$ref": "#/$defs/BasicVisualSceneOrVisualScene" },
+
+    "DataXMData":                             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                          { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                                    {
+
+    "GeometryObject":                         { "type": "object", "required": [ "ObjectSpaceTime", "ObjectQualifier" ],
+                                                "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Object is where the Scene Geometry places it." },
+      "ObjectSpaceTime":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "ObjectQualifier":                      { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/VisualQualifier.json" } } },
+
+    "ObjectIDOrGeometry":                     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "#/$defs/GeometryObject" },
+                                                { "type": "string" } ] } },
+
+    "SubVSceneIDOrSubVScene":                   { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/VisualSceneGeometry.json" },
+                                                { "type": "string" } ] } },
+
+    "BasicVisualSceneOrVisualScene":            { "type": "array", "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualSceneGeometry.json" },
+                                                { "$ref": "#/$defs/BasicVisualSceneOrVisualScene" } ] } } } }

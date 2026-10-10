@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Onnx\Mpai.Onnx.csproj" />
     <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
-    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
     <PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" />
   </ItemGroup>
 </Project>

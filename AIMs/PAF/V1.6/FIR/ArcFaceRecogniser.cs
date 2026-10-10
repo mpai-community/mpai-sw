@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using SixLabors.ImageSharp;
@@ -37,7 +38,7 @@ public sealed class ArcFaceRecogniser : IDisposable
 
     public ArcFaceRecogniser(string modelPath)
     {
-        _session = new InferenceSession(modelPath);
+        _session = OnnxSessions.Create(modelPath);
     }
 
     // Embedding for an already-cropped, roughly face-only image.

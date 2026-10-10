@@ -3,35 +3,37 @@
   "title":                                  "Basic 3D Model Scene Descriptors V1.5",
   "type":                                   "object",
   "required":                               [ "Header", "MInstanceID", "Basic3DModelSceneDescriptorsID", "Basic3DModelSceneDescriptorsSpaceTime",
-                                              "3DModelObjectCount", "Basic3DModelSceneDescriptors" ],
+                                              "3DModelObjectCount", "Basic3DModelSceneDescriptors", "UserPoV" ],
   "additionalProperties":                   false,
   "properties":                             {
-    "Header":                               { "type": "string", "const": "OSD-B3D-V1.5" },
+    "Header":                               { "type": "string", "const": "OSD-B3S-V1.5" },
     "MInstanceID":                          { "type": "string" },
     "UEnvironmentID":                       { "type": "string" },
     "Basic3DModelSceneDescriptorsID":       { "type": "string" },
     "Basic3DModelSceneDescriptorsTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
 
+    "UserPoV":                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where the Scene is seen from." },
     "GravityValue":                         { "type": "number" },
     "Basic3DModelSceneDescriptorsSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
 
     "3DModelObjectCount":                   { "type": "integer", "minimum": 0 },
 
     "Basic3DModelSceneDescriptors":         { "type": "array", "items": { "$anchor": "Basic3DModelSceneItem", "type": "object",
-                                              "additionalProperties": false, "required": [ "ObjectIDOrObject", "PointOfView" ],
+                                              "additionalProperties": false, "required": [ "3ObjectIDOr3Object" ],
                                               "properties": {
       "3DModelObjectSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
       "3ObjectIDOr3Object":                 { "$ref": "#/$defs/ObjectIDOrObject" },
       "3DModelSceneEnrichment":             { "type": "array", "items": { "$ref": "#/$defs/3DModelSceneEnrichment" } },
-      "PointOfView":                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" } } } },
+      "UserPoV":                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json",
+                                              "description": "Where this member is seen from in this Scene; absent, the Scene's UserPoV applies." } } } },
 
-    "DataExchangeMetadata":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DataXMData":                           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
     "DescrMetadata":                        { "type": "string", "maxLength": 2048 } },
 
   "$defs":                                  {
 
     "ObjectIDOrObject":                     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
-                                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelObject.json" },
+                                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelObject.json" },
                                             { "type": "string" } ] } },
 
     "3DModelSceneEnrichment":               { "type": "object", "additionalProperties": false, "properties": {

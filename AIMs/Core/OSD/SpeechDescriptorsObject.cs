@@ -10,9 +10,8 @@ namespace Mpai.Core.OSD;
 // (Entity Speech Description) and stored, as a serialized standard type, in the
 // gallery so any AIM can read it.
 //
-// Mirrors schemas/MMC/V2.5/data/SpeechDescriptorsObject.json. Speech differs from
-// face in the qualifier: the format is recorded under OtherSpeechDescriptorsFormats
-// (the NN-model enumeration) rather than the MPAI-native BasicSpeechDescriptors.
+// Mirrors schemas/MMC/V2.5/data/SpeechDescriptorsObject.json. The format of the
+// Data is recorded under OtherSpeechDescriptorsFormats (the NN-model enumeration).
 public sealed class SpeechDescriptorsObject
 {
     public string Header { get; init; } = "MMC-SDO-V2.5";
@@ -50,10 +49,8 @@ public sealed class SpeechDescriptorsDataItem
     public string? DataID { get; init; }       // by identifier
 }
 
-// TFA-SDQ-V1.5 - the qualifier. Its Formats offers TWO sources: the MPAI-native
-// BasicSpeechDescriptors (Pitch/Intensity/Tempo), or Other (an NN-model format
-// from SpeechDescriptorsFormats.json, e.g. "ECAPA-TDNN (192-d)"). For an NN
-// embedding we record the Other format.
+// TFA-SDQ-V1.5 - the qualifier. Its Formats records the NN-model format from
+// SpeechDescriptorsFormats.json, e.g. "ECAPA-TDNN (192-d)".
 public sealed class SpeechDescriptorsQualifier
 {
     public string Header { get; init; } = "TFA-SDQ-V1.5";
@@ -69,8 +66,6 @@ public sealed class SpeechDescriptorsQualifier
 
 public sealed class SpeechDescriptorsFormats
 {
-    // MPAI-native basic descriptors (Pitch/Intensity/Tempo) - unused for NN embeddings.
-    public object? MPAISpeechDescriptorsFormat { get; init; }
     // A value from TFA/V1.5/formats/SpeechDescriptorsFormats.json (the NN enumeration).
     public string? OtherSpeechDescriptorsFormats { get; init; }
 }

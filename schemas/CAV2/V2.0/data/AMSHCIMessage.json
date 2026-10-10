@@ -1,0 +1,43 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/CAV2/V2.0/data/AMSHCIMessage.json",
+  "title":                      "AMS-HCI Message V2.0",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "AMSHCIMessageID" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "CAV-AHM-V2.0",
+                                  "description": "AMS-HCI Message Header – Standard CAV-AHM-Vx.y" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this AMS-HCI Message." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this AMS-HCI Message." },
+    "AMSHCIMessageID":          { "type": "string", "description": "Unique identifier of this AMS-HCI Message instance." },
+    "AMSHCIMessageTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this AMS-HCI Message was produced." },
+
+    "AMSHCIMessageSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this AMS-HCI Message was sent." },
+
+    "HCIMessage":               { "type": "object", "additionalProperties": false, "description": "Data in message from HCI to AMS.", "properties": {
+      "RequestedRoutes":        { "type": "array", "description": "List of requested Routes with Stops.", "items": { "type": "object", "additionalProperties": false, "properties": {
+        "Route":                { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/Route.json", "description": "A requested Route." },
+        "OfflineMapID":         { "type": "string", "description": "Identifier of the reference Offline Map." } } } },
+      "SelectedRouteID":        { "type": "string", "description": "Identifier of the Route selected by the passenger." },
+      "RouteCommand":           { "type": "string", "enum": [ "Execute", "Suspend", "Resume", "Change", "Stop" ], "description": "Command to apply to the current Route." },
+      "StreamPointOfView":      { "type": "object", "additionalProperties": false, "description": "Request to stream the M-Location corresponding to a human-specified U-Location via Point of View.",
+                                  "properties": {
+        "ULocation":            { "type": "string", "description": "U-Location from which the passenger wishes to observe the environment." } } } } },
+
+    "AMSMessage":               { "type": "object", "additionalProperties": false, "description": "Data in message from AMS to HCI.", "properties": {
+      "RouteList":              { "type": "array",  "items": { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/Route.json" }, 
+                                  "description": "List of candidate Routes provided in response to an HCI request." },
+      "RouteStatus":            { "type": "object", "additionalProperties": false, "required": ["RouteID", "Status"],
+                                  "description": "State of the Route the CAV was commanded to drive: in answer to a Route Command, and on arrival.",
+                                  "properties": {
+                                    "RouteID": { "type": "string", "description": "Identifier of the Route this state refers to." },
+                                    "Status":  { "type": "string", "enum": ["Executing", "Suspended", "Stopped", "Arrived"],
+                                                 "description": "Executing: the CAV drives the Route; Suspended: halted, to be resumed; Stopped: halted, the Route abandoned; Arrived: stopped at the Route's destination." } } },
+      "FailureID":              { "type": "string", "description": "Identifier of a CAV equipment failure condition (e.g. battery low, mechanical failure)." },
+      "CAVState":               { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/CAVState.json", "description": "Current CAV State." },
+      "RoadState":              { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/RoadState.json", "description": "Current Road State." } } },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this AMS-HCI Message in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the AMS-HCI Message (plain text, max 2048 characters)." } } }

@@ -1,0 +1,61 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/PAF/V1.6/AIMs/SpeakingAvatarFormation.json",
+  "title":                "Speaking Avatar Formation V1.6",
+
+  "Identifier":           {"ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-SAF-V1.6"},
+  "Header":               "PAF-SAF-V1.6",
+
+  "APIProfile":           "Basic",
+  "Description":          "Speaking Avatar Formation: forms the Speaking Avatar of the input Avatar - its Model animated as it utters the Speech. Generative Face Description and Generative Body Description make the Face and Body Descriptors from the Speech and the Text, expressive when a Face or Body Personal Status is supplied; Speaking Avatar Synthesis packages the Avatar, the Speech and the Descriptors, time-aligned and ready to play.",
+
+  "InternalTypes":        [{"Name": "FaceDescriptors", "DataType": "PAF-FDO-V1.6"},
+                          {"Name": "BodyDescriptors", "DataType": "PAF-BDO-V1.6"}],
+
+  "ExternalPorts":        [{"Name": "SpeechGFD", "Direction": "Input", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "PortNumber": 1, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "SpeechGBD", "Direction": "Input", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "PortNumber": 2, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "SpeechSAS", "Direction": "Input", "DataType": ["OSD-BSO-V1.5", "OSD-SPO-V1.5"], "PortNumber": 3, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "TextGFD", "Direction": "Input", "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 1, "Input": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "TextGBD", "Direction": "Input", "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 2, "Input": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "FacePersonalStatus", "Direction": "Input", "DataType": "MMC-FPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "BodyPersonalStatus", "Direction": "Input", "DataType": "MMC-BPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "AvatarModel", "Direction": "Input", "DataType": "PAF-AVT-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                          {"Name": "SpeakingAvatar", "Direction": "Output", "DataType": "XRV-SAV-V1.0", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [{ "Identifier": { "ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-GFD-V1.6", "Relation": "Internal" } },
+                          { "Identifier": { "ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-GBD-V1.6", "Relation": "Internal" } },
+                          { "Identifier": { "ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-SAS-V1.6", "Relation": "Internal" } }],
+
+  "Topology":             [{"Output": {"AIMName": "", "DataType": "OSD-BSO-V1.5", "PortNumber": 1}, "Input": {"AIMName": "PAF-GFD-V1.6", "DataType": "OSD-BSO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BSO-V1.5", "PortNumber": 2}, "Input": {"AIMName": "PAF-GBD-V1.6", "DataType": "OSD-BSO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BSO-V1.5", "PortNumber": 3}, "Input": {"AIMName": "PAF-SAS-V1.6", "DataType": "OSD-BSO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BTO-V1.5", "PortNumber": 1}, "Input": {"AIMName": "PAF-GFD-V1.6", "DataType": "OSD-BTO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BTO-V1.5", "PortNumber": 2}, "Input": {"AIMName": "PAF-GBD-V1.6", "DataType": "OSD-BTO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "MMC-FPS-V2.5"}, "Input": {"AIMName": "PAF-GFD-V1.6", "DataType": "MMC-FPS-V2.5"}},
+                          {"Output": {"AIMName": "", "DataType": "MMC-BPS-V2.5"}, "Input": {"AIMName": "PAF-GBD-V1.6", "DataType": "MMC-BPS-V2.5"}},
+                          {"Output": {"AIMName": "", "DataType": "PAF-AVT-V1.6"}, "Input": {"AIMName": "PAF-SAS-V1.6", "DataType": "PAF-AVT-V1.6"}},
+                          {"Output": {"AIMName": "PAF-GFD-V1.6", "DataType": "PAF-FDO-V1.6"}, "Input": {"AIMName": "PAF-SAS-V1.6", "DataType": "PAF-FDO-V1.6"}},
+                          {"Output": {"AIMName": "PAF-GBD-V1.6", "DataType": "PAF-BDO-V1.6"}, "Input": {"AIMName": "PAF-SAS-V1.6", "DataType": "PAF-BDO-V1.6"}},
+                          {"Output": {"AIMName": "PAF-SAS-V1.6", "DataType": "XRV-SAV-V1.0"}, "Input": {"AIMName": "", "DataType": "XRV-SAV-V1.0"}}],
+
+  "Implementations": [{ "ImplementationURI":"/* absolute URI locating the Implementation */",
+                        "BinaryName":       "/* provided by implementer */",
+                        "Architecture":     "/* x86-64 | ARM64 */",
+                        "MASPort":          443,
+                        "Firewall":         [{ "Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0" }],
+                        "OperatingSystem":  "/* Windows | Linux | MacOS */",
+                        "Version":          "/* implementer version */",
+                        "Source":           "/* AIMStorage | MPAIStore */",
+                        "Destination":      "/* provided by implementer */" }],
+
+  "ResourcePolicies":[{ "Name": "Memory",               "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class",            "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class",       "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
+
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

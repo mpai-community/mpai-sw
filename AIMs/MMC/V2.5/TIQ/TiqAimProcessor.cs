@@ -9,7 +9,7 @@ namespace Mpai.Mmc.Tiq;
 // MMC-TIQ-V2.5 — self-contained IAimProcessor.
 // Reads its own port names from 1MMC-TIQ-V2.5-I01.json at startup.
 // Produces a text answer AND passes the input image through as OutputImage,
-// so CVE-VOD can display it.
+// so whoever receives the answer can display the image with it.
 // No adapter needed.
 public sealed class TiqAimProcessor : IAimProcessor
 {
@@ -53,7 +53,7 @@ public sealed class TiqAimProcessor : IAimProcessor
             Ports       = new Dictionary<string, string>
             {
                 [_textOutputPort]   = answerJson,
-                [_visualOutputPort] = imageJson    // pass image through to CVE-VOD
+                [_visualOutputPort] = imageJson    // pass the image through, to be displayed with the answer
             }
         };
     }

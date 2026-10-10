@@ -1,0 +1,49 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/CAV2/V2.0/data/WeatherData.json",
+  "title":                      "Weather Data V2.0",
+  "description":                "Weather Data representing the meteorological conditions relevant to the operation of a Connected Autonomous Vehicle.",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "WeatherDataID", "WeatherData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "CAV-WDT-V2.0", "description": "Weather Data Header – Standard CAV-WDT-Vx.y." },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Weather Data instance." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Weather Data instance." },
+    "WeatherDataID":            { "type": "string", "description": "Unique identifier of this Weather Data instance." },
+    "WeatherDataTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Weather Data instance was produced." },
+
+    "WeatherData":              { "type": "object", "additionalProperties": false, "description": "Set of meteorological measurements.", "properties": {
+      "Temperature":            { "$ref": "#/$defs/NumericMeasurement", "description": "Air temperature." },
+      "RelativeHumidity":       { "$ref": "#/$defs/NumericMeasurement", "description": "Relative humidity (%)." },
+      "AirPressure":            { "$ref": "#/$defs/NumericMeasurement", "description": "Air pressure (Pa)." },
+      "Ice":                    { "$ref": "#/$defs/BooleanMeasurement", "description": "Presence of ice." },
+      "WindConditions":         { "type": "array", "description": "Wind conditions as a set of wind vectors.", "items": { "$ref": "#/$defs/WindVector" } },
+      "Fog":                    { "$ref": "#/$defs/NumericMeasurement", "description": "Fog density / visibility." },
+      "Rain":                   { "$ref": "#/$defs/PrecipitationMeasurement", "description": "Rain precipitation rate (mm/h)." },
+      "Hail":                   { "$ref": "#/$defs/PrecipitationMeasurement", "description": "Hail precipitation rate (mm/h)." },
+      "Snow":                   { "$ref": "#/$defs/PrecipitationMeasurement", "description": "Snow precipitation rate (mm/h)." },
+      "Sleet":                  { "$ref": "#/$defs/PrecipitationMeasurement", "description": "Sleet precipitation rate (mm/h)." } } },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Weather Data instance in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Weather Data instance (plain text, max 2048 characters)." } },
+
+  "$defs":                      {
+
+    "NumericMeasurement":       { "type": "object", "additionalProperties": false, "required": [ "Value" ], "properties": {
+      "Value":                  { "type": "number", "description": "Measured value in the unit specified by context." },
+      "Accuracy":               { "type": "number", "minimum": 0, "description": "Absolute 1-sigma / RMS uncertainty." },
+      "Confidence":             { "type": "number", "minimum": 0, "maximum": 1 },
+      "Unit":                   { "type": "string", "description": "Unit symbol (e.g., K, %RH, Pa, m/s)." } } },
+
+    "BooleanMeasurement":       { "type": "object", "additionalProperties": false, "required": [ "Value" ], "properties": {
+      "Value":                  { "type": "boolean" },
+      "Confidence":             { "type": "number", "minimum": 0, "maximum": 1 } } },
+
+    "WindVector":               { "type": "object", "additionalProperties": false, "required": [ "Azimuth", "Velocity" ], "properties": {
+      "Azimuth":                { "$ref": "#/$defs/NumericMeasurement", "description": "Wind azimuth (deg, 0–360)." },
+      "Elevation":              { "$ref": "#/$defs/NumericMeasurement", "description": "Wind elevation angle (deg)." },
+      "Velocity":               { "$ref": "#/$defs/NumericMeasurement", "description": "Wind speed (m/s)." } } },
+
+    "PrecipitationMeasurement": { "allOf": [ { "$ref": "#/$defs/NumericMeasurement" } ], "description": "Precipitation rate (mm/h)." } } }

@@ -1,0 +1,22 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/PAF/V1.6/data/Accessory.json",
+  "title":                "Accessory V1.6",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Type", "Accessory" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "PAF-ACC-V1.6" },
+    "MInstanceID":        { "type": "string" },
+    "UEnvironmentID":     { "type": "string" },
+    "AccessoryID":        { "type": "string" },
+    "AccessoryTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "Type":               { "type": "string", "enum": [
+                            "belt","bracelet","braces","cloth","earrings","eyewear","footwear","gloves", "hairtie","hat",
+                            "necklace","piercing","pin","ring","sash","scarf","shawl", "socks","stockings","tie","watch" ] },
+
+    "Accessory":          { "oneOf": [ { "type": "string" }, { "type": "object" } ] },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MPAI as a Service</title>
+    <base href="/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="css/rca.css" />
+</head>
+<body>
+    <div id="app"><div class="loading">Loading the MPAI client...</div></div>
+    <div id="blazor-error-ui">MPAI as a Service has stopped: the server may have been restarted, or the connection lost. <a href="" class="reload">Reload the page</a> to start again.</div>
+    <script>
+        // What the page would otherwise swallow, written to the console with its stack;
+        // and the moment "Something went wrong" appears.
+        window.addEventListener('error', e => console.error('PAGE ERROR:', e.message, e.error && e.error.stack));
+        window.addEventListener('unhandledrejection', e => console.error('UNHANDLED REJECTION:', e.reason && (e.reason.stack || e.reason)));
+        new MutationObserver(() => {
+            const ui = document.getElementById('blazor-error-ui');
+            if (ui && getComputedStyle(ui).display !== 'none') console.error('ERROR UI SHOWN at ' + new Date().toISOString());
+        }).observe(document.getElementById('blazor-error-ui'), { attributes: true });
+    </script>
+    <script src="js/rca.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
   "required":                 [ "Header", "BoundingBoxID", "Dimensions", "VisualData", "BBXContentFormats" ],
   "properties":               {
 
+    "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Bounding Box contains what it is said to contain." },
     "Header":                 { "type": "string", "const": "OSD-BBX-V1.5",
                                 "description": "Bounding Box Header â€“ Standard OSD-BBX-Vx.y" },
     "MInstanceID":            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Bounding Box is or is intended to be located." },

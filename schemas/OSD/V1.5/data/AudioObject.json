@@ -1,0 +1,52 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/AudioObject.json",
+  "title":                          "Audio Object V1.5",
+  "type":                           "object",
+  "additionalProperties":           false,
+  "required":                       [ "Header", "MInstanceID", "AudioObjectID", "AudioObjectSpaceTime" ],
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "OSD-AUO-V1.5",
+                                      "description": "Audio Object Header â€“ Standard OSD-AUO-Vx.y" },
+    "MInstanceID":                  { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Audio Object is or is intended to be located." },
+    "UEnvironmentID":               { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Audio Object is or is intended to be located." },
+    "AudioObjectID":                { "type": "string", "description": "Unique identifier of this Audio Object." },
+    "AudioObjectTime":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                      "description": "Time this Audio Object was produced." },
+
+    "AudioObjectSpaceTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space/Time where/when this Audio Object is located." },
+
+    "UserPoV":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "ParentAudioObjectIDs":         { "type": "array", "minItems": 0, "items": { "type": "string" },
+                                      "description": "IDs of Audio Objects at a preceding time step that spawned this object. Empty if the object has no known parent at a previous time step." },
+
+    "BasicAudioObjectCount":        { "type": "integer", "minimum": 0, "description": "Number of Basic Audio Objects contained in this Audio Object." },
+
+    "BasicAudioObjects":            { "type": "array", "minItems": 0, "description": "Set of Basic Audio Objects contained in this Audio Object.",
+                                      "items": { "type": "object", "additionalProperties": false, "required": [ "BAObjectIDOrBAObject" ], "properties": {
+      "BasicAudioObjectSpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json",
+                                      "description": "Space/Time where/when this Basic Audio Object is located within the containing Audio Object. If absent, the Space/Time of the containing object applies." },
+      "BAObjectIDOrBAObject":       { "$ref": "#/$defs/BAObjectIDOrBAObject", "description": "Either the ID of a Basic Audio Object or the Basic Audio Object itself." } } } },
+
+    "SubAudioObjectCount":          { "type": "integer", "minimum": 0, "description": "Number of child Audio Objects contained in this Audio Object." },
+
+    "SubAudioObjects":              { "type": "array", "minItems": 0, "description": "Set of child Audio Objects contained in this Audio Object.",
+                                      "items": { "type": "object", "additionalProperties": false, "properties": {
+      "SubAudioObjectSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json",
+                                      "description": "Space/Time where/when this child Audio Object is located within the containing Audio Object. If absent, the Space/Time of the containing object applies." },
+      "SubAObjectIDOrSubAObject":   { "$ref": "#/$defs/SubAObjectIDOrSubAObject", "description": "Either the ID of a child Audio Object or the child Audio Object itself." } } } },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                      "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Audio Object in a trusted data exchange context." },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Audio Object (plain text, max 2048 characters)." } },
+
+  "$defs":                          {
+
+    "BAObjectIDOrBAObject":         { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioObject.json" },
+                                    { "type": "string" } ] } },
+
+    "SubAObjectIDOrSubAObject":     { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AudioObject.json" },
+                                    { "type": "string" } ] } } } }

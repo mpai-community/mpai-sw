@@ -1,0 +1,24 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/MMC/V2.5/data/BodyPersonalStatus.json",
+  "title":                    "Body Personal Status V2.5",
+  "description":              "Personal Status of the Body modality: the Cognitive State, Emotion, and Social Attitude Factors carried by the body. None is required; at least one shall be present. Note: gesture, in all its forms, is a subset of the body, so the Personal Status of a gesture is carried here, as a Body Personal Status.",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "BodyPersonalStatusID" ],
+  "anyOf":                    [ { "required": [ "BodyCognitiveState" ] },
+                              { "required": [ "BodyEmotion" ] },
+                              { "required": [ "BodySocialAttitude" ] } ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "MMC-BPS-V2.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "BodyPersonalStatusID":  { "type": "string" },
+    "BodyPersonalStatusTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BodyCognitiveState":    { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/CognitiveState.json" },
+    "BodyEmotion":           { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/Emotion.json" },
+    "BodySocialAttitude":    { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/SocialAttitude.json" },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

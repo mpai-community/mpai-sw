@@ -99,7 +99,7 @@ public sealed class Visual2D
 
 public sealed class Visual2DDynamic
 {
-    public string? OtherContentFormat { get; init; }   // Visual2DDynamicFormats
+    public string? OtherContentFormat { get; init; }   // Visual2DDynamicFormats: AVC, AV1, EVC, HEVC, LCEVC, VVC
 }
 
 public sealed class Visual3D

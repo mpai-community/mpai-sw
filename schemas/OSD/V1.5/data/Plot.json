@@ -9,13 +9,12 @@
     "UEnvironmentID":       { "type": "string" },
     "PlotID":               { "type": "string" },
 
-    "PlotTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Time.json" },
+    "PlotTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
 
     "Plot":                 { "type": "object", "properties": {
       "2D":                 { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
       "3D":                 { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } } },
-      "4D":                   { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": {
-                                "type": "array", "items": { "type": "array", "items": { "type": "number" } } } } } } } },
+      "4D":                 { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } } } } } },
 
     "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
     "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

@@ -11,6 +11,6 @@ public sealed class EdpPlugin : IAimPlugin
     private OllamaClient? _dep;
     public string AimName => "MMC-EDP-V2.5";
     public IAimProcessor Create(AimPortReader ports, IReadOnlyDictionary<string, string> settings)
-        => new EdpAimProcessor(AimName, _dep ??= new OllamaClient(Get(settings,"OllamaModel","llama3.1")), ports);
+        => new EdpAimProcessor(AimName, _dep ??= new OllamaClient(Get(settings,"OllamaModel","llama3.1"), Get(settings,"OllamaUrl","http://127.0.0.1:11434")), ports);
     private static string Get(IReadOnlyDictionary<string,string> s, string k, string d) => s.TryGetValue(k, out var v) && !string.IsNullOrWhiteSpace(v) ? v : d;
 }

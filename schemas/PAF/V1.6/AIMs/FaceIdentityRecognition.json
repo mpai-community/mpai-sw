@@ -2,16 +2,16 @@
   "Header":            "PAF-FIR-V1.6",
 
   "APIProfile":       "Basic",
-  "Description":      "This AIM identifies faces in the bounding boxes of an image.",
+  "Description":      "This AIM implements the face recognition function: it identifies a face based on the Visual Object that contains it. It is the visual counterpart of Speaker Identity Recognition.",
 
   "InternalTypes":   [ ],
 
-  "ExternalPorts":   [{"Name": "TextObject",          "Direction": "Input",  "DataType": "OSD-TXO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "Image",               "Direction": "Input",  "DataType": "OSD-VIO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "FaceTime",            "Direction": "Input",  "DataType": "OSD-TIM-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "VisualSceneGeometry", "Direction": "Input",  "DataType": "OSD-VSG-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "FaceID",              "Direction": "Output", "DataType": "OSD-IID-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "BoundingBox",         "Direction": "Output", "DataType": "OSD-BBX-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+  "ExternalPorts":   [{"Name": "AuxiliaryText",          "Direction": "Input",  "DataType": "OSD-TXO-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VisualObject",           "Direction": "Input",  "DataType": ["OSD-BVO-V1.5", "OSD-VIO-V1.5"],                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VisualSceneGeometry",    "Direction": "Input",  "DataType": "OSD-VSG-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "FaceID",                 "Direction": "Output", "DataType": "OSD-IID-V1.5",                                       "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "BoundingBox",            "Direction": "Output", "DataType": "OSD-BBX-V1.5",                                       "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "VisualSceneDescriptors", "Direction": "Input",  "DataType": "OSD-BVS-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""}],
 
   "SubAIMs":         [ ],
 
@@ -27,11 +27,11 @@
                         "Source":           "/* AIMStorage | MPAIStore */",
                         "Destination":      "/* provided by implementer */" }],
 
-  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
-                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
-                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+  "ResourcePolicies":[{ "Name": "Memory",               "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class",            "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class",       "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
                       { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
                       { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
 

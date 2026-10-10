@@ -1,0 +1,54 @@
+{ "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "$id":                              "https://schemas.mpai.community/OSD/V1.5/data/OfflineMapObject.json",
+  "title":                            "Offline Map Object V1.5",
+  "type":                             "object",
+  "additionalProperties":             false,
+  "required":                         [ "Header", "OfflineMapObjectID", "OfflineMapObjectSpaceTime" ],
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "OSD-OMO-V1.5", "description": "Offline Map Object Header â€“ Standard OSD-OMO-Vx.y" },
+    "MInstanceID":                    { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Offline Map Object is or is intended to be located." },
+    "UEnvironmentID":                 { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Offline Map Object is or is intended to be located." },
+    "OfflineMapObjectID":             { "type": "string", "description": "Unique identifier of this Offline Map Object." },
+    "OfflineMapObjectTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Offline Map Object was produced." },
+
+    "OfflineMapObjectSpaceTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Offline Map Object is located." },
+
+    "UserPoV":                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicOfflineObjectCount":        { "type": "integer", "minimum": 0, "description": "Number of Basic Offline Map Objects contained in this Offline Map Object." },
+
+    "BasicOfflineObjects":            { "type": "array", "minItems": 0, "description": "Set of Basic Offline Map Objects contained in this Offline Map Object.",
+                                        "items": { "type": "object", "additionalProperties": false, "required": [ "BOObjectIDOrBOObject" ], "properties": {
+      "BasicOfflineObjectSpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                        "description": "Space/Time where/when this Basic Offline Map Object is located within the containing Offline Map Object. If absent, the Space/Time of the containing object applies." },
+      "BOObjectIDOrBOObject":         { "$ref": "#/$defs/BOObjectIDOrBOObject", "description": "Either the ID of a Basic Offline Map Object or the Basic Offline Map Object itself." } } } },
+
+    "SubOfflineObjectCount":          { "type": "integer", "minimum": 0, "description": "Number of child Offline Map Objects contained in this Offline Map Object." },
+
+    "SubOfflineObjects":              { "type": "array", "minItems": 0, "description": "Set of child Offline Map Objects contained in this Offline Map Object.",
+                                        "items": { "type": "object", "additionalProperties": false, "required": [ "SubOObjectIDOrSubOObject" ], "properties": {
+      "SubOfflineObjectSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                        "description": "Space/Time where/when this child Offline Map Object is located within the containing Offline Map Object. If absent, the Space/Time of the containing object applies." },
+      "SubOObjectIDOrSubOObject":     { "$ref": "#/$defs/SubOObjectIDOrSubOObject", "description": "Either the ID of a child Offline Map Object or the child Offline Map Object itself." } } } },
+
+    "OObjectOrBOObject":              { "type": "array", "minItems": 0, "description": "A mixed array of Basic Offline Map Objects and child Offline Map Objects.",
+                                        "items": { "$ref": "#/$defs/OObjectOrBOObject" } },
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                        "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Offline Map Object in a trusted data exchange context." },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Offline Map Object (plain text, max 2048 characters)." } },
+
+  "$defs":                            {
+
+    "OObjectOrBOObject":              { "type": "array", "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicOfflineMapObject.json" },
+                                        { "$ref": "#/$defs/OObjectOrBOObject" } ] } },
+
+    "BOObjectIDOrBOObject":           { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicOfflineMapObject.json" },
+                                        { "type": "string" } ] } },
+
+    "SubOObjectIDOrSubOObject":       { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/OfflineMapObject.json" },
+                                        { "type": "string" } ] } } } }

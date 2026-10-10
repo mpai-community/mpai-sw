@@ -1,0 +1,29 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/CAV2/V2.0/data/Route.json",
+  "title":                        "Route V2.0",
+  "type":                         "object",
+  "additionalProperties":         false,
+  "required":                     [ "Header", "RouteID", "OfflineMapID", "RouteSegments" ],
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "CAV-RTE-V2.0", "description": "Route Header – Standard CAV-RTE-Vx.y" },
+    "MInstanceID":                { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Route." },
+    "UEnvironmentID":             { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Route." },
+    "RouteID":                    { "type": "string", "description": "Unique identifier of this Route instance." },
+    "RouteTime":                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Route was produced." },
+
+    "RouteSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Route applies." },
+
+    "OfflineMapID":               { "type": "string", "description": "Identifier of the Offline Map to which this Route refers." },
+
+    "RouteSegments":              { "type": "array", "minItems": 1, "description": "Ordered sequence of route segments, each defined by two Way Points.",
+                                    "items": { "type": "object", "additionalProperties": false, "required": [ "WayPoint1ID", "WayPoint2ID" ], "properties": {
+      "WayPoint1ID":              { "type": "string", "description": "Identifier of the starting Way Point of this segment on the Offline Map." },
+      "WayPoint2ID":              { "type": "string", "description": "Identifier of the ending Way Point of this segment on the Offline Map." },
+      "EstimatedArrDepSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Estimated arrival and departure Space/Time at WayPoint2ID." },
+      "ActualArrDepSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Actual arrival and departure Space/Time at WayPoint2ID." },
+      "SegmentState":             { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/RoadState.json", "description": "Road State at this segment at the time of traversal." } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                    "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Route in a trusted data exchange context." },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Route (plain text, max 2048 characters)." } } }

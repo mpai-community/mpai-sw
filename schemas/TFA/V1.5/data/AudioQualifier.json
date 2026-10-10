@@ -1,0 +1,126 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/TFA/V1.5/data/AudioQualifier.json",
+  "title":                        "Audio Qualifier V1.5",
+  "description":                  "Specifies audio Sub-Type, encoding Formats, Attributes.",
+  "type":                         "object",
+  "additionalProperties":         false,
+  "required":                     [ "Header", "AudioQualifierID", "SubTypes", "Formats" ],
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "TFA-AUQ-V1.5" },
+    "MInstanceID":                { "type": "string" },
+    "UEnvironmentID":             { "type": "string" },
+    "AudioQualifierID":           { "type": "string" },
+    "AudioQualifierTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":                    { "type": "string", "enum": [ "Speech", "Music", "SoundEffects", "Noise", "Mixed" ] },
+
+    "Formats":                     { "type": "object", "additionalProperties": false, "properties": {
+
+      "ContentFormat":            { "type": "object", "additionalProperties": false, "properties": {
+
+        "RawData":                { "type": "object", "additionalProperties": false, "properties": {
+
+          "SampleSpace":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json" },
+
+          "TransformSpace":       { "type": "object", "additionalProperties": false, "properties": {
+            "Sequence":           { "type": "string", "enum": [ "Sequential", "Interleaved" ] },
+            "Precision":          { "type": "string", "enum": [ "float32", "float64" ] } } },
+
+          "SpherlHarmDecompos":   { "type": "object", "additionalProperties": false, "properties": {
+            "SHDOrder":           { "type": "string", "enum": [ "1stOrder","2ndOrder","3rdOrder","4thOrder", "5thOrder","6thOrder","7thOrder" ] },
+            "Precision":          { "type": "string", "enum": [ "float32", "float64" ] } } },
+
+          "Ambisonics":           { "type": "object", "additionalProperties": false, "properties": {
+            "Normalisation":      { "type": "string", "enum": [ "maxN","SN3D","N3D","N2D","SN2D" ] },
+            "ChannelOrder":       { "type": "string", "enum": [ "FuMa","SID","ACN" ] },
+            "Order":              { "type": "string", "enum": [ "1stOrder","2ndOrder","3rdOrder","4thOrder", "5thOrder","6thOrder","7thOrder" ] },
+            "Precision":          { "type": "string", "enum": [ "float32","float64" ] } } },
+
+          "MultiPointAmbisonics": { "type": "array", "items": {
+                                    "$ref": "#/properties/Formats/properties/ContentFormat/properties/RawData/properties/Ambisonics" } } } },
+
+        "OtherContentFormats":    { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioContentFormats.json" } } },
+
+      "TransportFormat":          { "type": "object", "additionalProperties": false, "properties": {
+        "FileFormats":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioFileFormats.json" },
+        "StreamFormats":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioStreamFormats.json" } } } } },
+
+    "Attributes":                 { "type": "object", "additionalProperties": false, "properties": {
+
+      "Source":                   { "type": "object", "additionalProperties": false, "oneOf": [
+                                  { "required": [ "Vocal" ], "properties": { "Vocal": { "type": "string", "enum": [ "Real", "Synthetic" ] } } },
+                                  { "required": [ "Music" ], "properties": { "Music": { "type": "string", "enum": [ "Real", "Synthetic" ] } } },
+                                  { "required": [ "SoundEffects" ], "properties": { "SoundEffects": { "type": "string", "enum": [ "Real", "Synthetic" ] } } },
+                                  { "required": [ "Noise" ], "properties": { "Noise": { "type": "string", "enum": [ "Real", "Synthetic" ] } } } ] },
+
+      "Metadata":                 { "type": "object", "additionalProperties": false, "properties": {
+        "MetadataFormat":         { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioMetadataFormats.json" },
+        "ObjectID":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" } } },
+
+      "SpatialAttributes":        { "type": "object", "additionalProperties": false, "properties": {
+
+        "BinauralCues":           { "type": "object", "additionalProperties": false, "properties": {
+
+          "InterauralLevelDiff":  { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+            "Frequency":          { "type": "number" },
+            "LevelDifference":    { "type": "number" } } } },
+
+          "InterauralTimeDelay":  { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+            "Frequency":          { "type": "number" },
+            "TimeDelay":          { "type": "number" } } } },
+
+          "InterauralPhaseDiff":  { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+            "Frequency":          { "type": "number" },
+            "PhaseDifference":    { "type": "number" } } } } } },
+
+        "SpectralCues":           { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "Frequency":            { "type": "number" },
+          "RSLeftEar":            { "type": "number" },
+          "ISLeftEar":            { "type": "number" },
+          "RSRightEar":           { "type": "number" },
+          "ISRightEar":           { "type": "number" } } } },
+
+        "InterchannelDifferences":{ "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelID":            { "type": "string" },
+          "InterchannelLevelDiff":{ "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+            "Frequency":          { "type": "number" },
+            "InterchannTimeDiff": { "type": "number" } } } } } } } } },
+
+      "AcousticProfile":           { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Object" },
+
+      "Device":                   { "type": "object", "additionalProperties": false, "properties": {
+
+        "DeviceID":               { "type": "string" },
+        "DeviceRole":             { "type": "string", "enum": [ "Capture", "Render", "Bidirectional" ] },
+        "DeviceType":             { "type": "string", "enum": [ "Microphone", "MicrophoneArray", "Speaker", "Headphones", "WearableMic", "Other" ] },
+        "Manufacturer":           { "type": "string" },
+        "Model":                  { "type": "string" },
+
+        "MicrophoneArrayGeometry":{ "$ref": "https://schemas.mpai.community/CAE1/V2.5/data/MicrophoneArrayGeometry.json" },
+        "DeviceGeometry":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/DeviceSceneGeometry.json" },
+        "MicrophDirectivFormat":  { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/MicrophoneDirectivityFormats.json" },
+
+        "SpeakerConfiguration":   { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelCount":         { "type": "integer" },
+          "Layout":               { "type": "string", "enum": [ "Mono", "Stereo", "5.1", "7.1", "Custom" ] } } },
+
+        "CaptureConfiguration":   { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelCount":         { "type": "integer" },
+          "SamplingMode":         { "type": "string", "enum": [ "Mono", "Stereo", "MultiChannel", "Ambisonics" ] } } },
+
+        "RenderConfiguration":    { "type": "object", "additionalProperties": false, "properties": {
+          "ChannelCount":         { "type": "integer" },
+          "RenderingMode":        { "type": "string", "enum": [ "Mono", "Stereo", "Multichannel", "Binaural", "Ambisonics" ] } } },
+
+        "OperationalParameters":  { "type": "object", "additionalProperties": false, "properties": {
+          "Gain":                 { "type": "number" },
+          "Sensitivity":          { "type": "number" },
+          "DynamicRange":         { "type": "number" } } },
+
+        "Synchronisation":        { "type": "object", "additionalProperties": false, "properties": {
+          "ClockType":            { "type": "string", "enum": [ "Internal", "External", "NetworkSynchronised" ] },
+          "Reference":            { "type": "string" } } } } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048 } } }

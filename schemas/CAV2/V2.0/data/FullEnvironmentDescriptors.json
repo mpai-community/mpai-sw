@@ -1,0 +1,41 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/CAV2/V2.0/data/FullEnvironmentDescriptors.json",
+  "title":                "Full Environment Descriptors V2.0",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "FullEnvironmentDescriptorsID", "FullEnvironmentDescriptorsTime", "EgoSpatialAttitude", "FullEnvironmentObjects" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "CAV-FED-V2.0" },
+    "MInstanceID":        { "type": "string" },
+    "UEnvironmentID":     { "type": "string" },
+    "FullEnvironmentDescriptorsID": { "type": "string" },
+    "FullEnvironmentDescriptorsTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                            "description": "The instant described: that of the Basic Environment Descriptors it was made from." },
+    "OfflineMapID":       { "type": "string", "description": "The Offline Map the placements refer to." },
+    "EgoSpatialAttitude": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json",
+                            "description": "The CAV's Spatial Attitude, on the frame of the Offline Map." },
+    "EgoPlacement":       { "$ref": "#/$defs/Placement", "description": "Where the CAV is on the Offline Map." },
+    "FullEnvironmentObjectCount": { "type": "integer", "minimum": 0 },
+    "FullEnvironmentObjects": { "type": "array", "items": { "$ref": "#/$defs/FullEnvironmentObject" },
+                            "description": "What the CAV perceives - and, at a later stage, what other CAVs report - each placed on the map." },
+    "RoadAhead":          { "type": "array", "description": "The segments of the Offline Map ahead of the CAV, in the order it meets them.",
+                            "items": { "type": "object", "additionalProperties": false, "required": [ "SegmentID" ], "properties": {
+      "SegmentID":        { "type": "string" },
+      "Length":           { "type": "number", "description": "m" },
+      "SpeedLimit":       { "type": "number", "description": "m/s" },
+      "Lanes":            { "type": "integer", "minimum": 1 } } } },
+    "WeatherData":        { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/WeatherData.json" },
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                {
+    "Placement":          { "type": "object", "additionalProperties": false, "required": [ "SegmentID", "Along" ], "properties": {
+      "SegmentID":        { "type": "string", "description": "The segment of the Offline Map." },
+      "Lane":             { "type": "integer", "description": "0 the CAV's lane, +1 the lane to its left, -1 to its right." },
+      "Along":            { "type": "number", "description": "Metres from the start of the segment." } } },
+    "FullEnvironmentObject": { "type": "object", "additionalProperties": false, "required": [ "BasicEnvironmentObject", "Source" ], "properties": {
+      "BasicEnvironmentObject": { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/BasicEnvironmentDescriptors.json#/$defs/BasicEnvironmentObject",
+                            "description": "The object as the ESS describes it, relative to the CAV." },
+      "Placement":        { "$ref": "#/$defs/Placement" },
+      "Source":           { "enum": [ "Ego", "Remote" ], "description": "Perceived by this CAV, or reported by another." } } } } }

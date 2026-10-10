@@ -24,18 +24,28 @@ public sealed class BlipTiqAim : ITiqAim, IDisposable
 {
     private readonly TIQEngine _engine;
 
+    // THE ENGINE HOLDS THE PICTURE BETWEEN SetImage AND Ask. One engine serves
+    // every client, so the two calls are one step: without this, a second
+    // person's picture could be set between the first person's SetImage and Ask,
+    // and the first person answered about a picture they never showed.
+    private readonly object _askOne = new();
+
     public BlipTiqAim(BlipTiqConfiguration c)
         => _engine = new TIQEngine(c.VisionModel, c.EncoderModel, c.DecoderModel, c.VocabFile);
 
     public Task<BasicTextObject> ProcessAsync(BasicTextObject question, BasicVisualObject image)
     {
-        if (image.Data.Length > 0)
-            _engine.SetImageFromBytes(image.Data);
-        else
-            _engine.SetImage(image.FileName
-                ?? throw new ArgumentException("Visual object has neither inline data nor a file name."));
+        string answer;
+        lock (_askOne)
+        {
+            if (image.Data.Length > 0)
+                _engine.SetImageFromBytes(image.Data);
+            else
+                _engine.SetImage(image.FileName
+                    ?? throw new ArgumentException("Visual object has neither inline data nor a file name."));
 
-        var answer = _engine.Ask(question.GetText());
+            answer = _engine.Ask(question.GetText());
+        }
 
         return Task.FromResult(BasicTextObject.FromText(answer, BuildTextQualifier(question)));
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using SixLabors.ImageSharp;
@@ -52,7 +53,7 @@ public sealed class YoloxObjectDetector : IDisposable
         float scoreThreshold = 0.3f,
         float nmsThreshold = 0.45f)
     {
-        _session = new InferenceSession(modelPath);
+        _session = OnnxSessions.Create(modelPath);
         _inputSize = inputSize;
         _scoreThreshold = scoreThreshold;
         _nmsThreshold = nmsThreshold;

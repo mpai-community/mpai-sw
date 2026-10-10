@@ -16,7 +16,6 @@
     "SubTypes":                       { "type": "object", "additionalProperties": false },
 
     "Formats":                        { "type": "object", "additionalProperties": false, "properties": {
-      "MPAISpeechDescriptorsFormat":  { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/BasicSpeechDescriptors.json" },
       "OtherSpeechDescriptorsFormats":{ "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/SpeechDescriptorsFormats.json" } } },
 
     "Attributes":                     { "type": "object", "additionalProperties": false },

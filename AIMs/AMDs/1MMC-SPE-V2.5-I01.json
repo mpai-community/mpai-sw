@@ -1,0 +1,9 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-SPE-V2.5-I01", "AIMName": "1MMC-SPE-V2.5-I01" },
+  "Header":           "MMC-SPE-V2.5",
+  "APIProfile":"Basic","Description":"Speech Personal Status Extraction.",
+  "ExternalPorts":[{"Name": "BasicSpeechObject",         "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                   {"Name": "SpeechPersonalStatus", "Direction": "Output", "DataType": "MMC-SPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+  "SubAIMs":[],"Topology":[],
+  "Implementations":[{"ImplementationURI":"https://github.com/mpai-community/mpai-sw/tree/main/AIMs/MMC/V2.5/SPE","MASPort":443,"BinaryName":"Mpai.Mmc.Spe","Architecture":"x86-64","OperatingSystem":"Windows","Version":"2.5","Source":"AIMStorage"}],
+  "ResourcePolicies":[{"Name": "Memory",    "Minimum": "1 GB", "Request": "2 GB",   "Maximum": "4 GB"},{"Name": "CPU:Class", "Minimum": "Low",  "Request": "Medium", "Maximum": "High"}],
+  "DataXMData":{},"Documentation":[{"Type":"Tutorial","URI":"https://mpai.community/standards/mpai-mmc/v2-5/"}]}

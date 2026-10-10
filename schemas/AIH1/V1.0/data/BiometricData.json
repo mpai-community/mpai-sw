@@ -1,0 +1,26 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/AIH1/V1.0/data/BiometricData.json",
+  "title":                    "Biometric Data V1.0",
+  "description":              "Container for biometric observations of a user.",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "BiometricDataID", "UserID", "BiometricData" ],
+  "properties": {
+
+    "Header":                 { "type": "string", "const": "AIH-BID-V1.0" },
+    "MInstanceID":            { "type": "string", "description": "Measurement instance ID (UUID or opaque)." },
+    "UEnvironment":           { "type": "string", "description": "Unique identifier for the universe environment." },
+    "BiometricDataID":        { "type": "string", "description": "Unique ID of BiometricData." },
+    "BiometricDataTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Time.json" },
+    "UserID":                 { "type": "string", "description": "User identifier to whom the measurements refer." },
+
+    "BiometricData":          { "type": "object", "description": "Biometric Data values.", "additionalProperties": false, "properties": {
+      "HeartRate":            { "$ref": "https://schemas.mpai.community/AIH1/V1.0/data/ECGObject.json" },
+      "HeartRateVariability": { "type": "number" },
+      "BrainState":           { "$ref": "https://schemas.mpai.community/AIH1/V1.0/data/EEGObject.json" },
+      "GalvanicSkinResponse": { "type": "number", "minimum": 0, "description": "Skin conductance (microsiemens)." },
+      "MyoelectricIntensity": { "type": "number", "minimum": 0, "description": "EMG amplitude (mV)." },
+      "SkinTemperature":      { "type": "number", "minimum": 20, "maximum": 45, "description": "Skin temp. (degrees C)." } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }

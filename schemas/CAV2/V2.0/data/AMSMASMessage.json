@@ -1,0 +1,32 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/CAV2/V2.0/data/AMSMASMessage.json",
+  "title":                "AMS-MAS Message V2.0",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "AMSMASMessageID" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "CAV-AMM-V2.0",
+                            "description": "AMS-MAS Message Header – Standard CAV-AMM-Vx.y" },
+    "MInstanceID":        { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this AMS-MAS Message." },
+    "UEnvironmentID":     { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this AMS-MAS Message." },
+    "AMSMASMessageID":    { "type": "string", "description": "Unique identifier of this AMS-MAS Message instance." },
+    "AMSMASMessageTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this AMS-MAS Message was produced." },
+
+    "AMSMASMessageSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this AMS-MAS Message was sent." },
+
+    "AMSMessage":         { "type": "object", "additionalProperties": false, "description": "Data in message from AMS to MAS.", "properties": {
+      "Trajectory":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Trajectory.json", "description": "Trajectory to be executed by the MAS." },
+      "SpatialAttitude":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json", "description": "The CAV's Spatial Attitude as the AMS knows it - GNSS and the MAS's own estimate combined - on the frame of the Trajectory: what the MAS follows the Trajectory from." },
+      "Command":          { "type": "string", "enum": [ "Execute", "Suspend", "Resume", "Change" ],
+                            "description": "Command to apply to the current Trajectory." } } },
+
+    "MASMessage":         { "type": "object", "additionalProperties": false, "description": "Data in message from MAS to AMS.", "properties": {
+      "CurrentTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Current Time at which this MAS Message was produced." },
+      "SpatialAttitude":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpatialAttitude.json", "description": "CAV Spatial Attitude estimated from MAS-internal sensors." },
+      "RoadState":        { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/RoadState.json", "description": "Road State reported when significant divergence between expected and actual Spatial Attitude is detected." },
+      "CAVState":         { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/CAVState.json", "description": "Current functional state of the CAV." } } },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                            "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this AMS-MAS Message in a trusted data exchange context." },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the AMS-MAS Message (plain text, max 2048 characters)." } } }

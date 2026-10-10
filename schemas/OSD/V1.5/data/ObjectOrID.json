@@ -1,0 +1,12 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/OSD/V1.5/data/ObjectOrID.json",
+  "title":                "Object or ID V1.5",
+  "type":                 "object",
+  "additionalProperties": false,
+  "properties":           {
+    "Header":             { "type": "string", "const": "OSD-OBI-V1.5" } },
+  "$defs":                {
+    "3DModelObjectOrID":  { "oneOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelObject.json"},  { "type": "string" } ] },
+    "AudioObjectOrID":    { "anyOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioObject.json" }, { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AudioObject.json"  },  { "type": "string" } ] },
+    "SpeechObjectOrID":   { "anyOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" }, { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json" },  { "type": "string" } ] },
+    "VisualObjectOrID":   { "oneOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/VisualObject.json" },  { "type": "string" } ] } } }

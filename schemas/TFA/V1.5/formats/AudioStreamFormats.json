@@ -1,0 +1,5 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/AudioStreamFormats.json",
+  "title":   "Audio Stream Formats V1.5",
+  "type":    "string", "enum": [ "AES3", "AES67", "Dante", "DASH", "HLS", "MADI", "RTP Audio" ] }
+

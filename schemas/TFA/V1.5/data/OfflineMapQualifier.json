@@ -1,0 +1,23 @@
+{ "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/OfflineMapQualifier.json",
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+
+  "title":                  "Offline Map Qualifier V1.5", "description": "Qualifier describing subtypes, format, and attributes of offline map data.",
+                            "type": "object", "required": [ "Header", "OLMapQualifierID", "SubTypes", "Formats" ],
+                            "additionalProperties": false, "properties": {
+
+    "Header":               { "type": "string", "const": "TFA-OMQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "OLMapQualifierID":     { "type": "string" },
+    "OLMapQualifierTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+
+    "SubTypes":              { "type": "object", "additionalProperties": false },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":      { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/OfflineMapContentFormats.json" } } },
+
+    "Attributes":           { "type": "object", "additionalProperties": false },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048 } } }

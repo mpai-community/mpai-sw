@@ -1,0 +1,39 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/OSD/V1.5/AIMs/BasicAudioVisualSceneDescription.json",
+  "title":                "Basic Audio-Visual Scene Description V1.5",
+
+  "Identifier":           {"ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "OSD-BMS-V1.5"},
+  "Header":               "OSD-BMS-V1.5",
+
+  "APIProfile":           "Basic",
+  "Description":          "This AIM implements the Basic Audio-Visual Scene Description function.",
+
+  "InternalTypes":        [ ],
+
+  "ExternalPorts":        [{"Name": "SpaceTime",                        "Direction": "Input",  "DataType": "OSD-SPT-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "AudioVisualObject",                "Direction": "Input",  "DataType": "OSD-AVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicAudioVisualSceneDescriptors", "Direction": "Output", "DataType": "OSD-BMS-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicAudioObject",         "Direction": "Input",  "DataType": "OSD-BAO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BasicVisualObject",        "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "InputSpeech",              "Direction": "Output", "DataType": "OSD-BSO-V1.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "ParticipantSpeechObject",  "Direction": "Output", "DataType": "OSD-BSO-V1.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FaceObject",               "Direction": "Output", "DataType": "OSD-BVO-V1.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FaceDescriptors",          "Direction": "Output", "DataType": "PAF-FDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "BodyDescriptors",          "Direction": "Output", "DataType": "PAF-BDO-V1.6", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [ ],
+
+  "Topology":             [ ],
+
+  "Implementations":      [{"ImplementationURI": "/* absolute URI locating the Implementation */", "BinaryName": "/* provided by implementer */", "Architecture": "/* x86-64 | ARM64 */", "MASPort": 443, "Firewall": [{"Protocol": "TCP | UDP", "Version": "IPV4 | IPV6", "Direction": "Ingress | Egress | Both", "Range": "9990[-9999]", "Source": "0.0.0.0/0"}], "OperatingSystem": "/* Windows | Linux | MacOS */", "Version": "/* implementer version */", "Source": "/* AIMStorage | MPAIStore */", "Destination": "/* provided by implementer */"}],
+  "ResourcePolicies":     [{"Name": "Memory", "Minimum": "/* GB */", "Maximum": "/* GB */", "Request": "/* GB */"},
+                          {"Name": "CPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */"},
+                          {"Name": "CPU:Class", "Minimum": "/* string */", "Maximum": "/* string */", "Request": "/* string */"},
+                          {"Name": "GPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */"},
+                          {"Name": "GPU:CUDA:Class", "Minimum": "/* string */", "Maximum": "/* string */", "Request": "/* string */"},
+                          {"Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */", "Maximum": "/* GB */", "Request": "/* GB */"},
+                          {"Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */", "Maximum": "/* GB/s */", "Request": "/* GB/s */"}],
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-osd/v1-5/"}]}

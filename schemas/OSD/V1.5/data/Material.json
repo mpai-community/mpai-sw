@@ -1,0 +1,30 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/OSD/V1.5/data/Material.json",
+  "title":                    "Material V1.5",
+  "description":              "What a surface is made of, as far as it acts on what reaches it: for sound, the fractions of energy it absorbs, scatters and lets through. Each fraction by frequency band; a renderer maps the bands given onto its own (for example 400 Hz, 2.5 kHz and 15 kHz).",
+  "type":                     "object",
+  "required":                 [ "Header", "MaterialID" ],
+  "additionalProperties":     false,
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "OSD-MTR-V1.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "MaterialID":             { "type": "string" },
+    "MaterialTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "Acoustic":               { "type": "object", "additionalProperties": false, "description": "How the surface acts on sound.", "properties": {
+      "Absorption":           { "$ref": "#/$defs/ByBand", "description": "Fraction of the sound energy reaching the surface that it absorbs." },
+      "Scattering":           { "type": "number", "minimum": 0, "maximum": 1, "description": "Fraction of the reflected energy scattered in random directions: 0 a mirror-like reflection, 1 a fully diffuse one." },
+      "Transmission":         { "$ref": "#/$defs/ByBand", "description": "Fraction of the sound energy reaching the surface that passes through it." },
+      "BandScheme":           { "type": "string", "enum": [ "Octave", "ThirdOctave", "Other" ], "description": "The bands the per-band values are given in, by their centre frequencies: octave bands, one-third-octave bands, or others." },
+      "Incidence":            { "type": "string", "enum": [ "Random", "Normal" ], "description": "How the values were measured or estimated: for sound arriving from all directions (random incidence, as in a reverberation room, ISO 354), or perpendicular to the surface (normal incidence, as in an impedance tube, ISO 10534). Values of different incidence are not directly comparable." } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                    {
+
+    "ByBand":                 { "type": "array", "minItems": 1, "items": { "type": "object", "required": [ "FrequencyHz", "Fraction" ], "additionalProperties": false, "properties": {
+      "FrequencyHz":          { "type": "number", "minimum": 0, "description": "Centre frequency of the band." },
+      "Fraction":             { "type": "number", "minimum": 0, "maximum": 1 } } } } } }

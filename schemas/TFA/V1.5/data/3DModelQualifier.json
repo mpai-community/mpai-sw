@@ -1,0 +1,60 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/TFA/V1.5/data/3DModelQualifier.json",
+  "title":                      "3D Model Qualifier V1.5",
+  "description":                "Specifies Sub-Type, Content and Transport Formats for 3D models.",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "3DModelQualifierID", "SubTypes", "Formats" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "TFA-3MQ-V1.5" },
+    "MInstanceID":              { "type": "string" },
+    "UEnvironmentID":           { "type": "string" },
+    "3DModelQualifierID":       { "type": "string" },
+    "3DModelQualifierTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":                  { "type": "string", "enum": [ "Real", "Virtual", "Hybrid" ] },
+
+    "Formats":                   { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":          { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/3DModelContentFormats.json" },
+      "TransportFormat":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/3DModelTransportFormats.json" } } },
+
+    "Attributes":               { "type": "object", "additionalProperties": false, "properties": {
+
+      "Source":                 { "type": "string", "enum": [ "Captured", "Reconstructed", "Designed", "Hybrid" ] },
+
+      "Generation":             { "type": "object", "additionalProperties": false, "properties": {
+        "Method":               { "type": "string", "enum": [ "Photogrammetry", "MultiView", "DepthSensing", "NeRF", "Procedural", "CAD",
+                                                              "Other" ] },
+        "Software":             { "type": "string" },
+        "Version":              { "type": "string" } } },
+
+      "Device":                 { "type": "object", "additionalProperties": false, "properties": {
+
+        "DeviceID":             { "type": "string" },
+        "DeviceRole":           { "type": "string", "enum": [ "Capture", "Generate", "Render", "Bidirectional" ] },
+        "DeviceType":           { "type": "string", "enum": [ "3DScanner", "MultiCameraRig", "DepthSensor", "GPUNode", "Workstation",
+                                                              "HMD", "Display", "Other" ] },
+        "Manufacturer":         { "type": "string" },
+        "Model":                { "type": "string" },
+        "DeviceGeometry":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/DeviceSceneGeometry.json" },
+
+        "CaptureConfiguration": { "type": "object", "additionalProperties": false, "properties": {
+          "SensorType":         { "type": "string", "enum": [ "RGB", "Depth", "LiDAR", "MultiSensor" ] },
+          "Resolution":         { "type": "string" },
+          "FrameCount":         { "type": "integer" } } },
+
+        "GenerationConfiguration":{ "type": "object", "additionalProperties": false, "properties": {
+          "Algorithm":          { "type": "string" },
+          "IterationCount":     { "type": "integer" } } },
+
+        "RenderConfiguration":  { "type": "object", "additionalProperties": false, "properties": {
+          "RenderingMode":      { "type": "string", "enum": [ "Rasterization", "RayTracing", "NeuralRendering" ] },
+          "FrameRate":          { "type": "number" } } },
+
+        "OperationalParameters":{ "type": "object", "additionalProperties": false, "properties": {
+          "Precision":          { "type": "string" },
+          "ComputeType":        { "type": "string" } } } } } } },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048 } } }

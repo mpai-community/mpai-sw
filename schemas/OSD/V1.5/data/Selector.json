@@ -24,7 +24,7 @@
       "Text":                 { "type": "string", "enum": ["Text", "TextDescriptors"] },
       "Speech":               { "type": "string", "enum": ["Speech", "SpeechDescriptors"] },
       "Face":                 { "type": "string", "enum": ["Face", "FaceDescriptors"] },
-      "Gesture":              { "type": "string", "enum": ["Gesture", "GestureDescriptors"] },
+      "Body":                 { "type": "string", "enum": ["Body", "BodyDescriptors"] },
       "View":                 { "type": "string", "enum": ["Avatar", "Scene"] } } },
 
     "SpeechDescriptors":      { "type": "boolean" },

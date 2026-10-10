@@ -1,0 +1,5 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/CAV2/V2.0/data/AMSAlertMessageIDs.json",
+  "title": "AMSAlertMessageIDs",
+  "type": "string",
+  "enum": [ "Ambulance", "Authority", "Health", "Evacuation" ] }

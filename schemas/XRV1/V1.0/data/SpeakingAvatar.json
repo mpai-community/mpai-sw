@@ -1,0 +1,26 @@
+
+{ "$schema":                   "https://json-schema.org/draft/2020-12/schema",
+  "$id":                       "https://schemas.mpai.community/XRV1/V1.0/data/SpeakingAvatar.json",
+  "title":                     "Speaking Avatar V1.0",
+  "type":                      "object",
+  "required":                  [ "Header", "SpeakingAvatarID" ],
+  "additionalProperties":      false,
+  "properties":                {
+
+    "Header":                  { "type": "string", "const": "XRV-SAV-V1.0" },
+    "MInstanceID":             { "type": "string" },
+    "SpeakingAvatarID":        { "type": "string" },
+    "SpeakingAvatarTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SpeakingAvatarData":      { "type": "object", "additionalProperties": false, "properties": {
+
+      "Avatar":                { "$ref": "https://schemas.mpai.community/PAF/V1.6/data/Avatar.json" },
+      "SpeechObject":          { "anyOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" }, { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json" } ] },
+
+      "AudioBehaviour":        { "type": "object" },
+      "VisualBehaviour":       { "type": "object" },
+
+      "BiometricData":         { "$ref": "https://schemas.mpai.community/AIH1/V1.0/data/BiometricData.json" } } },
+
+    "DataXMData":              { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":           { "type": "string", "maxLength": 2048 } } }

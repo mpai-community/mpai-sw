@@ -16,7 +16,6 @@ public sealed class SpaceTime
     public string? MInstanceID { get; init; }
     public string? UEnvironmentID { get; init; }
     public string SpaceTimeID { get; init; } = "";
-    public SimpleTime? SpaceTimeTime { get; init; }
 
     public SpatialAttitude? SpatialAttitude1 { get; init; }   // at T0
     public SpatialAttitude? SpatialAttitude2 { get; init; }   // at T1
@@ -40,6 +39,26 @@ public sealed class SimpleTime
     public string SimpleTimeID { get; init; } = "";
     public List<TimeSegment> SimpleTimeData { get; init; } = new();
     public string? DescrMetadata { get; init; }
+
+    // ONE INSTANT: start and end the same, absolute (1970 epoch), in seconds.
+    // What an Object is stamped with when it is made: its time travels in it.
+    public static SimpleTime At(DateTimeOffset moment)
+    {
+        var seconds = moment.ToUnixTimeMilliseconds() / 1000.0;
+        return new SimpleTime
+        {
+            SimpleTimeID = Guid.NewGuid().ToString(),
+            SimpleTimeData =
+            {
+                new TimeSegment
+                {
+                    FlagsByte = 1, StartTime = seconds, EndTime = seconds,
+                    AccuracyMode = "single", AccuracyPlusMinus = 0.0,
+                    TimeType = true, TimeUnit = "00"
+                }
+            }
+        };
+    }
 }
 
 // One time segment. FlagsByte and the decoded TimeType/TimeUnit/Reserved are
@@ -192,6 +211,7 @@ public sealed class Orientation
     // Named "EulerAngles" rather than the schema's literal "Orientation" to
     // avoid a property sharing the exact name of its own containing class -
     // same reasoning as BasicAudioSceneDescriptorsEntries.
+    [System.Text.Json.Serialization.JsonPropertyName("Orientation")]
     public double[] EulerAngles { get; init; } = new double[3];   // required: (alpha, beta, gamma) degrees
     public double[]? OrientAccuracy { get; init; }
     public double[]? OrientVelocity { get; init; }
@@ -208,7 +228,21 @@ public sealed class OrientationGeneral
     public ObjectType? ObjectType { get; init; }
     public string? MediaType { get; init; }   // MediaType.* constant
 }
-public sealed class DataExchangeMetadata { }      // PTF/V1.0/data/DataExchangeMetadata.json
+// PTF/V1.0/data/DataExchangeMetadata.json - only what is used so far: the data it is
+// about, the Process that made it, and the confidence in it.
+public sealed class DataExchangeMetadata
+{
+    public string Header { get; init; } = "PTF-DEM-V1.0";
+    public string DataID { get; init; } = "";
+    public List<ProcessInstanceRef> Source { get; init; } = new();
+    public double? Confidence { get; init; }   // 0..1
+}
+
+public sealed class ProcessInstanceRef
+{
+    public string? AIMID { get; init; }
+    public string? ImplementerAIMID { get; init; }
+}
 public sealed class PersonalStatus { }            // MMC/V2.5/data/PersonalStatus.json
 // VisualQualifier is now defined in VisualQualifier.cs (TFA/V1.5 schema).
 
@@ -261,10 +295,14 @@ public sealed class BasicSpeechObject
     public string? MInstanceID { get; init; }
     public string? UEnvironmentID { get; init; }
     public string BasicSpeechObjectID { get; init; } = "";
+    public SimpleTime? BasicSpeechObjectTime { get; init; }   // when the speech was acquired
     public SpaceTime? BasicSpeechObjectSpaceTime { get; init; }
 
     public byte[] Data { get; init; } = [];                    // inline speech data (e.g. WAV/PCM)
     public SpeechQualifier? SpeechQualifier { get; init; }
+
+    // Where the Object is heard from when heard on its own, as a Basic Audio Object's.
+    public PointOfView? UserPoV { get; init; }
 
     public DataExchangeMetadata? DataXMData { get; init; }
     public string? DescrMetadata { get; init; }
@@ -309,6 +347,7 @@ public sealed class BasicSpeechObject
             : new()
     {
         BasicSpeechObjectID = Guid.NewGuid().ToString(),
+        BasicSpeechObjectTime = SimpleTime.At(DateTimeOffset.UtcNow),
         Data = data,
         SpeechQualifier = qualifier
     };
@@ -321,8 +360,8 @@ public sealed class BasicSpeechObject
     // Types.
     //
     // The receiving AIM should DETERMINE an Audio Qualifier for what it now
-    // holds, as MMC-SOA does in the other direction - it asserts a Speech
-    // Qualifier and says in its own comments why an assertion is the honest
+    // holds, as the Microphone Unit does in the other direction - it asserts a
+    // Speech Qualifier and says in its own comments why an assertion is the honest
     // thing and a conversion is not.
     // AsAudio() and AsSpeech() are gone. Reclassifying a medium is the business of
     // ONE AIM - CAE-ASI - and nature forces it there: a scene is captured as sound
@@ -371,10 +410,11 @@ public sealed class BasicAudioObject
     // Object and CAE-AOE had nowhere to put one.
     //
     // A lone Basic Object sits at the origin - it is what is being auditioned.
-    // What moves is the EAR. When the Object is later placed in a Scene, the
-    // Scene's ListenerPointOfView overrides this one, per the rule that an
-    // entity keeps its own attributes unless the context provides them.
-    public PointOfView? ListenerPointOfView { get; init; }
+    // What moves is the EAR. When the Object is placed in a Scene, the member's
+    // UserPoV, else the Scene's, applies instead (the author, 2026/10/02); this
+    // one counts only when the Object is heard alone. UserPoV, not
+    // ListenerPointOfView: the user is neutral, for audio and visual alike.
+    public PointOfView? UserPoV { get; init; }
 
     public BasicAudioObjectProperties? BasicAudioObjectProperties { get; init; }
     public AudioQualifier? AudioQualifier { get; init; }
@@ -416,10 +456,10 @@ public sealed class BasicAudioObject
     // Reinterpret the BYTES as a Basic Speech Object; the Qualifier does not
     // cross, for the reason given on AsAudio.
     //
-    // MMC-SOA is the model for what a caller should do instead: it takes the
+    // The Microphone Unit's speech capture is the model for what a caller should do instead: it takes the
     // captured bytes and ASSERTS a Speech Qualifier - Source Real, SpeakerType
     // Human, the language inherited from the request - because asserting that
-    // sound is speech is what that AIM is FOR. A conversion records nothing
+    // sound is speech is what that capture is FOR. A conversion records nothing
     // about where the sound came from or why anyone should believe it contains
     // speech.
     // AsSpeech() is gone - see the note on BasicAudioObject above.
@@ -440,14 +480,14 @@ public sealed class BasicAudioObject
         ParentObjects = ParentObjects,
         ChildObjects = ChildObjects,
         BasicAudioObjectData = BasicAudioObjectData,
-        ListenerPointOfView = ListenerPointOfView,
+        UserPoV = UserPoV,
         BasicAudioObjectProperties = BasicAudioObjectProperties,
         AudioQualifier = AudioQualifier,
         DataXMData = DataXMData,
         DescrMetadata = DescrMetadata
     };
 
-    // ListenerPointOfView was added to this class after WithId was written, and
+    // The listener (now UserPoV) was added to this class after WithId was written, and
     // WithId did not copy it - so a listener set before storing was silently
     // dropped on the way in. Adding a field to a hand-written copy method means
     // finding every such method; there was one, and it had been missed.
@@ -461,7 +501,7 @@ public sealed class BasicAudioObject
         ParentObjects = ParentObjects,
         ChildObjects = ChildObjects,
         BasicAudioObjectData = BasicAudioObjectData,
-        ListenerPointOfView = listener,
+        UserPoV = listener,
         BasicAudioObjectProperties = BasicAudioObjectProperties,
         AudioQualifier = AudioQualifier,
         DataXMData = DataXMData,
@@ -505,19 +545,24 @@ public sealed class BasicAudioObjectProperties
 }
 
 // ---------------------------------------------------------------------------
-//  Acoustic Profile ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½?OSD/V1.5/data/AcousticProfile.json
+//  Acoustic Profile - CAE3/V1.0/data/AcousticProfile.json (moved from OSD, 2026/10/02)
 // ---------------------------------------------------------------------------
+// One Data Type with two parts (the author, 2026/10/02): an Object's acoustics -
+// FrequencyRange, Spectrogram, Loudness, DirectionalPatterns - and a Scene's -
+// Reflectivity, Reverberation, Diffusion, Absorption, Doppler. An instance fills
+// the part it is: schemas refer to #/$defs/Object or #/$defs/Scene.
 public sealed class AcousticProfile
 {
-    public string Header { get; init; } = "OSD-ACP-V1.5";
+    public string Header { get; init; } = "CAE-ACP-V1.0";
     public string? MInstanceID { get; init; }
     public string? UEnvironmentID { get; init; }
     public string AcousticProfileID { get; init; } = "";
     public SpaceTime? AcousticProfileTime { get; init; }
 
-    public FrequencyRange FrequencyRange { get; init; } = new();
+    public FrequencyRange? FrequencyRange { get; init; }
     public Plot? Spectrogram { get; init; }
-    public double Loudness { get; init; }
+    public double? Loudness { get; init; }
+    public Plot? DirectionalPatterns { get; init; }   // gain by direction, relative to the Object's orientation
     public List<Reflectivity>? Reflectivity { get; init; }
     public List<Reverberation>? Reverberation { get; init; }
     public double? Diffusion { get; init; }
@@ -538,7 +583,30 @@ public sealed class Timbre
 public sealed class Reflectivity { public double EarlyReflectionTime { get; init; } public double LateReflectionTime { get; init; } }
 public sealed class Reverberation { public Plot? RT60 { get; init; } public Plot? RT30 { get; init; } public Plot? RT20 { get; init; } public double? EDT { get; init; } }
 public sealed class Doppler { public double? DirectSoundFactor { get; init; } public double? IndirectSound { get; init; } }
-public sealed class Plot { }   // OSD/V1.5/data/Plot.json ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½?not yet provided
+// OSD/V1.5/data/Plot.json: values over 2, 3 or 4 dimensions - a directional
+// pattern, a spectrogram, a reverberation time by band.
+public sealed class Plot
+{
+    public string Header { get; init; } = "OSD-PLT-V1.5";
+    public string? MInstanceID { get; init; }
+    public string? UEnvironmentID { get; init; }
+    public string? PlotID { get; init; }
+    public SimpleTime? PlotTime { get; init; }
+
+    // The schema's Plot; named Data in C# so the property does not share its class's name.
+    [System.Text.Json.Serialization.JsonPropertyName("Plot")]
+    public PlotData? Data { get; init; }
+
+    public DataExchangeMetadata? DataXMData { get; init; }
+    public string? DescrMetadata { get; init; }
+}
+
+public sealed class PlotData
+{
+    [System.Text.Json.Serialization.JsonPropertyName("2D")] public List<List<double>>? TwoD { get; init; }
+    [System.Text.Json.Serialization.JsonPropertyName("3D")] public List<List<List<double>>>? ThreeD { get; init; }
+    [System.Text.Json.Serialization.JsonPropertyName("4D")] public List<List<List<List<double>>>>? FourD { get; init; }
+}
 
 // ---------------------------------------------------------------------------
 //  Basic Visual Object ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½?atomic visual unit (Data + Visual Qualifier).
@@ -548,6 +616,7 @@ public sealed class BasicVisualObject
 {
     public string Header { get; init; } = "OSD-BVO-V1.5";     // placeholder header
     public string BasicVisualObjectID { get; init; } = "";
+    public SpaceTime? BasicVisualObjectTime { get; init; }    // when the picture was acquired
     public string? FileName { get; init; }
     public byte[] Data { get; init; } = [];
     public VisualQualifier? VisualQualifier { get; init; }
@@ -555,6 +624,7 @@ public sealed class BasicVisualObject
     public static BasicVisualObject FromFile(string fileName, byte[] data, string? visualObjectType = null) => new()
     {
         BasicVisualObjectID = Guid.NewGuid().ToString(),
+        BasicVisualObjectTime = new SpaceTime { SpaceTimeID = Guid.NewGuid().ToString(), Time = SimpleTime.At(DateTimeOffset.UtcNow) },
         FileName = fileName,
         Data = data,
         VisualQualifier = BuildQualifier(fileName, visualObjectType)
@@ -589,19 +659,24 @@ public sealed class TextObject
     public int? SubTextObjectCount { get; init; }
     public List<SubTextObjectEntry> SubTextObjects { get; init; } = new();
 
+    public DataExchangeMetadata? DataXMData { get; init; }
+    public string? DescrMetadata { get; init; }
+
     // Wrap a single Basic Text Object as a one-element Text Object (Object subsumes Basic).
     public static TextObject FromBasic(BasicTextObject basic) => new()
     {
         TextObjectID = Guid.NewGuid().ToString(),
         BasicTextObjectCount = 1,
-        BasicTextObjects = new() { new BasicTextObjectEntry { BTObjectIDOrBTObject = basic } }
+        BasicTextObjects = new() { new BasicTextObjectEntry { BTObjectIDOrBTObject = [basic] } }
     };
 }
 
 public sealed class BasicTextObjectEntry
 {
     public SpaceTime? BasicTextObjectSpaceTime { get; init; }
-    public BasicTextObject? BTObjectIDOrBTObject { get; init; }   // object or id-string (simplified to object)
+    // The schema's array of one: the Basic Text Object (its ID alone, the schema's other
+    // choice, is not used).
+    public List<BasicTextObject>? BTObjectIDOrBTObject { get; init; }
 }
 
 public sealed class SubTextObjectEntry

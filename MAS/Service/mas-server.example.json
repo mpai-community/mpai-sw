@@ -1,0 +1,5 @@
+{
+  "ListenUrl": "https://localhost:5105/",
+  "Apps": [ "MAD", "AMQ", "MAT", "MPD", "MAC", "ACR" ],
+  "ForgetOnClose": true
+}

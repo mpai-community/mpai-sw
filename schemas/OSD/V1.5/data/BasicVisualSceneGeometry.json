@@ -1,0 +1,25 @@
+{ "$schema":                              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                  "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualSceneGeometry.json",
+  "title":                                "Basic 3D Model Scene Geometry V1.5",
+  "type":                                 "object",
+  "additionalProperties":                 false,
+  "required":                             [ "Header", "BasicVisualSceneGeometryID", "BasicVisualSceneGeometrySpaceTime", "VisualObjectCount", "VisualObjects" ],
+  "properties":                           {
+
+    "Header":                             { "type": "string", "const": "OSD-BVG-V1.5" },
+    "MInstanceID":                        { "type": "string" },
+    "UEnvironmentID":                     { "type": "string" },
+    "BasicVisualSceneGeometryID":         { "type": "string" },
+    "BasicVisualSceneGeometryTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BasicVisualSceneGeometrySpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "VisualObjectCount":                  { "type": "integer", "minimum": 0 },
+    "VisualObjects":                      { "type": "array", "minItems": 0, "items": { "type": "object", "additionalProperties": false,
+                                            "required": [ "VisualObjectSpaceTime", "VisualObjectQualifier" ], "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Object is where the Scene Geometry places it." },
+      "VisualObjectSpaceTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "VisualObjectQualifier":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/VisualQualifier.json" } } } },
+
+    "DataXMData":                         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                      { "type": "string", "maxLength": 2048 } } }

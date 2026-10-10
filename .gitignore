@@ -10,12 +10,16 @@ _macpublish/
 *.exe
 
 # diagnostics / scratch
+Test/Reports/
 *.log
 *.bak
 .backups/
 
-# governed storage: biometrics / runtime data - NEVER commit
-SharedStorage/
+# governed storage: biometrics / runtime data - NEVER commit. Anchored to the
+# root: AIF/Communication/SharedStorage is source, not data.
+/SharedStorage/
+# Access: the Controller's data, machine-local like Shared Storage.
+/Access/
 TestData/
 
 # large model binaries - not source (kept locally; use Git LFS in the
@@ -25,14 +29,12 @@ Models/
 # OS
 Thumbs.db
 .DS_Store
-MPAIApps/HCIApps/MatApp/MatApp.exe
-MPAIApps/HCIApps/MatApp/src/*.bak*
-MPAIApps/HCIApps/MatApp/src/*.allbak
-MPAIApps/HCIApps/MatApp/src/*.flowbak
-MPAIApps/HCIApps/MatApp/src/*.langbak
 
 # transient
 mas-server*.json
+# ...except the templates, which hold no token: a copy is made from them.
+!MAS/Service/linux/mas-server.json
+!MAS/Service/mas-server.example.json
 tree.txt
 _stale/
 *.bak
@@ -62,5 +64,5 @@ _removed/
 # backups made by the Apply/Prepare scripts
 _backup-*/
 
-# BLIP's four files are force-added despite this rule - see docs/MAS-App-Models.md
-
+# the public instance on Windows, published Release (MAS/Service/windows/publish.ps1)
+/deploy/

@@ -1,0 +1,46 @@
+{ "$schema":                            "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                "https://schemas.mpai.community/OSD/V1.5/data/UltrasoundObject.json",
+  "title":                              "Ultrasound Object V1.5",
+  "description":                        "A Data Type including a collection of Basic Ultrasound Objects, with optional hierarchical structure where Ultrasound Objects contain Basic Ultrasound Objects and Ultrasound Objects.",
+  "type":                               "object",
+  "additionalProperties":               false,
+  "required":                           [ "Header", "UltrasoundObjectID", "UltrasoundObjectSpaceTime" ],
+  "properties":                         {
+
+    "Header":                           { "type": "string", "const": "OSD-USO-V1.5", "description": "Ultrasound Object Header â€“ Standard OSD-USO-Vx.y." },
+    "MInstanceID":                      { "type": "string", "description": "Identifier of M-Instance." },
+    "UEnvironmentID":                   { "type": "string", "description": "Identifier of the U-Environment." },
+    "UltrasoundObjectID":               { "type": "string", "description": "Identifier of the Ultrasound Object." },
+    "UltrasoundObjectSpaceTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space-Time of Ultrasound Object." },
+
+    "UserPoV":                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicUltrasoundObjectCount":       { "type": "integer", "minimum": 0, "description": "Set of Parent Ultrasound Objects." },
+    "BasicUltrasoundObjects":           { "type": "array", "description": "Set of Basic Ultrasound Objects.", "items": { 
+                                          "type": "object", "additionalProperties": false, "required": [ "BUObjectIDOrBUObject" ], "properties": {
+      "BasicUltrasoundObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Basic Ultrasound Object in the Ultrasound Object." },
+      "BUObjectIDOrBUObject":           { "$ref": "#/$defs/BUObjectIDOrBUObject", "description": "A Basic Ultrasound Object in the Ultrasound Object." } } } },
+
+    "SubUltrasoundObjectCount":         { "type": "integer", "minimum": 0, "description": "Number of Ultrasound Objects." },
+    "SubUltrasoundObjects":             { "type": "array", "description": "Set of Ultrasound Objects.", "items": { "type": "object", "additionalProperties": false, "required": [ "SubUObjectIDOrSubUObject" ], "properties": {
+      "SubUltrasoundObjectSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Space Time of a Ultrasound Object in the Ultrasound Object." },
+      "SubUObjectIDOrSubUObject":       { "$ref": "#/$defs/SubUObjectIDOrSubUObject", "description": "A Ultrasound Object in the set of Ultrasound Objects." } } } },
+
+    "BUSOOrUSO":                        { "$ref": "#/$defs/BUSOOrUSO" },
+
+    "DataXMData":                       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json", "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Ultrasound Object instance in a trusted data exchange context." },
+    "DescrMetadata":                    { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Ultrasound Object instance (plain text, max 2048 characters)." } },
+
+  "$defs":                              {
+
+    "BUSOOrUSO":                        { "type": "array", "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicUltrasoundObject.json" },
+                                          { "$ref": "#/$defs/BUSOOrUSO" } ] } },
+
+    "BUObjectIDOrBUObject":             { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicUltrasoundObject.json" },
+                                          { "type": "string" } ] } },
+
+    "SubUObjectIDOrSubUObject":         { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/UltrasoundObject.json" },
+                                          { "type": "string" } ] } } } }

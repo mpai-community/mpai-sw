@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using SixLabors.ImageSharp;
@@ -48,7 +49,7 @@ public sealed class ScrfdFaceDetector : IDisposable
         float scoreThreshold = 0.5f,
         float nmsThreshold = 0.4f)
     {
-        _session = new InferenceSession(modelPath);
+        _session = OnnxSessions.Create(modelPath);
         _inputSize = inputSize;
         _scoreThreshold = scoreThreshold;
         _nmsThreshold = nmsThreshold;

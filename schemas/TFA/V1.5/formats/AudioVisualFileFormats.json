@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/AudioVisualFileFormats.json",
+  "title":   "Audio Visual File Formats V1.5",
+  "type":    "string", "enum": [ "3GP", "ASF", "AVI", "FLV", "MKV", "MOV", "MP4", "MPEG-2PS", "MPEG-2TS", "Ogg", "WebM", "WMV" ] }

@@ -32,7 +32,10 @@ public static class TtsFactory
             new PiperProcessRunner(
                 new PiperConfiguration
                 {
-                    ExecutablePath = Setting(settings, "PiperExecutable")
+                    ExecutablePath = Setting(settings, "PiperExecutable"),
+                    // "PiperResident": "false" starts piper for every text, as before.
+                    Resident = !(settings.TryGetValue("PiperResident", out var resident) &&
+                                 resident.Equals("false", StringComparison.OrdinalIgnoreCase))
                 });
 
         var defaultVoice =

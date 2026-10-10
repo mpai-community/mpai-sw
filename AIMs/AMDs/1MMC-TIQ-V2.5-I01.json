@@ -1,4 +1,5 @@
 { "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-TIQ-V2.5-I01", "AIMName": "1MMC-TIQ-V2.5-I01" },
+  "Header":           "MMC-TIQ-V2.5",
 
   "APIProfile":       "Basic",
   "Description":      "Text and Image Query: produces a Basic Text Object response to a Basic Text Object question about a Basic Visual Object. Within MMC-AMQ-V2.5 its Input Visual arrives from the User Agent across the Composite AIM boundary and its Output Image returns there: Visual Object Acquisition and Delivery are User Agent modules, not SubAIMs.",
@@ -12,7 +13,7 @@
 
   "Topology":         [],
 
-  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-TIQ-V2.5-I01",
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/MMC/V2.5/TIQ",
                         "MASPort":          443,
                         "BinaryName":        "Mpai.Mmc.Tiq",
                         "Architecture":      "x86-64",

@@ -14,7 +14,7 @@
 
     "DeviceEnsembleList":           { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["CharacteristicName", "DeviceEnsemble"],
                                       "additionalProperties": false, "properties": {
-      "CharacteristicName":         { "$ref": "https://schemas.mpai.community/CAE1/V2.4/data/MicrophoneArrayGeometry.json" },
+      "CharacteristicName":         { "$ref": "https://schemas.mpai.community/CAE1/V2.5/data/MicrophoneArrayGeometry.json" },
       "DeviceEnsemble":             { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["DeviceID", "PointOfView"], "additionalProperties": false, "properties": {
         "DeviceID":                 { "type": "string" },
         "PointOfView":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" } } } } } } },

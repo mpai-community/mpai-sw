@@ -1,0 +1,49 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-SAF-V1.6-I01", "AIMName": "1PAF-SAF-V1.6-I01"},
+  "Header":           "PAF-SAF-V1.6",
+
+  "APIProfile":       "Basic",
+  "OnDegraded":       "Continue",
+  "Description":      "Speaking Avatar Formation: forms the Speaking Avatar of the input Avatar Model, animated as it utters the Speech. Generative Face Description and Generative Body Description make the Face and Body Descriptors from the Speech and the Text, expressive when a Face or Body Personal Status is supplied; Speaking Avatar Synthesis packages the Avatar, the Speech and the Descriptors. The Avatar is kept by Speaking Avatar Synthesis: given once, it is used for every utterance until another arrives.",
+
+  "InternalTypes":    [{"Name": "FaceDescriptors", "DataType": "PAF-FDO-V1.6"},
+                       {"Name": "BodyDescriptors", "DataType": "PAF-BDO-V1.6"}],
+
+  "ExternalPorts":    [{"Name": "SpeechGFD", "Direction": "Input", "DataType": "OSD-BSO-V1.5", "PortNumber": 1, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechGBD", "Direction": "Input", "DataType": "OSD-BSO-V1.5", "PortNumber": 2, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechSAS", "Direction": "Input", "DataType": "OSD-BSO-V1.5", "PortNumber": 3, "Input": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextGFD", "Direction": "Input", "DataType": "OSD-BTO-V1.5", "PortNumber": 1, "Input": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextGBD", "Direction": "Input", "DataType": "OSD-BTO-V1.5", "PortNumber": 2, "Input": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FacePersonalStatus", "Direction": "Input", "DataType": "MMC-FPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "BodyPersonalStatus", "Direction": "Input", "DataType": "MMC-BPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "AvatarModel", "Direction": "Input", "DataType": "PAF-AVT-V1.6", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeakingAvatar", "Direction": "Output", "DataType": "XRV-SAV-V1.0", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-GFD-V1.6-I01", "AIMName": "1PAF-GFD-V1.6-I01", "Relation": "Internal" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-GBD-V1.6-I01", "AIMName": "1PAF-GBD-V1.6-I01", "Relation": "Internal" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-SAS-V1.6-I01", "AIMName": "1PAF-SAS-V1.6-I01", "Relation": "Internal" } }],
+
+  "Topology":         [{"Output":{"AIMName":"","DataType":"OSD-BSO-V1.5","PortNumber":1},"Input":{"AIMName":"1PAF-GFD-V1.6-I01","DataType":"OSD-BSO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BSO-V1.5","PortNumber":2},"Input":{"AIMName":"1PAF-GBD-V1.6-I01","DataType":"OSD-BSO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BSO-V1.5","PortNumber":3},"Input":{"AIMName":"1PAF-SAS-V1.6-I01","DataType":"OSD-BSO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BTO-V1.5","PortNumber":1},"Input":{"AIMName":"1PAF-GFD-V1.6-I01","DataType":"OSD-BTO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BTO-V1.5","PortNumber":2},"Input":{"AIMName":"1PAF-GBD-V1.6-I01","DataType":"OSD-BTO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"MMC-FPS-V2.5","PortNumber":1},"Input":{"AIMName":"1PAF-GFD-V1.6-I01","DataType":"MMC-FPS-V2.5"}},
+                          {"Output":{"AIMName":"","DataType":"MMC-BPS-V2.5","PortNumber":1},"Input":{"AIMName":"1PAF-GBD-V1.6-I01","DataType":"MMC-BPS-V2.5"}},
+                          {"Output":{"AIMName":"","DataType":"PAF-AVT-V1.6","PortNumber":1},"Input":{"AIMName":"1PAF-SAS-V1.6-I01","DataType":"PAF-AVT-V1.6"}},
+                          {"Output":{"AIMName":"1PAF-GFD-V1.6-I01","DataType":"PAF-FDO-V1.6"},"Input":{"AIMName":"1PAF-SAS-V1.6-I01","DataType":"PAF-FDO-V1.6"}},
+                          {"Output":{"AIMName":"1PAF-GBD-V1.6-I01","DataType":"PAF-BDO-V1.6"},"Input":{"AIMName":"1PAF-SAS-V1.6-I01","DataType":"PAF-BDO-V1.6"}},
+                          {"Output":{"AIMName":"1PAF-SAS-V1.6-I01","DataType":"XRV-SAV-V1.0"},"Input":{"AIMName":"","DataType":"XRV-SAV-V1.0","PortNumber":1}}],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/blob/main/AIMs/AMDs/1PAF-SAF-V1.6-I01.json",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Saf",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.5 GB", "Request": "1 GB", "Maximum": "2 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",  "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

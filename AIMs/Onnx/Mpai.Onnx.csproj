@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    ONNX RUNTIME, ONCE FOR EVERY AIM THAT USES IT (OnnxSessions.cs). The package is chosen
+    here and nowhere else, so that a build has one onnxruntime and not two that collide:
+
+      default                       Microsoft.ML.OnnxRuntime      CPU only
+      -p:MpaiOnnxGpu=true           Microsoft.ML.OnnxRuntime.Gpu  CUDA, with the CPU as fallback
+
+    The GPU package needs, on the machine that runs it, an NVIDIA driver (580 or later), the CUDA 13 runtime libraries and cuDNN 9;
+    without them every session falls back to the CPU and says so.
+
+    For a machine with an older driver (550, say): -p:MpaiOnnxGpu=true -p:MpaiOrtVersion=1.26.0
+    is the CUDA 12.8 build of ONNX Runtime - it needs the CUDA 12.8 (or later 12.x) runtime
+    libraries and cuDNN 9 for CUDA 12, and runs on a 12.x driver by CUDA's minor-version
+    compatibility. package.sh does it with MPAI_CUDA=12.
+  -->
+  <PropertyGroup>
+    <MpaiOrtVersion Condition="'$(MpaiOrtVersion)' == ''">1.27.0</MpaiOrtVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MpaiOnnxGpu)' != 'true'">
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="$(MpaiOrtVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(MpaiOnnxGpu)' == 'true'">
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="$(MpaiOrtVersion)" />
+  </ItemGroup>
+</Project>

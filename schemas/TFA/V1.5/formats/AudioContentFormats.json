@@ -1,0 +1,7 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/TFA/V1.5/formats/AudioContentFormats.json",
+  "title": "Audio Content Formats V1.5",
+  "type": "string",
+  "enum": [ "AAC-ELD", "AAC-LC", "AAC-LD", "ALS", "AmbiX", "CAF", "FLAC", "HE-AAC v1", "HE-AAC v2", "MP3", "MPEG-2 AAC LC",
+            "MPEG-2 AAC Main", "MPEG-2 AAC SSR", "MPEG-H Audio", "USAC", "WAV" ] }
+

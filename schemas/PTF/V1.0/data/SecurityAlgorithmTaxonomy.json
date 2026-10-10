@@ -1,0 +1,56 @@
+{
+  "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/PTF/V1.0/data/SecurityAlgorithmTaxonomy.json",
+  "title":                "Security Algorithm Taxonomy V1.0",
+  "description":          "Typed identifiers for cryptographic algorithms.",
+  "type":                 "object",
+  "additionalProperties": false,
+  "properties":           {
+
+    "Hash":               { "type": "string",
+                            "enum": [ "PTF-ALGO-HASH-SHA256",
+                                      "PTF-ALGO-HASH-SHA384",
+                                      "PTF-ALGO-HASH-SHA512",
+                                      "PTF-ALGO-HASH-SHA3-256",
+                                      "PTF-ALGO-HASH-SHA3-512",
+                                      "PTF-ALGO-HASH-BLAKE3",
+                                      "PTF-ALGO-HASH-CUSTOM" ] },
+
+    "Signature":          { "type": "string",
+                            "enum": [ "PTF-ALGO-SIG-ED25519",
+                                      "PTF-ALGO-SIG-ECDSA-P256-SHA256",
+                                      "PTF-ALGO-SIG-ECDSA-P384-SHA384",
+                                      "PTF-ALGO-SIG-RSA-PSS-SHA256",
+                                      "PTF-ALGO-SIG-RSA-PSS-SHA384",
+                                      "PTF-ALGO-SIG-DILITHIUM2",
+                                      "PTF-ALGO-SIG-FALCON512",
+                                      "PTF-ALGO-SIG-CUSTOM" ] },
+
+    "MAC":                { "type": "string",
+                            "enum": [ "PTF-ALGO-MAC-HMAC-SHA256",
+                                      "PTF-ALGO-MAC-HMAC-SHA384",
+                                      "PTF-ALGO-MAC-CMAC-AES",
+                                      "PTF-ALGO-MAC-CUSTOM" ] },
+
+    "Encryption":         { "type": "string",
+                            "enum": [ "PTF-ALGO-ENC-AES-256-CBC",
+                                      "PTF-ALGO-ENC-AES-256-CTR",
+                                      "PTF-ALGO-ENC-CHACHA20",
+                                      "PTF-ALGO-ENC-CUSTOM" ] },
+
+    "AEAD":               { "type": "string",
+                            "enum": [ "PTF-ALGO-AEAD-AES-256-GCM",
+                                      "PTF-ALGO-AEAD-CHACHA20-POLY1305",
+                                      "PTF-ALGO-AEAD-CUSTOM" ] },
+
+    "KeyExchange":        { "type": "string",
+                            "enum": [ "PTF-ALGO-KX-X25519",
+                                      "PTF-ALGO-KX-ECDH-P256",
+                                      "PTF-ALGO-KX-ECDH-P384",
+                                      "PTF-ALGO-KX-KYBER512",
+                                      "PTF-ALGO-KX-CUSTOM" ] },
+
+    "Hybrid":             { "type": "string",
+                            "enum": [ "PTF-ALGO-HYBRID-X25519-KYBER512",
+                                      "PTF-ALGO-HYBRID-ECDH-P256-DILITHIUM2",
+                                      "PTF-ALGO-HYBRID-CUSTOM" ] } } }

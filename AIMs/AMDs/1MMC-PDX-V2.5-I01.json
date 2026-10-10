@@ -1,0 +1,21 @@
+{ "Identifier":       { "ImplementerID": "1", "ImplementationID": "MMC-PDX-V2.5-I01", "AIMName": "1MMC-PDX-V2.5-I01" },
+  "Header":           "MMC-PDX-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Personal Status De-multiplexing: the inverse of Personal Status Multiplexing. Splits one Entity Personal Status (the machine's) into the per-modality Personal Statuses - Text, Speech, Face, and Body - for the Response and Scene Rendering composite. It de-multiplexes; it does not compute.",
+
+  "ExternalPorts":    [{"Name": "PersonalStatus",        "Direction": "Input",  "DataType": "MMC-EPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatusText",    "Direction": "Output", "DataType": "MMC-TPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatusSpeech",  "Direction": "Output", "DataType": "MMC-SPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatusFace",    "Direction": "Output", "DataType": "MMC-FPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatusBody", "Direction": "Output", "DataType": "MMC-BPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/PAF/V1.6/PSD", "MASPort": 443, "BinaryName": "Mpai.Paf.Psd", "Architecture": "x86-64", "OperatingSystem": "Windows", "Version": "1.6", "Source": "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.25 GB", "Request": "0.5 GB", "Maximum": "1 GB"}, {"Name": "CPU:Class", "Minimum": "Low",     "Request": "Low",    "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

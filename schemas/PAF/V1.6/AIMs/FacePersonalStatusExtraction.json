@@ -1,0 +1,31 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/PAF/V1.6/AIMs/FacePersonalStatusExtraction.json",
+  "title":                "Face Personal Status Extraction V1.6",
+
+  "Header":               "PAF-FPE-V1.6",
+
+  "Identifier":           {"ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-FPE-V1.6"},
+
+  "APIProfile":           "Basic",
+  "Description":          "This AIM extracts the Personal Status of Face.",
+
+  "ExternalPorts":        [{"Name": "FaceDescriptorsObject", "Direction": "Input",  "DataType": "PAF-FDO-V1.6",                   "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FaceObject",            "Direction": "Input",  "DataType": ["OSD-BVO-V1.5", "OSD-VIO-V1.5"],                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FacePersonalStatus",    "Direction": "Output", "DataType": "MMC-FPS-V2.5",                                       "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [{ "Identifier": { "ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-EFD-V1.6" } },
+                           { "Identifier": { "ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-PFI-V1.6" } }],
+
+  "Topology":             [{"Output": {"AIMName": "", "DataType": "OSD-BVO-V1.5"}, "Input": {"AIMName": "PAF-EFD-V1.6", "DataType": "OSD-BVO-V1.5"}},
+                          {"Output": {"AIMName": "PAF-EFD-V1.6", "DataType": "PAF-FDO-V1.6"}, "Input": {"AIMName": "PAF-PFI-V1.6", "DataType": "PAF-FDO-V1.6", "PortNumber": 1}},
+                          {"Output": {"AIMName": "", "DataType": "PAF-FDO-V1.6"}, "Input": {"AIMName": "PAF-PFI-V1.6", "DataType": "PAF-FDO-V1.6", "PortNumber": 1}},
+                          {"Output": {"AIMName": "PAF-PFI-V1.6", "DataType": "MMC-FPS-V2.5"}, "Input": {"AIMName": "", "DataType": "MMC-FPS-V2.5"}}],
+
+  "Implementations":      [{"BinaryName": "/* provided by implementer */", "Architecture": "/* x86-64 | ARM64 */", "OperatingSystem": "/* Windows | Linux | MacOS */", "Version": "/* implementer version */", "Source": "/* AIMStorage | MPAIStore */", "Destination": "/* provided by implementer */"}],
+
+  "ResourcePolicies":     [ ],
+
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

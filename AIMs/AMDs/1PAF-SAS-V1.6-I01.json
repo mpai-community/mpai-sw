@@ -1,0 +1,29 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-SAS-V1.6-I01", "AIMName": "1PAF-SAS-V1.6-I01"},
+  "Header":           "PAF-SAS-V1.6",
+
+  "APIProfile":       "Basic",
+  "Description":      "Speaking Avatar Synthesis: makes the Speaking Avatar of the input Avatar - its Model animated by the Face and Body Descriptors, uttering the Machine Speech; ready to play. The Avatar is kept: given once, it is used for every utterance until another arrives.",
+
+  "ExternalPorts":    [{"Name": "Avatar",                 "Direction": "Input",  "DataType": "PAF-AVT-V1.6", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeechObject",           "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceDescriptorsObject",  "Direction": "Input",  "DataType": "PAF-FDO-V1.6",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "BodyDescriptorsObject",  "Direction": "Input",  "DataType": "PAF-BDO-V1.6",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeakingAvatar",         "Direction": "Output", "DataType": "XRV-SAV-V1.0",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/PAF/V1.6/SAS",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Sas",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.1 GB", "Request": "0.2 GB", "Maximum": "0.5 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Low",    "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

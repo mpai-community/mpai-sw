@@ -3,10 +3,10 @@ namespace Mpai.Core;
 // Resolves the application root at runtime so the app is portable.
 //
 // The root is the first ancestor of the running executable that contains the
-// parts present in EVERY clone: the "AIMs" folder AND the "UAs" folder. Models/
+// parts present in EVERY clone: the "AIMs" folder AND the "UserAgent" folder. Models/
 // and SharedStorage/ are machine-local (distributed separately) and are NOT
 // required to locate the root. A clone unzipped anywhere therefore finds its own
-// AIMs/AMDs, aim-settings.json and UAs/Assets, whether or not models are present.
+// AIMs/AMDs, aim-settings.json and UserAgent/Assets, whether or not models are present.
 public static class MpaiPaths
 {
     private static string? _root;
@@ -16,7 +16,7 @@ public static class MpaiPaths
     // User-Agent side. These ship in the repository; Models/ need not.
     private static bool IsRoot(string dir) =>
         System.IO.Directory.Exists(System.IO.Path.Combine(dir, "AIMs")) &&
-        System.IO.Directory.Exists(System.IO.Path.Combine(dir, "UAs"));
+        System.IO.Directory.Exists(System.IO.Path.Combine(dir, "UserAgent"));
 
     private static string FindRoot()
     {
@@ -28,7 +28,7 @@ public static class MpaiPaths
             System.AppContext.BaseDirectory
         };
 
-        // 1) The repository root: an ancestor holding both AIMs and UAs.
+        // 1) The repository root: an ancestor holding both AIMs and UserAgent.
         foreach (var start in starts)
         {
             if (string.IsNullOrEmpty(start)) continue;
@@ -36,7 +36,7 @@ public static class MpaiPaths
                 if (IsRoot(d.FullName)) return d.FullName;
         }
 
-        // 2) Looser: an ancestor holding AIMs (in case the UAs layout differs).
+        // 2) Looser: an ancestor holding AIMs (in case the UserAgent layout differs).
         foreach (var start in starts)
         {
             if (string.IsNullOrEmpty(start)) continue;
@@ -66,7 +66,9 @@ public static class MpaiPaths
     public static string Gallery       => System.IO.Path.Combine(Root, "TestData", "gallery.json");
     public static string Amds          => System.IO.Path.Combine(Root, "AIMs", "AMDs");
     public static string Settings      => System.IO.Path.Combine(Root, "AIMs", "aim-settings.json");
-    public static string Assets        => System.IO.Path.Combine(Root, "UAs", "Assets");
+    public static string Assets        => System.IO.Path.Combine(Root, "UserAgent", "Assets");
     // The governed Shared Storage area (AIF Shared Storage backing folder).
     public static string SharedStorage => System.IO.Path.Combine(Root, "SharedStorage");
+    // Access, the Controller's static or slowly changing data (AIF V3.0, Storage 6).
+    public static string Access        => System.IO.Path.Combine(Root, "Access");
 }

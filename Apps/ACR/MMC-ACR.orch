@@ -1,0 +1,63 @@
+# =============================================================================
+#  MMC-ACR.orch - Access Control Registration
+#  Workflow Description Language v0.3, AIF V3.0
+#
+#  One Controller, one Module. The User Agent offers the Controller data
+#  identified by Data Type and Port Number, and asks for data identified the
+#  same way. It names no AIM.
+#
+#  The person gives a name, a face and a voice; the Module computes the Face and
+#  Speech Descriptors and registers them in the Service's gallery, which MMC-MAC
+#  reads (M3245). The registering is done by the Module's own AIMs - Entity Face
+#  Description and Entity Speech Description - and the User Agent neither
+#  performs nor witnesses it. MMC-ACR declares OSD-BTO twice: #1 the words the
+#  avatar is to speak, #2 the name the descriptors are kept under.
+#
+#  On the server what a session registered is deleted when the session closes;
+#  the avatar says so when she confirms the registration (the author).
+# =============================================================================
+
+workflow MMC-ACR over 1MMC-ACR-V2.5-I01
+
+on Start:
+
+    ask Controller to start
+
+    # The Avatar this client holds and draws: every utterance animates it.
+    acquire Avatar (PAF-AVT-V1.6)
+
+    offer Welcome (OSD-BTO-V1.5:1) = "Welcome to Access Control Registration.
+        Please type your name."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   WelcomeSpeakingAvatar (XRV-SAV-V1.0)
+    present WelcomeSpeakingAvatar
+
+    acquire UserName (OSD-BTO-V1.5)
+
+    offer Look (OSD-BTO-V1.5:1) = "Thank you, {UserName}. Please look at the camera."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   LookSpeakingAvatar (XRV-SAV-V1.0)
+    present LookSpeakingAvatar
+
+    acquire UserFace (OSD-BVO-V1.5) = { "Attributes": { "VisualObjectType": "Face" } }
+
+    offer Speak (OSD-BTO-V1.5:1) = "Now please say a short sentence, so that I can learn your voice."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   SpeakSpeakingAvatar (XRV-SAV-V1.0)
+    present SpeakSpeakingAvatar
+
+    acquire UserSpeech (OSD-BSO-V1.5) via VAD
+
+    offer UserFace (OSD-BVO-V1.5)
+    offer UserSpeech (OSD-BSO-V1.5)
+    offer UserName (OSD-BTO-V1.5:2)
+    offer Registered (OSD-BTO-V1.5:1) = "{UserName}, you are registered: Multimodal
+        Access Control will know your face and your voice. When you close the
+        session, your face and speech descriptors will be deleted."
+    offer Avatar (PAF-AVT-V1.6:1)
+    ask   RegisteredSpeakingAvatar (XRV-SAV-V1.0)
+    present RegisteredSpeakingAvatar
+
+on Stop:
+
+    ask Controller to stop

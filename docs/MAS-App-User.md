@@ -5,9 +5,7 @@ and two **clients** to use them with: one for the Windows desktop, one for a web
 browser. This guide explains how to install it, start it and use it.
 
 For what the software is, see [MPAI Software](MPAI-Software.md). For how it is
-built, see the [Developer Guide](MAS-App-Developer.md). To run one AIM on a
-machine of its own - a separate GPU box, or your own cloud instance - see
-[Remote Deployment](MAS-App-Remote-Deployment.md).
+built, see the [Developer Guide](MAS-App-Developer.md).
 
 ---
 
@@ -51,30 +49,31 @@ Service over HTTPS on this machine:
 dotnet dev-certs https --trust
 ```
 
-**Write the Service's configuration.** Create a file, for example
-`MPAIApps\MmcApps\AmqServer\mas-server-MAS.json`, replacing `D:\\MPAI` with the
-folder where you put the software:
+**The Service's configuration.** Copy `MAS\Service\mas-server.example.json` to
+`MAS\Service\mas-server.json` (that copy is not tracked by Git, because a
+configuration may hold a secret). The example names no folder: the Service finds
+the Apps, the L3s, the settings and the schemas by itself, wherever you put the
+software. Edit the copy only to change the address or the Apps offered. A path you
+add to it may be relative; it is then taken from the folder of the software:
 ```json
 {
-  "ListenUrl":    "https://localhost:5005/",
-  "AppDirectory": "D:\\MPAI\\Apps",
-  "Apps":         [ "MAD", "AMQ", "MAT", "MPD" ],
-  "AmdDirectory": "D:\\MPAI\\AIMs\\AMDs",
-  "SettingsPath": "D:\\MPAI\\AIMs\\aim-settings.json"
+  "ListenUrl": "https://localhost:5105/",
+  "Apps":      [ "MAD", "AMQ", "MAT", "MPD", "MAC", "ACR" ],
+  "ForgetOnClose": true
 }
 ```
 
 ## 4. Starting it
 
-Use one PowerShell window for each program. In the commands below, replace
-`D:\MPAI` with your folder.
+Use one PowerShell window for each program, in the folder where you put the
+software.
 
 **Window 1 - the Service.** Start it first, and wait: loading the models takes a
 minute or two.
 ```
-dotnet run --project D:\MPAI\MPAIApps\MmcApps\AmqServer\src\AmqServer.csproj -- D:\MPAI\MPAIApps\MmcApps\AmqServer\mas-server-MAS.json
+dotnet run --project MAS\Service\src\MasService.csproj -- MAS\Service\mas-server.json
 ```
-It is ready when it prints `[MAS] Listening on https://localhost:5005/`. Above
+It is ready when it prints `[MAS] Listening on https://localhost:5105/`. Above
 that it lists the Modules it loaded, the four Apps, and the Data Types it
 carries.
 
@@ -82,14 +81,14 @@ Then start either client, or both.
 
 **Window 2 - the browser client.**
 ```
-dotnet run --project D:\MPAI\MPAIApps\RcaWeb\Host\RcaWeb.Host.csproj -- --Service https://localhost:5005/ --Urls https://localhost:5010
+dotnet run --project UserAgent\Clients\Browser\Host\RcaWeb.Host.csproj -- --Service https://localhost:5105/ --Urls https://localhost:5010
 ```
 Open `https://localhost:5010` in Edge or Chrome and press **Start**. The browser
 asks to use the microphone - allow it.
 
 **Window 3 - the desktop client.**
 ```
-dotnet run --project D:\MPAI\MPAIApps\RcaApp\src\RcaApp.csproj
+dotnet run --project UserAgent\Clients\Desktop\src\RcaApp.csproj
 ```
 It opens its own window with the avatar.
 
@@ -97,15 +96,8 @@ To stop a program, press **Ctrl+C** in its window.
 
 ## 5. Using it
 
-The avatar welcomes you, says how many other people are using it right now,
-and shows the Apps. Choose one. **Stop** ends the App you are in and brings
-the list back; with no App running, it ends the session.
-
-**Finding an App.** With few Apps offered, the list alone is enough. Where a
-Service offers more, you may instead say or type what you want to do (for
-example "I want to translate what I say"), and the closest matches are
-offered instead of the full list - this depends on how the Service you are
-using is configured, so it may not appear on every installation.
+The avatar welcomes you and shows the Apps. Choose one. **Stop** ends the App
+you are in and brings the list back; with no App running, it ends the session.
 
 **Speaking or typing.** Whenever the avatar waits for you, you may either speak,
 or type in the text box and press **Enter**. As soon as you type the first

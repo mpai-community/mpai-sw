@@ -2,3 +2,6 @@ Models/BLIP/onnx/blip_decoder_context_dynamic.onnx filter=lfs diff=lfs merge=lfs
 Models/BLIP/onnx/blip_text_encoder_wrapper.onnx filter=lfs diff=lfs merge=lfs -text
 Models/BLIP/onnx/blip_vision_model.onnx filter=lfs diff=lfs merge=lfs -text
 Models/BLIP/onnx/blip_vision_model.onnx.data filter=lfs diff=lfs merge=lfs -text
+
+# Shell scripts run on Linux (WSL too, from a Windows checkout): LF always.
+*.sh text eol=lf

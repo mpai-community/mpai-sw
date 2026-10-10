@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 using Mpai.Core;
 
@@ -22,7 +24,7 @@ namespace Mpai.Core.OSD;
 //  emits.
 //
 //  DESCRIBE, DO NOT IDENTIFY: this type carries visual objects (faces, bodies,
-//  generic objects) with their Spatial Attitude (the per-entry PointOfView).
+//  generic objects) with their Spatial Attitude (the member's SpaceTime).
 //  It says "a face is here, at this bearing" - never "this is person X".
 //  Identity is the job of downstream FIR, not of the scene descriptor.
 //
@@ -35,8 +37,10 @@ namespace Mpai.Core.OSD;
 
 // ---------------------------------------------------------------------------
 //  Basic Visual Scene Descriptors - OSD/V1.5/data/BasicVisualSceneDescriptors.json
-//  A flat-ish scene: each entry places either a BasicVisualObject directly
-//  or its id, with a PointOfView (Spatial Attitude) per entry.
+//  A flat-ish scene: each entry places a BasicVisualObject (or its id) by its
+//  SpaceTime. Since 2026/10/02 (the author) the members are Basic Visual
+//  Objects only, and the Scene is seen from its UserPoV (required, as in the
+//  Basic Audio Scene); a member's own UserPoV overrides it.
 // ---------------------------------------------------------------------------
 public sealed class BasicVisualSceneDescriptors
 {
@@ -47,7 +51,8 @@ public sealed class BasicVisualSceneDescriptors
     public SimpleTime? BVSDescriptorsTime { get; init; }
 
     public SpaceTime? BVSDescriptorsSpaceTime { get; init; }
-    public PointOfView? ViewerPointOfView { get; init; }
+    // Where the Scene is seen from - for a captured Scene, the camera.
+    public PointOfView UserPoV { get; init; } = new();
     public double? GravityValue { get; init; }
 
     public int VisualObjectCount { get; init; }
@@ -55,6 +60,7 @@ public sealed class BasicVisualSceneDescriptors
     // "BasicVisualSceneDescriptors" to avoid a property sharing the exact name
     // of its own containing class - same convention as
     // BasicAudioSceneDescriptorsEntries.
+    [JsonPropertyName("BasicVisualSceneDescriptors")]
     public List<BasicVisualSceneEntry> BasicVisualSceneDescriptorsEntries { get; init; } = new();
 
     public DataExchangeMetadata? DataXMData { get; init; }
@@ -63,7 +69,19 @@ public sealed class BasicVisualSceneDescriptors
 
 public sealed class BasicVisualSceneEntry
 {
+    // Where the member is in the Scene.
     public SpaceTime? VisualObjectSpaceTime { get; init; }
-    public BasicVisualObject? VObjectIDOrVObject { get; init; }   // object or id-string (simplified to object)
-    public PointOfView PointOfView { get; init; } = new();        // Spatial Attitude of this object (required)
+    // Where this member is seen from; absent, the Scene's UserPoV applies.
+    public PointOfView? UserPoV { get; init; }
+
+    // The member: in C# the Basic Visual Object itself; in JSON the schema's
+    // VObjectIDOrVObject, an array of one.
+    [JsonIgnore]
+    public BasicVisualObject? VObjectIDOrVObject { get; init; }
+    [JsonPropertyName("VObjectIDOrVObject")]
+    public List<BasicVisualObject>? VObjectIDOrVObjectArray
+    {
+        get => VObjectIDOrVObject is null ? null : [VObjectIDOrVObject];
+        init => VObjectIDOrVObject = value?.FirstOrDefault();
+    }
 }

@@ -7,15 +7,15 @@
   <ItemGroup>
     <!-- ArcFace recognition: ONNX Runtime for glintr100.onnx, ImageSharp for
          face crops. Same stack as SCRFD/TIQ. -->
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
   <ItemGroup>
     <!-- PAF/V1.6/FIR -> Core is ..\..\..\ (up to AIMs); AIF is ..\..\..\..\.
          Consumes the OSD visual scene's face objects, so references VisualScene
          (OSD V1.5) cross-standard. -->
+    <ProjectReference Include="..\..\..\Onnx\Mpai.Onnx.csproj" />
     <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
     <ProjectReference Include="..\..\..\OSD\V1.5\VisualScene\Mpai.Osd.VisualScene.csproj" />
-    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
   </ItemGroup>
 </Project>

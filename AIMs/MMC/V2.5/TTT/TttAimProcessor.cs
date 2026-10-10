@@ -106,7 +106,7 @@ public sealed class TttAimProcessor : IAimProcessor
             : null;
 
     // An empty Text Object is how a caller says "I am not using this branch"
-    // (the AMQ suspend/resume test does exactly that), so treat it as absent.
+    // (an old AMQ test did exactly that), so treat it as absent.
     private static BasicTextObject? NonEmpty(BasicTextObject text) =>
         string.IsNullOrWhiteSpace(text.GetText()) ? null : text;
 

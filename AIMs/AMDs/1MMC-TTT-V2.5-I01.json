@@ -1,4 +1,5 @@
 { "Identifier":           {"ImplementerID": "1", "ImplementationID": "MMC-TTT-V2.5-I01", "AIMName": "1MMC-TTT-V2.5-I01"},
+  "Header":               "MMC-TTT-V2.5",
 
   "APIProfile":           "Basic",
   "Description":          "Text-to-Text Translation. Translates Input Text or Recognised Text into the language named by the Language Selector. Two OSD-BTO-V1.5 text input ports, told apart by PortNumber; when both carry data the Media Selector decides which is translated.",
@@ -14,7 +15,7 @@
   "SubAIMs":              [],
   "Topology":             [],
 
-  "Implementations":      [{"ImplementationURI": "file:///D:/AI/AIMs/AMDs/MMC-TTT-V2.5-I01",
+  "Implementations":      [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/MMC/V2.5/TTT",
                             "MASPort":          443,
                             "BinaryName":       "Mpai.Mmc.Ttt",
                             "Architecture":     "x86-64",
@@ -22,8 +23,8 @@
                             "Version":          "2.5",
                             "Source":           "AIMStorage"}],
 
-  "ResourcePolicies":     [{"Name": "Memory",     "Minimum": "1 GB",   "Request": "3 GB",   "Maximum": "8 GB"},
-                           {"Name": "CPU:Class",  "Minimum": "Medium", "Request": "Medium", "Maximum": "High"}],
+  "ResourcePolicies":     [{"Name": "Memory",    "Minimum": "1 GB",   "Request": "3 GB",   "Maximum": "8 GB"},
+                           {"Name": "CPU:Class", "Minimum": "Medium", "Request": "Medium", "Maximum": "High"}],
 
   "DataXMData":           { },
 

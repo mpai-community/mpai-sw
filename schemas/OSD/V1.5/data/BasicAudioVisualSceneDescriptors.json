@@ -1,0 +1,66 @@
+﻿{ "$id":                          "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioVisualSceneDescriptors.json",
+  "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "title":                        "Basic Audio-Visual Scene Descriptors V1.5",
+  "type":                         "object",
+  "required":                     [ "Header", "MInstanceID", "BasicAVSceneDescriptorsID", "BAVSDescriptorsSpaceTime", "AVObjectCount" ],
+  "additionalProperties":         false,
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "OSD-BMS-V1.5" },
+    "MInstanceID":                { "type": "string" },
+    "UEnvironmentID":             { "type": "string" },
+    "BasicAVSceneDescriptorsID":  { "type": "string" },
+    "BAVSDescriptorsTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BAVSDescriptorsSpaceTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "UserPoV":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where the Scene is heard and seen from." },
+    "ClosedSpace":                { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ClosedSpace.json" },
+                                  { "type": "string" } ] },
+                                    "description": "The Closed Space the Scene is in, placed by BAVSDescriptorsSpaceTime; it applies to the members of this Scene also when the Scene is in an Audio-Visual Scene Descriptors with a Closed Space of its own." },
+    "AcousticProfile":            { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Scene" },
+
+    "GravityValue":               { "type": "number" },
+
+    "AVObjectCount":              { "type": "integer", "minimum": 0 },
+
+    "BasicAVSceneDescriptorsData":{ "type": "array", "minItems": 1, "description": "The Basic Scenes, of any medium. A Scene holds Basic Scenes, Basic Objects or both, at least one member.", "items": { "type": "object", "additionalProperties": false, "required": [ "BXSSpaceTime", "BXSOrBXSID" ], "properties": {
+      "BXSSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "UserPoV":                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where this member is heard and seen from in this Scene; absent, the Scene's UserPoV applies." },
+      "BXSOrBXSID":               { "description": "A Basic Scene Descriptors of any medium - audio, speech, visual, 3D Model, LiDAR, RADAR, ultrasound, offline map, or its ID. A Basic Audio-Visual Scene Descriptors is not nested in another: that is an Audio-Visual Scene Descriptors.", "anyOf": [
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicLiDARSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicUltrasoundSceneDescriptors.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicOfflineMapSceneDescriptors.json" },
+                                  { "type": "string" } ] } } } },
+    "BasicObjectsData":           { "type": "array", "minItems": 1, "description": "The Basic Objects placed in the Scene directly, of any medium - an Object not in a Basic Scene of its own medium.", "items": { "type": "object", "additionalProperties": false, "required": [ "BXOSpaceTime", "BXOOrBXOID" ], "properties": {
+      "BXOSpaceTime":             { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "UserPoV":                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where this member is heard and seen from in this Scene; absent, the Scene's UserPoV applies." },
+      "BXOOrBXOID":               { "description": "A Basic Object of any medium - audio, visual, speech, 3D Model, LiDAR, RADAR, ultrasound, offline map, or its ID.", "anyOf": [
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Basic3DModelObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicLiDARObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicUltrasoundObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicOfflineMapObject.json" },
+                                  { "type": "string" } ] } } } },
+    "AlignedMMObjects":           { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": [ "AlignmentCode", "AlignedObjects" ], "properties": {
+      "AlignmentCode":            { "type": "string" },
+      "AlignmentPointOfView":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+      "Confidence":               { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Aligned Objects are the same entity - for instance, that a horn heard by a microphone array of limited accuracy is emitted by this car. Two alignments competing for the same Object carry each its own Confidence." },
+      "AlignedObjects":           { "type": "array", "items": { "anyOf": [
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualObject.json" },
+                                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" },
+                                  { "type": "string" } ] } } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048 } },
+  "anyOf":                        [ { "required": [ "BasicAVSceneDescriptorsData" ] }, { "required": [ "BasicObjectsData" ] } ] }

@@ -1,0 +1,46 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id": "https://schemas.mpai.community/MMC/V2.5/AIMs/PersonalStatusDemultiplexing.json",
+  "title": "PersonalStatusDemultiplexing V2.5",
+
+  "Identifier":   { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-PDX-V2.5" },
+  "Header":       "MMC-PDX-V2.5",
+
+  "APIProfile":   "Basic",
+  "Description":  "This AIM Demultiplexes the Personal Status of the different Modalities.",
+
+  "ExternalPorts":  [
+    { "Name": "PersonalStatus"       , "Direction": "Input",   "DataType": "MMC-EPS-V2.5",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "PersonalStatusText"   , "Direction": "Output",  "DataType": "MMC-TPS-V2.5",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "PersonalStatusSpeech" , "Direction": "Output",  "DataType": "MMC-SPS-V2.5",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "PersonalStatusFace"   , "Direction": "Output",  "DataType": "MMC-FPS-V2.5",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "PersonalStatusBody", "Direction": "Output",  "DataType": "MMC-BPS-V2.5",  "Technology": "Software", "Protocol": "", "IsRemote": false }
+  ],
+
+  "SubAIMs":  [ ],
+  "Topology":  [ ],
+
+  "Implementations":  [
+   {
+    "BinaryName": "/* provided by implementer */",
+    "Architecture": "/* x86-64 | ARM64 */",
+    "OperatingSystem": "/* Windows | Linux | MacOS */",
+    "Version": "/* implementer version */",
+    "Source": "/* AIMStorage | MPAIStore */",
+    "Destination": "/* provided by implementer */"
+   }
+  ],
+
+  "ResourcePolicies":  [
+    { "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+    { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+    { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+    { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+    { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+    { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+    { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" }
+  ],
+
+  "DataXMData":  { },
+
+  "Documentation":  [{ "Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/" }] }

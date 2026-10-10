@@ -1,0 +1,33 @@
+{ "$schema":          "https://json-schema.org/draft/2020-12/schema",
+  "$id":              "https://schemas.mpai.community/CAV2/V2.0/data/Road.json",
+  "title":            "Road V2.0",
+  "type":             "object",
+  "required":         [ "Header", "RoadID", "MapProvider", "MapVersion", "Segments", "Trace"],
+  "properties":       {
+
+    "Header":         { "type": "string", "const": "CAV-ROA-V2.0" },
+    "MInstanceID":    { "type": "string" },
+    "UEnvironmentID": { "type": "string" },
+    "RoadID":         { "type": "string", "description": "Unique identifier of the road." },
+    "RoadTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "MapProvider":    { "type": "string", "description": "Map source identifier defining the road (e.g., HERE, OpenDRIVE, Lanelet2)." },
+    "MapVersion":     { "type": "string", "description": "Version or timestamp of the map data used to define the road." },
+    "RoadCategory":   { "type": "string", "enum": ["highway", "urban", "rural", "residential", "other"], "description": "Road classif." },
+    "Geometry":       { "$ref": "#/$defs/Polyline", "description": "Geometric representation of the road (centerline polyline." },
+    "Segments":       { "type": "array", "items": { "$ref": "#/$defs/SegmentID" }, "description": "List of segments composing the road." },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048 } },
+
+  "$defs":            {
+
+    "SegmentID":      { "type": "object", "required": ["RoadID", "SegmentNumber"], "properties": {
+      "RoadID":       { "type": "string", "description": "Identifier of the parent road." },
+      "SectionID":    { "type": "string", "description": "Optional subdivision of the road." },
+      "SegmentNumber":{ "type": "integer", "minimum": 0, "description": "Index of the segment within the road." },
+      "LaneIDs":      { "type": "array", "items": { "type": "string" }, "description": "List of lane IDs in this segment." } } },
+
+    "Polyline":       { "type": "array",
+      "items":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+                         "description": "A polyline represented as an ordered list of Points of View." } } }

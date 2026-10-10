@@ -1,0 +1,22 @@
+{ "$schema":                         "https://json-schema.org/draft/2020-12/schema",
+  "$id":                             "https://schemas.mpai.community/OSD/V1.5/data/SimpleLocation.json",
+  "title":                           "Simple Location V1.5",
+  "type":                            "object",
+  "properties":                      {
+
+    "Header":                        { "type": "string", "const": "OSD-SLC-V1.5" },
+    "MInstanceID":                   { "type": "string" },
+    "UEnvironmentID":                { "type": "string" },
+    "SimpleLocationID":              { "type": "string" },
+
+    "SimpleLocationData":            { "type": "array", "items": { "type": "object", "properties": {
+      "SpaceTime":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "RightParallelepiped":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/RightParallelepiped.json" } } } },
+
+    "DataXMData":                    { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                 { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                           {
+    "3DModelEventIDOr3DModelEvent":  { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelEventDescriptors.json" },
+                                     { "type": "string" } ] } } } }

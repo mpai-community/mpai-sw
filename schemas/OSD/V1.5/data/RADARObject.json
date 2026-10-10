@@ -1,0 +1,53 @@
+{ "$schema":                                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                      "https://schemas.mpai.community/OSD/V1.5/data/RADARObject.json",
+  "title":                                    "RADAR Object V1.5",
+  "type":                                     "object",
+  "additionalProperties":                     false,
+  "required":                                 [ "Header", "MInstanceID", "RADARObjectID", "RADARObjectSpaceTime" ],
+  "properties":                               {
+
+    "Header":                                 { "type": "string", "const": "OSD-RAO-V1.5", "description": "RADAR Object Header â€“ Standard OSD-RAO-Vx.y" },
+    "MInstanceID":                            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this RADAR Object is or is intended to be located." },
+    "UEnvironmentID":                         { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this RADAR Object is or is intended to be located." },
+    "RADARObjectID":                          { "type": "string", "description": "Unique identifier of this RADAR Object." },
+    "RADARObjectTime":                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this RADAR Object was produced." },
+
+    "RADARObjectSpaceTime":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this RADAR Object is located." },
+
+    "UserPoV":                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicRADARObjectCount":                  { "type": "integer", "minimum": 0, "description": "Number of Basic RADAR Objects contained in this RADAR Object." },
+
+    "BasicRADARObjects":                      { "type": "array", "minItems": 0, "description": "Set of Basic RADAR Objects contained in this RADAR Object.",
+                                                "items": { "type": "object", "additionalProperties": false, "required": [ "BRObjectIDOrBRObject" ], "properties": {
+      "BasicRADARObjectSpaceTime":            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                                "description": "Space/Time where/when this Basic RADAR Object is located within the containing RADAR Object. If absent, the Space/Time of the containing object applies." },
+      "BRObjectIDOrBRObject":                 { "$ref": "#/$defs/BRObjectIDOrBRObject", "description": "Either the ID of a Basic RADAR Object or the Basic RADAR Object itself." } } } },
+
+    "SubRADARObjectCount":                    { "type": "integer", "minimum": 0, "description": "Number of child RADAR Objects contained in this RADAR Object." },
+
+    "SubRADARObjects":                        { "type": "array", "minItems": 0, "description": "Set of child RADAR Objects contained in this RADAR Object.",
+                                                "items": { "type": "object", "additionalProperties": false, "required": [ "SubRObjectIDOrSubRObject" ], "properties": {
+      "SubRADARObjectSpaceTime":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                                "description": "Space/Time where/when this child RADAR Object is located within the containing RADAR Object. If absent, the Space/Time of the containing object applies." },
+      "SubRObjectIDOrSubRObject":             { "$ref": "#/$defs/SubRObjectIDOrSubRObject", "description": "Either the ID of a child RADAR Object or the child RADAR Object itself." } } } },
+
+    "BRObjectOrRObject":                      { "$ref": "#/$defs/BRObjectOrRObject", "description": "A mixed array of Basic RADAR Objects and child RADAR Objects contained in this RADAR Object." },
+
+    "DataXMData":                             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                                "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this RADAR Object in a trusted data exchange context." },
+    "DescrMetadata":                          { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the RADAR Object (plain text, max 2048 characters)." } },
+
+  "$defs":                                    {
+
+    "BRObjectOrRObject":                      { "type": "array", "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARObject.json" },
+                                                { "$ref": "#/$defs/BRObjectOrRObject" } ] } },
+
+    "BRObjectIDOrBRObject":                   { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARObject.json" },
+                                                { "type": "string" } ] } },
+
+    "SubRObjectIDOrSubRObject":               { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/RADARObject.json" },
+                                                { "type": "string" } ] } } } }

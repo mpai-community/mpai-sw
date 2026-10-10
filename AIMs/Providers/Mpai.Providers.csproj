@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
-    <ProjectReference Include="..\..\AIF\V3.0\src\AIF.Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\AIF\Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\AIF\Store\AIF.Store.csproj" />
     <ProjectReference Include="..\Core\Mpai.Core.csproj" />
     <ProjectReference Include="..\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
     <ProjectReference Include="..\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
@@ -25,10 +25,19 @@
     <ProjectReference Include="..\MMC\V2.5\TTT\Mpai.Mmc.Ttt.csproj" />
     <ProjectReference Include="..\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
     <ProjectReference Include="..\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\GBD\Mpai.Paf.Gbd.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\SAS\Mpai.Paf.Sas.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\SAR\Mpai.Paf.Sar.csproj" />
     <ProjectReference Include="..\MMC\V2.5\NLU\Mpai.Mmc.Nlu.csproj" />
-    <ProjectReference Include="..\MMC\V2.5\ESI\Mpai.Mmc.Esi.csproj" />
-    <ProjectReference Include="..\MMC\V2.5\EFI\Mpai.Mmc.Efi.csproj" />
-    <ProjectReference Include="..\MMC\V2.5\PSM\Mpai.Mmc.Psm.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\SPE\Mpai.Mmc.Spe.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\FPE\Mpai.Paf.Fpe.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\PMX\Mpai.Mmc.Pmx.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\FIR\Mpai.Paf.Fir.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\SIR\Mpai.Mmc.Sir.csproj" />
+    <ProjectReference Include="..\OSD\V1.5\IDR\Mpai.Osd.Idr.csproj" />
+    <ProjectReference Include="..\OSD\V1.5\VisualScene\Mpai.Osd.VisualScene.csproj" />
+    <ProjectReference Include="..\PAF\V1.6\EFD\Mpai.Paf.Efd.csproj" />
+    <ProjectReference Include="..\MMC\V2.5\ESD\Mpai.Mmc.Esd.csproj" />
   </ItemGroup>
 
 </Project>

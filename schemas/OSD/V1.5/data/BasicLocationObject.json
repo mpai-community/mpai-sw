@@ -1,0 +1,29 @@
+{ "$id":                            "https://schemas.mpai.community/OSD/V1.5/data/BasicLocationObject.json",
+  "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "title":                          "Basic Location Object V1.5",
+  "type":                           "object",
+  "required":                       [ "Header", "BasicLocationObjectID", "BasicLocationObjectSpaceTime" ],
+  "additionalProperties":           false,
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "OSD-BLC-V1.5" },
+    "MInstanceID":                  { "type": "string" },
+    "UEnvironment":                 { "type": "string" },
+    "BasicLocationObjectID":        { "type": "string" },
+    "BasicLocationObjectTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BasicLocationObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "BasicLocationData":            { "type": "array", "items": { "anyOf": [
+                                    { "type": "object", "additionalProperties": false, "properties": {
+      "Length":                     { "type": "integer" },
+      "URI":                        { "type": "string", "format": "uri" } } },
+                                    { "type": "object", "additionalProperties": false, "properties": {
+      "Data":                       { "type": "string" } } },
+                                    { "type": "object", "additionalProperties": false, "properties": {
+      "DataID":                     { "type": "string" } } } ] } },
+
+    "LocationQualifier":            { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/LocationQualifier.json" },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048 } } }

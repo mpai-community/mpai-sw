@@ -3,7 +3,7 @@
   "title":                  "Annotation V1.5",
   "type":                   "object",
   "additionalProperties":   false,
-  "required":               [ "Header", "AnnotationID", "AnnotationSpaceTime" ],
+  "required":               [ "Header", "AnnotationID" ],
   "properties":             {
 
     "Header":               { "type": "string", "const": "OSD-ANN-V1.5" },

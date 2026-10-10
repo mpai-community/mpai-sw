@@ -1,0 +1,39 @@
+{ "$schema":                         "https://json-schema.org/draft/2020-12/schema",
+  "$id":                             "https://schemas.mpai.community/OSD/V1.5/data/ClosedSpace.json",
+  "title":                           "Closed Space V1.5",
+  "description":                     "A space enclosed by walls: its shape a Simple Location - a combination of Right Parallelepipeds - and the Material of its walls. The walls are the faces of the Right Parallelepipeds, named Floor, Ceiling, Front, Back, Left and Right as Right Parallelepiped names them; a face where two Right Parallelepipeds meet is an opening, not a wall. A wall not given its own Material has the DefaultMaterial. Part of a wall - a glass panel in a plaster wall, a door - is a Region of its face, a 2D Right Parallelepiped, with a Material of its own; a door left open is a Region of air (Absorption 0, Transmission 1).",
+  "type":                            "object",
+  "required":                        [ "Header", "ClosedSpaceID", "Shape" ],
+  "additionalProperties":            false,
+  "properties":                      {
+
+    "Header":                        { "type": "string", "const": "OSD-CSP-V1.5" },
+    "MInstanceID":                   { "type": "string" },
+    "UEnvironmentID":                { "type": "string" },
+    "ClosedSpaceID":                 { "type": "string" },
+    "ClosedSpaceTime":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+    "ClosedSpaceSpaceTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json", "description": "Where and when the Closed Space is." },
+
+    "Shape":                         { "$ref": "#/$defs/SimpleLocationIDOrSimpleLocation", "description": "The Simple Location giving the shape of the Closed Space." },
+
+    "Walls":                         { "type": "array", "description": "The Materials of walls, each a face - or a Region of a face - of one of the Right Parallelepipeds of the Shape.",
+                                       "items": { "type": "object", "required": [ "RightParallelepipedID", "Face", "MaterialIDOrMaterial" ], "additionalProperties": false, "properties": {
+      "RightParallelepipedID":       { "type": "string", "description": "The Right Parallelepiped of the Shape whose face this wall is." },
+      "Face":                        { "type": "string", "enum": [ "Floor", "Ceiling", "Front", "Back", "Left", "Right" ] },
+      "Region":                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/RightParallelepiped.json", "description": "A part of the face, a 2D Right Parallelepiped on it; absent, the whole face. Where Regions of a face overlap, the later one applies." },
+      "MaterialIDOrMaterial":        { "$ref": "#/$defs/MaterialIDOrMaterial" } } } },
+
+    "DefaultMaterial":               { "$ref": "#/$defs/MaterialIDOrMaterial", "description": "The Material of every wall not given its own." },
+
+    "DataXMData":                    { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                 { "type": "string", "maxLength": 2048 } },
+
+  "$defs":                           {
+
+    "SimpleLocationIDOrSimpleLocation": { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleLocation.json" },
+                                     { "type": "string" } ] } },
+
+    "MaterialIDOrMaterial":          { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Material.json" },
+                                     { "type": "string" } ] } } } }

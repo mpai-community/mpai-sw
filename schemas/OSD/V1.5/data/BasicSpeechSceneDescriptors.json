@@ -1,0 +1,34 @@
+{ "$schema":                                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                    "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechSceneDescriptors.json",
+  "title":                                  "Basic Speech Scene Descriptors V1.5", "type": "object", "additionalProperties": false,
+                                            "required": [ "Header", "MInstanceID", "BasicSpeechSceneDescriptorsID",
+                                            "BasicSpeechSceneDescriptorsSpaceTime", "ObjectCount", "BasicSpeechSceneDescriptors" ],
+"properties":                               {
+
+    "Header":                               { "type": "string", "const": "OSD-BSS-V1.5" },
+    "MInstanceID":                          { "type": "string" },
+    "UEnvironmentID":                       { "type": "string" },
+    "BasicSpeechSceneDescriptorsID":        { "type": "string" },
+    "BasicSpeechSceneDescriptorsTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "BasicSpeechSceneDescriptorsSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "UserPoV":                              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where the Scene is heard from." },
+    "ClosedSpace":                          { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/ClosedSpace.json" },
+                                            { "type": "string" } ] },
+                                              "description": "The Closed Space the Scene is in, placed by BasicSpeechSceneDescriptorsSpaceTime; it applies to the members of this Scene also when the Scene is in a Speech Scene Descriptors with a Closed Space of its own." },
+    "AcousticProfile":                      { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Scene" },
+
+    "ObjectCount":                          { "type": "integer", "minimum": 0 },
+
+    "BasicSpeechSceneDescriptors":          { "type": "array", "minItems": 0, "items": { "type": "object",
+                                              "additionalProperties": false, "required": [ "ObjectIDOrObject" ], "properties": {
+      "ObjectSpaceTime":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+      "UserPoV":                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where this member is heard from in this Scene; absent, the Scene's UserPoV applies." },
+      "ObjectIDOrObject":                   { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                            { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" },
+                                            { "type": "string" } ] } } } } },
+
+    "DataXMData":                           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                        { "type": "string", "maxLength": 2048 } } }

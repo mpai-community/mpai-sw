@@ -57,16 +57,18 @@ icon. The work is done by the Module on the Service.
 
 | Folder | What it holds |
 |---|---|
-| `AIF/` | The Controller, the Store of L3s, Shared Storage. |
-| `AIMs/` | The AIMs, their L3s (`AIMs/AMDs/`), the shared data types (`AIMs/Core/`), and the providers that build each Module's AIMs (`AIMs/Providers/`). |
-| `MW/` | Middleware: the WDL reader (`Wdl`), the workflow interpreter (`Rca`), the MPAI-MAS server and client (`MasServer`, `MasClient`), the wire form of each Data Type (`PortData`), the North API (`HciApi`). |
-| `MPAIApps/MmcApps/AmqServer/` | The **Service**. (The name is historical: it began as the AMQ server and now offers all four Apps.) |
-| `MPAIApps/RcaApp/` | The **desktop client** (Windows). |
-| `MPAIApps/RcaWeb/` | The **browser client**: `Client` (runs in the browser) and `Host` (serves it). |
+| `AIF/` | The AI Framework: the Controller, the Store of L3s, the Metadata and PortData checks, Shared Storage, Trust. |
+| `AIMs/` | The AIMs (`MMC`, `OSD`, `PAF`, `HCI`, `Onnx`), the shared data types (`Core/`), the providers that build each Module's AIMs (`Providers/`), the L3s (`AMDs/`) and the settings (`aim-settings.json`). |
+| `MAS/` | The MPAI-MAS **Service** (`Service/`) and the library it is made of (`Server/`), with the scripts to install it on Linux and publish it on Windows. |
+| `UserAgent/` | The clients and what they run: the **desktop client** (`Clients/Desktop`), the **browser client** (`Clients/Browser`), the workflow interpreter (`Rca`, `Wdl`), the avatar library (`UaKit`), the physical layer, the spatial audio renderer, the client's own workflow (`Orchestration/`) and the avatar (`Assets/`). |
 | `Apps/` | One folder per App: its workflow, `app.json` and icon. |
-| `UAs/` | The avatar (`Assets/`), the desktop avatar library (`Lib/UaKit`), and the client's own workflow, MPAI-MAS (`Orchestration/`). |
-| `schemas/` | The JSON Schemas of the MPAI Data Types. |
-| `docs/` | This guide, the User and Developer guides, model provenance. |
+| `schemas/` | The JSON Schemas of the MPAI Data Types and the L2 metadata of the AIMs. |
+| `docs/` | The User and Developer guides, the models and their provenance. |
+| `Models/`, `Access/`, `SharedStorage/` | Where the models, the Controller's static data and the governed storage go on your machine. They are not distributed (see below). |
+
+**The folder can be put anywhere.** The software finds its own root by going up
+from where it runs to the folder that holds `AIMs` and `UserAgent`; nothing in it,
+and nothing in `MAS/Service/mas-server.example.json`, names a drive or a folder.
 
 ## What is not in the repository
 

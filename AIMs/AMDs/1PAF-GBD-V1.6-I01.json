@@ -1,0 +1,28 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "PAF-GBD-V1.6-I01", "AIMName": "1PAF-GBD-V1.6-I01"},
+  "Header":           "PAF-GBD-V1.6",
+
+  "APIProfile":       "Basic",
+  "Description":      "Generative Body Description: produces the Machine Body Descriptors - the body animation of a speaking avatar, as BVH - from the Text and the Machine Speech, and optionally a Body Personal Status for expression; when the Body Personal Status is absent the body moves with a neutral posture.",
+
+  "ExternalPorts":    [{"Name": "BodyPersonalStatus",     "Direction": "Input",  "DataType": "MMC-BPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "TextObject",             "Direction": "Input",  "DataType": "OSD-BTO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineSpeech",          "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "MachineBodyDescriptors", "Direction": "Output", "DataType": "PAF-BDO-V1.6",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/PAF/V1.6/GBD",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Paf.Gbd",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "1.6",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.1 GB", "Request": "0.2 GB", "Maximum": "0.5 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Low",    "Maximum": "Medium"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

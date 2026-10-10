@@ -1,0 +1,37 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARObject.json",
+  "title":                        "Basic RADAR Object V1.5",
+  "type":                         "object",
+  "required":                     ["Header", "BasicRADARObjectID", "BasicRADARObjectSpaceTime"],
+  "additionalProperties":         false,
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "OSD-BRO-V1.5" },
+    "MInstanceID":                { "type": "string" },
+    "UEnvironmentID":             { "type": "string" },
+    "BasicRADARObjectID":         { "type": "string" },
+    "BasicRADARObjectTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "ParentObjects":              { "type": "array", "minItems": 0, "items": { "type": "object", "required": ["ParentObjectID"], "additionalProperties": false, "properties": {
+      "ParentObjectID":           { "type": "string" },
+      "ParentObjectSpaceTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "ChildObjects":               { "type": "array", "minItems": 0, "items": { "type": "object", "required": ["ChildObjectID"], "additionalProperties": false, "properties": {
+      "ChildObjectID":            { "type": "string" },
+      "ChildObjectSpaceTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+    "BasicRADARObjectSpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "BasicRADARData":             { "type": "array", "minItems": 0, "items": { "oneOf": [
+                                  { "type": "object", "required": ["Data"], "additionalProperties": false, "properties": {
+        "Data":                   { "type": "string" } } },
+                                  { "type": "object", "required": ["Length", "URI"], "additionalProperties": false, "properties": {
+        "Length":                 { "type": "integer", "minimum": 0 },
+        "URI":                    { "type": "string", "format": "uri" } } },
+                                  { "type": "object", "required": ["ID"], "additionalProperties": false, "properties": {
+        "ID":                     { "type": "string" } } } ] } },
+
+    "BasicRADARDataQualifier":    { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/RADARQualifier.json" },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048 } } }

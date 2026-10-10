@@ -11,13 +11,13 @@ namespace Mpai.Aims.Tts;
 // AIF adapter for Text to Speech (MMC-TTS-V2.5).
 //
 // NOTE: Transitional 鈥?see TiqAimAdapter for the rationale.
-// Port names must match 1MMC-TTS-V2.5-I01.json ExternalPorts
-// (to be confirmed once that file is finalised).
+// Ports keyed by Data Type and number (PortKey), as in 1MMC-TTS-V2.5-I01.json
+// - never by name.
 public sealed class TtsAimAdapter
     : IAimProcessor
 {
-    public const string InputPort  = "InputText";
-    public const string OutputPort = "OutputAudio";
+    public static readonly string InputPort  = PortKey.Of("OSD-BTO-V1.5", 1);
+    public static readonly string OutputPort = PortKey.Of("OSD-BSO-V1.5", 1);
 
     private readonly ITtsAim tts;
 

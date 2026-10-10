@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/MMC/V2.5/data/HCIMemoryData.json",
+  "title": "HCI Memory Data V2.5",
+  "description": "The Text and the Personal Status of the user and of the machine, from Entity Dialogue Processing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Header", "UserText", "UserPersonalStatus", "MachineText", "MachinePersonalStatus"],
+  "properties": {
+    "Header":                { "type": "string", "const": "MMC-HMD-V2.5" },
+    "UserText":              { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicTextObject.json" },
+    "UserPersonalStatus":    { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/EntityPersonalStatus.json" },
+    "MachineText":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicTextObject.json" },
+    "MachinePersonalStatus": { "$ref": "https://schemas.mpai.community/MMC/V2.5/data/EntityPersonalStatus.json" }
+  }
+}

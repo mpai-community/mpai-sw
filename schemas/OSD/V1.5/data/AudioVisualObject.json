@@ -1,0 +1,56 @@
+{ "$schema":                            "https://json-schema.org/draft/2020-12/schema",
+  "$id":                                "https://schemas.mpai.community/OSD/V1.5/data/AudioVisualObject.json",
+  "title":                              "Audio-Visual Object V1.5",
+  "type":                               "object",
+  "additionalProperties":               false,
+  "required":                           [ "Header", "MInstanceID", "AVObjectID", "AVObjectSpaceTime" ],
+  "properties":                         {
+
+    "Header":                           { "type": "string", "const": "OSD-AVO-V1.5",
+                                          "description": "Audio-Visual Object Header â€“ Standard OSD-AVO-Vx.y" },
+    "MInstanceID":                      { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Audio-Visual Object is or is intended to be located." },
+    "UEnvironmentID":                   { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Audio-Visual Object is or is intended to be located." },
+    "AVObjectID":                       { "type": "string", "description": "Unique identifier of this Audio-Visual Object." },
+    "AVObjectTime":                     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                          "description": "Time this Audio-Visual Object was produced." },
+
+    "AVObjectSpaceTime":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                          "description": "Space/Time where/when this Audio-Visual Object is located." },
+
+    "UserPoV":                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+
+    "BasicAVObjectCount":               { "type": "integer", "minimum": 0, "description": "Number of Basic Audio-Visual Objects contained in this Audio-Visual Object." },
+
+    "BasicAVObjects":                   { "type": "array", "minItems": 0, "description": "Set of Basic Audio-Visual Objects contained in this Audio-Visual Object.",
+                                          "items": { "type": "object", "additionalProperties": false, "properties": {
+      "BasicAVObjectSpaceTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                          "description": "Space/Time where/when this Basic Audio-Visual Object is located within the containing Audio-Visual Object. If absent, the Space/Time of the containing object applies." },
+      "BMObjectIDOrBMObject":           { "$ref": "#/$defs/BMObjectIDOrBMObject", "description": "Either the ID of a Basic Audio-Visual Object or the Basic Audio-Visual Object itself." } } } },
+
+    "SubAVObjectCount":                 { "type": "integer", "minimum": 0, "description": "Number of child Audio-Visual Objects contained in this Audio-Visual Object." },
+
+    "SubAVObjects":                     { "type": "array", "minItems": 0, "description": "Set of child Audio-Visual Objects contained in this Audio-Visual Object.",
+                                          "items": { "type": "object", "additionalProperties": false, "properties": {
+      "SubAVObjectSpaceTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                          "description": "Space/Time where/when this child Audio-Visual Object is located within the containing Audio-Visual Object. If absent, the Space/Time of the containing object applies." },
+      "SubMObjectIDOrSubMObject":       { "$ref": "#/$defs/SubMObjectIDOrSubMObject", "description": "Either the ID of a child Audio-Visual Object or the child Audio-Visual Object itself." } } } },
+
+    "BMObjectOrMObject":                { "$ref": "#/$defs/BMObjectOrMObject", "description": "A mixed array of Basic Audio-Visual Objects and child Audio-Visual Objects contained in this Audio-Visual Object." },
+
+    "DataXMData":                       { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                          "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Audio-Visual Object in a trusted data exchange context." },
+    "DescrMetadata":                    { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Audio-Visual Object (plain text, max 2048 characters)." } },
+
+  "$defs":                              {
+
+    "BMObjectOrMObject":                { "type": "array", "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioVisualObject.json" },
+                                        { "$ref": "#/$defs/BMObjectOrMObject" } ] } },
+
+    "BMObjectIDOrBMObject":             { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioVisualObject.json" },
+                                        { "type": "string" } ] } },
+
+    "SubMObjectIDOrSubMObject":         { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+                                        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AudioVisualObject.json" },
+                                        { "type": "string" } ] } } } }

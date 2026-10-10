@@ -1,0 +1,12 @@
+{
+  "ListenUrl": "http://127.0.0.1:5005/",
+  "AppDirectory": "/opt/mpai/Apps",
+  "Apps": [ "MAD", "AMQ", "MAT", "MPD", "MAC", "ACR" ],
+  "AmdDirectory": "/opt/mpai/AMDs",
+  "SettingsPath": "/opt/mpai/aim-settings.json",
+  "SchemaDirectory": "/opt/mpai/schemas",
+  "Gallery": "/opt/mpai/gallery",
+  "ForgetOnClose": true,
+  "WarmUp": true,
+  "WarmUpDirectory": "/opt/mpai/warmup"
+}

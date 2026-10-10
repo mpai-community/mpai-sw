@@ -20,6 +20,8 @@
 
     "BasicSpeechObjectSpaceTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
 
+    "UserPoV":                          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Where the Basic Speech Object is heard from when heard on its own." },
+
     "BasicSpeechObjectData":            { "type": "array", "items": { "anyOf": [
                                         { "type": "object", "properties": {
       "Data":                           { "type": "string" } } },
@@ -32,7 +34,7 @@
     "BasicSpeechObjectProperties":      { "type": "object", "properties": {
 
       "PerceptStatus":                  { "type": "boolean" },
-      "AcousticProfile":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AcousticProfile.json" },
+      "AcousticProfile":                { "$ref": "https://schemas.mpai.community/CAE3/V1.0/data/AcousticProfile.json#/$defs/Object" },
       "BasicSpeechObjectIdentifier":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/InstanceIdentifier.json" } } },
 
     "BasicSpeechDataQualifier":         { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/SpeechQualifier.json" },

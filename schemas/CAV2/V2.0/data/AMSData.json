@@ -1,0 +1,35 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/CAV2/V2.0/data/AMSData.json",
+  "title":                "AMS Data V2.0",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "AMSDataID", "AMSDataTime", "AMSMASMessage" ],
+
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "CAV-AMD-V2.0",
+                            "description": "AMS Data Header – Standard CAV-AMD-V2.0" },
+    "MInstanceID":        { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this AMS Data instance." },
+    "UEnvironmentID":     { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this AMS Data instance." },
+    "AMSDataID":          { "type": "string", "description": "Unique identifier of this AMS Data instance." },
+    "AMSDataTime":        { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                            "description": "Time this AMS Data instance was produced." },
+
+    "RouteID":            { "type": "string", "description": "Identifier of the Route produced by Route Selection Planning." },
+    "Path":               { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Path.json",
+                            "description": "Path produced by Path Selection Planning." },
+    "Trajectory":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Trajectory.json",
+                            "description": "Trajectory produced by Motion Selection Planning." },
+    "Alert":              { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/Alert.json",
+                            "description": "Alert produced by an Environment Sensing Technology Scene Description AIM." },
+    "RoadState":          { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/RoadState.json",
+                            "description": "Road State produced by Traffic Obstacle Avoidance." },
+    "CAVState":           { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/CAVState.json",
+                            "description": "CAV State produced by Traffic Obstacle Avoidance." },
+    "FED": { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/FullEnvironmentDescriptors.json", "description": "Full Environment Descriptors produced by Full Environment Description." },
+    "AMSMASMessage":      { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/AMSMASMessage.json",
+                            "description": "The decision this AMS Data records: the AMS-MAS Message sent to the Motion Actuation Subsystem." },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                            "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this AMS Data instance in a trusted data exchange context." },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the AMS Data instance (plain text, max 2048 characters)." } } }

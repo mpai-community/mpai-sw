@@ -84,6 +84,12 @@ public static class MpaiDiag
         catch { }
     }
 
+    // A stage of the affective chain and what it decided, one line per turn, in
+    // emotion.log (the author, 2026/09/30: why Thalia shows the user's emotion so
+    // rarely - which stage lets it go).
+    public static void Emotion(string stage, string text) =>
+        Append("emotion.log", DateTime.Now.ToString("HH:mm:ss.fff") + "  " + stage.PadRight(4) + " " + text + Environment.NewLine);
+
     private static void Log(string line) =>
         Append("flow.log", DateTime.Now.ToString("HH:mm:ss.fff") + "  " + line + Environment.NewLine);
 }

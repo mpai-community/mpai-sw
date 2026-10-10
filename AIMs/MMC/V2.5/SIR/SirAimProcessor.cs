@@ -10,9 +10,8 @@ namespace Mpai.Mmc.Sir;
 // MMC-SIR-V2.5 - Speaker Identity Recognition. Self-contained IAimProcessor.
 // Reads its own port names from 1MMC-SIR-V2.5-I01.json at startup.
 //
-// Consumes a Basic Speech Object (OSD-BSO-V1.5) - the mirror of what MMC-SOA
-// produces - and an optional Speech Time (OSD-STM-V1.5) delimiting the span to
-// analyse. Embeds the speech with ECAPA, matches it against the shared
+// Consumes a Basic Speech Object (OSD-BSO-V1.5) - the mirror of what the Microphone
+// Unit captures as speech - which carries the time it was acquired. Embeds the speech with ECAPA, matches it against the shared
 // SubjectGallery, and emits the speaker identity as an Instance Identifier
 // (OSD-IID-V1.5): a ranked candidate list at the speaker layer, or the coarse
 // "speech" layer when no subject matches.
@@ -23,9 +22,12 @@ namespace Mpai.Mmc.Sir;
 public sealed class SirAimProcessor : IAimProcessor
 {
     private readonly string                        _speechPort;
-    private readonly string                        _speechTimePort;
     private readonly string                        _outputPort;
     private readonly SpeakerIdentityRecognitionAim _sir;
+    // Where the gallery is kept, where it changes while the AIM runs (a Service,
+    // M3245): read again before each match.
+    private readonly SubjectGallery                _gallery;
+    private readonly AIF.SharedStorage.ISharedStorage? _galleryStore;
 
     public string InstanceId { get; }
 
@@ -33,20 +35,20 @@ public sealed class SirAimProcessor : IAimProcessor
         string instanceId,
         SpeakerEmbedder embedder,
         SubjectGallery gallery,
-        AimPortReader ports)
+        AimPortReader ports,
+        AIF.SharedStorage.ISharedStorage? galleryStore = null)
     {
         InstanceId      = instanceId;
         _sir            = new SpeakerIdentityRecognitionAim(embedder, gallery);
+        _gallery        = gallery;
+        _galleryStore   = galleryStore;
         _speechPort     = ports.Input("OSD-BSO-V1.5");
-        // Speech Time is optional for a first version (analyse the whole clip);
-        // resolve its port if declared, else a harmless default that simply
-        // won't be present in the incoming Ports dictionary.
-        _speechTimePort = ports.InputOrDefault("OSD-STM-V1.5", "InputSpeechTime");
         _outputPort     = ports.Output("OSD-IID-V1.5");
     }
 
     public async Task<Message> ProcessAsync(Message message)
     {
+        if (_galleryStore is not null) _gallery.Refresh(_galleryStore);
         // Read the Basic Speech Object delivered on the speech input port.
         if (!message.Ports.TryGetValue(_speechPort, out var speechJson) ||
             string.IsNullOrWhiteSpace(speechJson))
@@ -63,7 +65,7 @@ public sealed class SirAimProcessor : IAimProcessor
         }
 
         // Decode the in-memory WAV to 16 kHz mono samples and identify the speaker.
-        // (Speech Time, if delivered on _speechTimePort, could window the samples
+        // (The Speech Object carries its time, which could window the samples
         // here; the first version analyses the whole clip.)
         float[] samples = WavReader.ReadMono16k(speech);
 

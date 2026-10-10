@@ -1,0 +1,82 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/MMM4/V2.2/data/AnyProcessAction.json",
+  "title":                "Process Action V2.2",
+  "description":          "Defines an MMM-TEC compliant action initiated by a Process.", "type": "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "MInstanceID", "ProcessActionID", "ProcessAction" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "MMM-PAC-V2.2" },
+    "MInstanceID":        { "type": "string" },
+    "UEnvironment":       { "type": "string" },
+    "ProcessActionID":    { "description": "Unique identifier for this ProcessAction", "type": "string" },
+    "ProcessActionTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json"},
+
+    "ProcessAction":      { "description": "Encapsulates the action, complements, condition, and state.",
+                            "type": "array", "items": { "oneOf": [
+
+                          { "type": "object", "required": [ "Request" ], "additionalProperties": false, "properties": {
+      "Request":          { "type": "object", "required": [ "Time", "Action", "RQ-Complement" ], "additionalProperties": false, "properties": {
+
+        "Time":           { "description": "Timestamp of Request emission",
+                            "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+        "Action":         { "$ref": "https://schemas.mpai.community/MMM4/V2.2/data/ProcessAction.json" },
+
+        "RQ-Complements": { "description": "Request-side complements framing the action", "$ref": "#/$defs/Prepositions" } } } } },
+
+                          { "type": "object", "required": [ "Request" ], "additionalProperties": false, "properties": {
+      "Response":         { "type": "object", "required": [ "Time", "RQ-Complement", "PAStatus" ], "additionalProperties": false, "properties": {
+
+        "Time":           { "description": "Timestamp of Response emission",
+                            "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+        "RS-Complements": { "description": "Response-side complements framing the outcome", "$ref": "#/$defs/Prepositions" },
+
+        "PAStatus":       { "description": "Status of the ProcessAction", "type": "array", "items": { "oneOf": [
+
+                          { "description": "Acknowledgement of successful execution", "type": "object",
+                            "additionalProperties": false, "required": [ "Ack" ], "properties": {
+          "Ack":          { "description": "Acknowledgement keyword", "type": "string", "enum": [ "Ack" ] } } },
+
+                          { "description": "Error encountered during processing", "type": "object",
+                            "additionalProperties": false, "required": [ "Error" ], "properties": {
+          "Error":        { "type": "string", "enum": [
+                            "Clash", "FaultyReq", "IncID", "IncDQ", "InsRights", "InsValue", "LocOOR", "PostRef", "QualNS" ] } } } ] } } } } } } ] } },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "description": "Optional descriptive metadata for traceability", "type": "string" } },
+
+  "$defs":                {
+
+    "Prepositions":       { "description": "Array of semantic complements framing the action.", "type": "array", "items": { "anyOf": [
+
+                          { "description": "No process specified", "type": "object", "additionalProperties": false, "properties":
+                          { "NilProcess":           { "description": "Null process reference", "type": "string" } } },
+
+                          { "description": "No item specified", "type": "object", "additionalProperties": false, "properties":
+                          { "NilItem":              { "description": "Null item reference", "type": "string" } } },
+
+                          { "description": "Process location", "type": "object", "additionalProperties": false, "properties":
+                          { "AtProcess":            { "description": "Process location reference", "type": "string" } } },
+
+                          { "description": "Item location", "type": "object", "additionalProperties": false, "properties":
+                          { "AtItem":               { "description": "Item location reference", "type": "string" } } },
+
+                          { "description": "Source process", "type": "object", "additionalProperties": false, "properties":
+                          { "FromProcess":          { "description": "Source process reference", "type": "string" } } },
+
+                          { "description": "Source item", "type": "object", "additionalProperties": false, "properties":
+                          { "FromItem":             { "description": "Source item reference", "type": "string" } } },
+
+                          { "description": "Target process", "type": "object", "additionalProperties": false, "properties":
+                          { "ToProcess":            { "description": "Target process reference", "type": "string" } } },
+
+                          { "description": "Target item", "type": "object", "additionalProperties": false, "properties":
+                          { "ToItem":               { "description": "Target item reference", "type": "string" } } },
+
+                          { "description": "Associated process", "type": "object", "additionalProperties": false, "properties":
+                          { "WithProcess":          { "description": "Associated process reference", "type": "string" } } },
+
+                          { "description": "Associated item", "type": "object", "additionalProperties": false, "properties":
+                          { "WithItem":             { "description": "Associated item reference", "type": "string" } } } ] } } } }

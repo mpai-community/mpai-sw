@@ -9,5 +9,5 @@
       "SamplePrecision":    { "type": "number" },
       "Precision":          { "type": "integer" } } },
 
-  "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/nrdata/DataExchangeMetadata.json" },
+  "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
   "DescrMetadata":          { "type": "string" } } }

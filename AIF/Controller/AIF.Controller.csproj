@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\Communication\SharedStorage\AIF.SharedStorage.csproj" />
+    <ProjectReference Include="..\Communication\Channels\AIF.Channels.csproj" />
+    <ProjectReference Include="..\Trust\AIF.Trust.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

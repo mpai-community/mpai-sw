@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- AIF.Metadata - AIM Metadata checked against the AIM Metadata schema of AIF
+       V3.0. Used by the MPAI Store, which refuses an L3 that does not validate, and
+       by the tests. Kept out of AIF.Store and AIF.Controller so that what runs in a
+       browser does not carry a JSON Schema validator. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" Version="9.4.0" />
+  </ItemGroup>
+
+</Project>

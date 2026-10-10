@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Onnx\Mpai.Onnx.csproj" />
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\VisualScene\Mpai.Osd.VisualScene.csproj" />
+    <ProjectReference Include="..\FIR\Mpai.Paf.Fir.csproj" />
+  </ItemGroup>
+</Project>

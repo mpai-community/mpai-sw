@@ -1,28 +1,30 @@
 { "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-PSE-V2.5-I01", "AIMName": "1MMC-PSE-V2.5-I01"},
+  "Header":           "MMC-PSE-V2.5",
 
   "APIProfile":       "Basic",
+  "OnDegraded":       "Continue",
   "Description":      "Personal Status Extraction: extracts the entity's Personal Status from the available modalities. PS-Speech Interpretation reads the affect in the Speech Object; PS-Face Interpretation reads the affect in the Face Object; the Text Personal Status arrives ready-made from Natural Language Understanding. Personal Status Multiplexing assembles whichever per-modality Personal Statuses are present - Text, Speech, Face - into one Entity Personal Status. It combines; it does not compute.",
 
-  "InternalTypes":    [{"Name": "SpeechPersonalStatus",  "DataType": "MMC-SPS-V2.5"},
-                       {"Name": "FacePersonalStatus",    "DataType": "MMC-FPS-V2.5"}],
+  "InternalTypes":    [{"Name": "SpeechPersonalStatus", "DataType": "MMC-SPS-V2.5"},
+                       {"Name": "FacePersonalStatus",   "DataType": "MMC-FPS-V2.5"}],
 
-  "ExternalPorts":    [{"Name": "TextPersonalStatus",  "Direction": "Input",  "DataType": "MMC-TPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "SpeechObject",        "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "FaceObject",          "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
-                       {"Name": "PersonalStatus",      "Direction": "Output", "DataType": "MMC-EPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+  "ExternalPorts":    [{"Name": "TextPersonalStatus", "Direction": "Input",  "DataType": "MMC-TPS-V2.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "BasicSpeechObject",       "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "FaceObject",         "Direction": "Input",  "DataType": "OSD-BVO-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "PersonalStatus",     "Direction": "Output", "DataType": "MMC-EPS-V2.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
 
-  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-ESI-V2.5-I01", "AIMName": "1MMC-ESI-V2.5-I01" } },
-                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-EFI-V2.5-I01", "AIMName": "1MMC-EFI-V2.5-I01" } },
-                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-PSM-V2.5-I01", "AIMName": "1MMC-PSM-V2.5-I01" } }],
+  "SubAIMs":          [{ "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-SPE-V2.5-I01", "AIMName": "1MMC-SPE-V2.5-I01", "Relation": "Internal" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "PAF-FPE-V1.6-I01", "AIMName": "1PAF-FPE-V1.6-I01", "Relation": "Internal" } },
+                       { "Identifier": { "ImplementerID": "1", "ImplementationID": "MMC-PMX-V2.5-I01", "AIMName": "1MMC-PMX-V2.5-I01", "Relation": "Internal" } }],
 
-  "Topology":         [{ "Output": { "AIMName": "",              "PortName": "TextPersonalStatus" }  , "Input": { "AIMName": "1MMC-PSM-V2.5-I01",  "PortName": "TextPersonalStatus" } },
-                       { "Output": { "AIMName": "",              "PortName": "SpeechObject" }        , "Input": { "AIMName": "1MMC-ESI-V2.5-I01",  "PortName": "SpeechObject" } },
-                       { "Output": { "AIMName": "",              "PortName": "FaceObject" }          , "Input": { "AIMName": "1MMC-EFI-V2.5-I01",  "PortName": "FaceObject" } },
-                       { "Output": { "AIMName": "1MMC-ESI-V2.5-I01",  "PortName": "SpeechPersonalStatus" }, "Input": { "AIMName": "1MMC-PSM-V2.5-I01",  "PortName": "SpeechPersonalStatus" } },
-                       { "Output": { "AIMName": "1MMC-EFI-V2.5-I01",  "PortName": "FacePersonalStatus" }  , "Input": { "AIMName": "1MMC-PSM-V2.5-I01",  "PortName": "FacePersonalStatus" } },
-                       { "Output": { "AIMName": "1MMC-PSM-V2.5-I01",  "PortName": "EntityPersonalStatus" }, "Input": { "AIMName": "",              "PortName": "PersonalStatus" } }],
+  "Topology":         [{"Output":{"AIMName":"","DataType":"MMC-TPS-V2.5","PortNumber":1},"Input":{"AIMName":"1MMC-PMX-V2.5-I01","DataType":"MMC-TPS-V2.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BSO-V1.5","PortNumber":1},"Input":{"AIMName":"1MMC-SPE-V2.5-I01","DataType":"OSD-BSO-V1.5"}},
+                          {"Output":{"AIMName":"","DataType":"OSD-BVO-V1.5","PortNumber":1},"Input":{"AIMName":"1PAF-FPE-V1.6-I01","DataType":"OSD-BVO-V1.5"}},
+                          {"Output":{"AIMName":"1MMC-SPE-V2.5-I01","DataType":"MMC-SPS-V2.5"},"Input":{"AIMName":"1MMC-PMX-V2.5-I01","DataType":"MMC-SPS-V2.5"}},
+                          {"Output":{"AIMName":"1PAF-FPE-V1.6-I01","DataType":"MMC-FPS-V2.5"},"Input":{"AIMName":"1MMC-PMX-V2.5-I01","DataType":"MMC-FPS-V2.5"}},
+                          {"Output":{"AIMName":"1MMC-PMX-V2.5-I01","DataType":"MMC-EPS-V2.5"},"Input":{"AIMName":"","DataType":"MMC-EPS-V2.5","PortNumber":1}}],
 
-  "Implementations":  [{"ImplementationURI": "file:///D:/AI/AIMs/MMC-PSE-V2.5-I01",
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/blob/main/AIMs/AMDs/1MMC-PSE-V2.5-I01.json",
                         "MASPort":           443,
                         "BinaryName":        "Mpai.Mmc.Pse",
                         "Architecture":      "x86-64",
@@ -30,8 +32,8 @@
                         "Version":           "2.5",
                         "Source":            "AIMStorage"}],
 
-  "ResourcePolicies": [{"Name": "Memory",     "Minimum": "1 GB", "Request": "2 GB", "Maximum": "4 GB"},
-                       {"Name": "CPU:Class",  "Minimum": "Low", "Request": "Medium", "Maximum": "High"}],
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "1 GB", "Request": "2 GB",   "Maximum": "4 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",  "Request": "Medium", "Maximum": "High"}],
 
   "DataXMData":       {},
   "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

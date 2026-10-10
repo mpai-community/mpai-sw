@@ -1,10 +1,12 @@
-{
+﻿{
     "Name": "MPAI as a Service",
-    "Description": "Conversation, questions about pictures, translation and affective dialogue with a speaking avatar.",
+    "Description": "Conversation, questions about pictures, translation, affective dialogue and access control with a speaking avatar.",
     "Apps": [
         "MAD",
         "AMQ",
         "MAT",
-        "MPD"
+        "MPD",
+        "ACR",
+        "MAC"
     ]
 }

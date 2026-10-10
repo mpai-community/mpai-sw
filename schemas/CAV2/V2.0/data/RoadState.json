@@ -1,0 +1,127 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/CAV2/V2.0/data/RoadState.json",
+  "title":                          "Road State V2.0",
+  "type":                           "object",
+  "additionalProperties":           false,
+  "required":                       [ "Header", "RoadStateID", "RoadStateTime", "CAVID", "Segment", "RoadAttributes" ],
+  "properties":                     {
+
+    "Header":                       { "type": "string", "const": "CAV-RDS-V2.0", "description": "Road State Header – Standard CAV-RDS-Vx.y" },
+    "MInstanceID":                  { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Road State." },
+    "UEnvironmentID":               { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Road State." },
+    "RoadStateID":                  { "type": "string", "description": "Unique identifier of this Road State instance." }, "RoadStateTime":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                      "description": "Time this Road State was produced." },
+
+    "RoadStateSpaceTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Road State applies." },
+
+    "CAVID":                        { "type": "string", "description": "Identifier of the CAV producing this Road State." },
+    "Segment":                      { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/Road.json#/$defs/SegmentID",
+                                      "description": "Identifier of the road segment to which this Road State applies." },
+    "RoadAttributes":               { "$ref": "#/$defs/RoadAttributes", "description": "Static or slowly varying attributes of the road segment." },
+    "SurfaceCondition":             { "$ref": "#/$defs/SurfaceCondition", "description": "Current condition of the road surface." },
+    "WeatherData":                  { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/WeatherData.json", "description": "Weather information relevant to driving." },
+    "Hazard":                       { "type": "array", "items": { "$ref": "#/$defs/Hazard" }, "description": "Hazards present on or near the road segment." },
+    "DynamicRoadGeometry":          { "$ref": "#/$defs/DynamicRoadGeometry", "description": "Temporary modifications to the road geometry." },
+    "TrafficFlow":                  { "$ref": "#/$defs/TrafficFlow", "description": "Traffic flow information for the road segment." },
+    "TrafficJam":                   { "$ref": "#/$defs/TrafficJam", "description": "Traffic jam information for the road segment." },
+    "CooperativePerception":        { "$ref": "#/$defs/CooperativePerception", "description": "Information obtained from cooperative perception sources." },
+    "FusionMetadata":               { "$ref": "#/$defs/FusionMetadata", "description": "Information describing the fusion of multiple sources." },
+    "Predictions":                  { "$ref": "#/$defs/Predictions", "description": "Predicted evolution of traffic, weather, and hazards." },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                      "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Road State in a trusted data exchange context." },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Road State (plain text, max 2048 characters)." } },
+
+  "$defs":                          {
+
+    "RoadAttributes":               { "type": "object", "additionalProperties": false, "properties": {
+      "Lanes":                      { "type": "integer", "minimum": 1, "description": "Number of lanes on the road segment." },
+      "SurfaceType":                { "type": "string", "description": "Type of road surface (e.g., asphalt, concrete, gravel)." },
+      "Curvature":                  { "type": "number", "description": "Curvature of the road segment (1/m)." },
+      "Slope":                      { "type": "number", "description": "Longitudinal slope of the road segment (degrees or %)." } } },
+
+    "SurfaceCondition":             { "type": "object", "additionalProperties": false, "properties": {
+      "WetnessLevel":               { "type": "number", "minimum": 0, "maximum": 1, "description": "Wetness level of the road surface [0..1]." },
+      "SnowDepth":                  { "type": "number", "minimum": 0, "description": "Depth of snow on the road surface (cm)." },
+      "IcePresence":                { "type": "boolean", "description": "Indicates whether ice is present on the road surface." },
+      "FrictionCoefficientEstimate":{ "type": "number", "minimum": 0, "maximum": 1, "description": "Estimated friction coefficient of the road surface [0..1]." },
+      "OilOrContaminantPresence":   { "type": "boolean", "description": "Indicates the presence of oil or other contaminants on the road surface." },
+      "Confidence":                 { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in the surface condition estimate [0..1]." } } },
+
+    "Hazard":                       { "type": "object", "additionalProperties": false,
+                                      "required": [ "HazardType", "Location" ], "properties": {
+      "HazardType":                 { "type": "string", "enum": [ "pothole", "debris", "animal", "fallen_tree",
+                                      "flooding", "obstruction", "ice_patch", "other" ],
+                                      "description": "Type of hazard." },
+      "Location":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json",
+                                      "description": "Location of the hazard." },
+      "Severity":                   { "type": "integer", "minimum": 0, "maximum": 3, "description": "Severity level of the hazard [0..3]." },
+      "SpatialExtent":              { "type": "number", "minimum": 0, "description": "Spatial extent of the hazard (metres)." },
+      "RecommendedAction":          { "type": "string", "enum": [ "slow", "avoid", "reroute", "none" ],
+                                      "description": "Recommended action for the CAV." },
+      "Confidence":                 { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in the hazard estimate [0..1]." } } },
+
+    "DynamicRoadGeometry":          { "type": "object", "additionalProperties": false, "properties": {
+      "TemporaryLaneBoundaries":    { "type": "array", "items": { "$ref": "#/$defs/Polyline" }, "description": "Temporary lane boundary polylines." },
+      "LaneClosures":               { "type": "array", "items": { "type": "string" }, "description": "Identifiers of closed lanes." },
+      "TemporaryCurvature":         { "type": "number", "description": "Temporary curvature of the road segment (1/m)." },
+      "TemporarySpeedLimits":       { "type": "number", "description": "Temporary speed limit in effect (km/h)." },
+      "TemporarySignage":           { "type": "array", "items": { "$ref": "#/$defs/Sign" }, "description": "Temporary road signs present on the segment." } } },
+
+    "TrafficFlow":                  { "type": "object", "additionalProperties": false, "properties": {
+      "FlowPerLane":                { "type": "array", "items": { "type": "number", "minimum": 0 }, "description": "Vehicle flow per lane (vehicles/hour)." },
+      "MeanSpeedPerLane":           { "type": "array", "items": { "type": "number", "minimum": 0 }, "description": "Mean vehicle speed per lane (km/h)." },
+      "VehicleClassDistribution":   { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 },
+                                      "description": "Distribution of vehicle classes as proportions." },
+      "StopAndGoOscillationIndex":  { "type": "number", "minimum": 0, "maximum": 1, "description": "Stop-and-go oscillation index [0..1]." },
+      "Confidence":                 { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in the traffic flow estimate [0..1]." } } },
+
+    "TrafficJam":                   { "type": "object", "additionalProperties": false, "properties": {
+      "Location":                   { "$ref": "#/$defs/Polyline", "description": "Spatial extent of the traffic jam as a polyline." },
+      "Length":                     { "type": "number", "minimum": 0, "description": "Length of the traffic jam (metres)." },
+      "Severity":                   { "type": "integer", "minimum": 0, "maximum": 3, "description": "Severity of the traffic jam [0..3]." },
+      "EstimatedDelay":             { "type": "number", "minimum": 0, "description": "Estimated delay caused by the traffic jam (seconds)." },
+      "Confidence":                 { "type": "number", "minimum": 0, "maximum": 1, "description": "Confidence in the traffic jam estimate [0..1]." } } },
+
+    "CooperativePerception":        { "type": "object", "additionalProperties": false, "properties": {
+      "SharedObjectList":           { "type": "array", "items": { "$ref": "#/$defs/DetectedObject" }, "description": "Objects detected and shared by cooperative sources." },
+      "SharedOccupancyGrid":        { "$ref": "#/$defs/GridMap", "description": "Shared occupancy grid from cooperative sources." },
+      "SharedFreeSpaceMap":         { "$ref": "#/$defs/GridMap", "description": "Shared free-space map from cooperative sources." },
+      "SharedPredictedTrajectories":{ "type": "array", "items": { "$ref": "#/$defs/Trajectory" }, "description": "Predicted trajectories shared by cooperative sources." },
+      "SourceList":                 { "type": "array", "items": { "type": "string" }, "description": "Identifiers of cooperative perception sources." } } },
+
+    "FusionMetadata":               { "type": "object", "additionalProperties": false, "properties": {
+      "SourceCount":                { "type": "integer", "minimum": 1, "description": "Number of sources fused." },
+      "SourceIDs":                  { "type": "array", "items": { "type": "string" }, "description": "Identifiers of the fused sources." },
+      "FusionMethod":               { "type": "string", "description": "Method used for fusion." },
+      "ConflictResolutionStrategy": { "type": "string", "description": "Strategy used to resolve conflicts between sources." },
+      "OverallConfidence":          { "type": "number", "minimum": 0, "maximum": 1, "description": "Overall confidence in the fused result [0..1]." } } },
+
+    "Predictions":                  { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Predictions come true." },
+      "TrafficFlowForecast":        { "type": "array", "items": { "$ref": "#/$defs/TrafficFlow" }, "description": "Forecasted traffic flow states." },
+      "WeatherEvolution":           { "type": "array", "items": { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/WeatherData.json" }, "description": "Forecasted weather evolution." },
+      "HazardPropagation":          { "type": "array", "items": { "$ref": "#/$defs/Hazard" }, "description": "Predicted hazard propagation." } } },
+
+    "Polyline":                     { "type": "array", "items": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json" },
+                                      "description": "Sequence of Points of View defining a polyline." },
+
+    "Sign":                         { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Sign is there and of the stated Type." },
+      "Type":                       { "type": "string", "description": "Type of road sign." },
+      "Location":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Location of the road sign." } } },
+
+    "DetectedObject":               { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Object exists and is of the stated Class, at the stated Pose." },
+      "ID":                         { "type": "string", "description": "Identifier of the detected object." },
+      "Class":                      { "type": "string", "description": "Classification of the detected object." },
+      "Pose":                       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/PointOfView.json", "description": "Pose of the detected object." },
+      "Velocity":                   { "type": "number", "description": "Velocity of the detected object (m/s)." } } },
+
+    "GridMap":                      { "type": "object", "additionalProperties": false, "properties": {
+      "Resolution":                 { "type": "number", "description": "Grid cell resolution (metres/cell)." },
+      "Width":                      { "type": "integer", "description": "Number of columns in the grid." },
+      "Height":                     { "type": "integer", "description": "Number of rows in the grid." },
+      "Data":                       { "type": "array", "items": { "type": "number" }, "description": "Grid cell values, row-major order." } } },
+
+    "Trajectory":                   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Trajectory.json" } } }

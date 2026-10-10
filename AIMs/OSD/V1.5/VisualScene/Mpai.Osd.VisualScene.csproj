@@ -7,13 +7,12 @@
   <ItemGroup>
     <!-- Same stack as the TIQ AIM: ONNX Runtime for SCRFD inference,
          ImageSharp for decoding the BasicVisualObject image bytes. -->
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
   <ItemGroup>
     <!-- OSD/V1.5/VisualScene -> repo depth to Core/AIF is the same as MMC/V2.5/TIQ. -->
+    <ProjectReference Include="..\..\..\Onnx\Mpai.Onnx.csproj" />
     <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
-    <ProjectReference Include="..\..\..\CVE\V1.0\VOA\Mpai.Cve.Voa.csproj" />
-    <ProjectReference Include="..\..\..\..\AIF\V3.0\src\AIF.Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
   </ItemGroup>
 </Project>

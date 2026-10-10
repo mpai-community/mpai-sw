@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.mpai.community/PTF/V1.0/data/TrustOperation.json",
+  "title": "Trust Operation V1.0",
+  "description": "Record of a trust-related operation within the PTF framework.",
+  "type": "object",
+  "required": [
+    "Header",
+    "TrustOperationID",
+    "OperationType",
+    "TargetType",
+    "TargetID",
+    "ActorID",
+    "Status",
+    "Signature",
+    "KeyID"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "Header": {
+      "type": "string",
+      "const": "PTF-TOP-V1.0"
+    },
+    "MInstanceID": {
+      "type": "string"
+    },
+    "UEnvironmentID": {
+      "type": "string"
+    },
+    "TrustOperationID": {
+      "type": "string"
+    },
+    "TrustOperationTime": {
+      "$ref": "https://schemas.mpai.community/OSD/V1.5/data/Time.json"
+    },
+    "OperationType": {
+      "$ref": "https://schemas.mpai.community/PTF/V1.0/data/TrustOperationTaxonomy.json#/properties/OperationType",
+      "description": "Operation type identifier from the Trust Operation Taxonomy."
+    },
+    "TargetType": {
+      "type": "string",
+      "enum": [
+        "CII",
+        "InstanceCredential",
+        "ProcessLifecycleCredential",
+        "AttestationEvidence",
+        "PolicyBinding",
+        "Profile",
+        "TrustMessage"
+      ],
+      "description": "Type of object on which the operation was performed."
+    },
+    "TargetID": {
+      "type": "string",
+      "description": "Identifier of the target object."
+    },
+    "ActorID": {
+      "type": "string",
+      "description": "Identifier of the entity performing the operation."
+    },
+    "Status": {
+      "type": "string",
+      "enum": [
+        "Success",
+        "Failure"
+      ],
+      "description": "Outcome of the trust operation."
+    },
+    "FailureReason": {
+      "type": "string",
+      "description": "Optional reason for failure."
+    },
+    "Signature": {
+      "type": "string",
+      "pattern": "^([0-9A-F]{2})+$",
+      "description": "Hexadecimal ASCII-encoded signature over the canonical form (PTF-JSON-CANON-V1) of the object without its Signature, by the key KeyID names."
+    },
+    "DataXMData": {
+      "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json"
+    },
+    "DescrMetadata": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "KeyID": {
+      "type": "string",
+      "description": "Identifier of the key that verifies the Signature; the key's identity states its algorithm."
+    }
+  }
+}

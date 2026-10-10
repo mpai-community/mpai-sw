@@ -1,0 +1,36 @@
+{ "$schema":                        "https://json-schema.org/draft/2020-12/schema",
+  "$id":                            "https://schemas.mpai.community/CAV2/V2.0/data/Alert.json",
+  "title":                          "Alert V2.0",
+  "type":                           "object",
+  "additionalProperties":           false,
+  "required":                       [ "Header", "AlertID", "AlertData" ],
+
+  "properties":                     {
+
+    "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Alert is warranted - that the Objects it names require urgent consideration." },
+    "Header":                       { "type": "string", "const": "CAV-ALT-V2.0",
+                                      "description": "Alert Header – Standard CAV-ALT-Vx.y" },
+    "MInstanceID":                  { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Alert." },
+    "UEnvironmentID":               { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Alert." },
+    "AlertID":                      { "type": "string", "description": "Unique identifier of this Alert." },
+    "AlertTime":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                      "description": "Time this Alert was produced." },
+
+    "AlertData":                    { "type": "array", "minItems": 1, "description": "Set of Objects deemed to require urgent consideration by the Traffic Obstacle Avoidance AIM.",
+                                      "items": { "anyOf": [
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicAudioObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicVisualObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicRADARObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicLiDARObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicUltrasoundObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/AudioObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/LiDARObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/RADARObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/TextObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/UltrasoundObject.json" },
+                                      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/VisualObject.json" } ] } },
+
+    "DataXMData":                   { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                      "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Alert in a trusted data exchange context." },
+    "DescrMetadata":                { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Alert (plain text, max 2048 characters)." } } }

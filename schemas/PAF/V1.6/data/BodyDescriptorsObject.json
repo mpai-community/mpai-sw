@@ -1,0 +1,38 @@
+{ "$schema":                    "https://json-schema.org/draft/2020-12/schema",
+  "$id":                        "https://schemas.mpai.community/PAF/V1.6/data/BodyDescriptorsObject.json",
+  "title":                      "Body Descriptors Object V1.6",
+  "type":                       "object",
+  "additionalProperties":       false,
+  "required":                   [ "Header", "BodyDescriptorsObjectID", "BodyDescriptorsData" ],
+  "properties":                 {
+
+    "Header":                   { "type": "string", "const": "PAF-BDO-V1.6",
+                                  "description": "Body Descriptors Object Header - Standard PAF-BDO-V1.6" },
+    "MInstanceID":              { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) where this Body is or is intended to be located." },
+    "UEnvironmentID":           { "type": "string", "description": "Identifier of the U-Environment (Real Space) where this Body is or is intended to be located." },
+    "BodyDescriptorsObjectID":  { "type": "string", "description": "Unique identifier of this Body Descriptors Object instance." },
+    "BodyDescriptorsObjectTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                  "description": "Time this Body Descriptors Object was produced." },
+
+    "BodyDescriptorsObjectSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json",
+                                  "description": "Space/Time where/when this Body is located." },
+
+    "BodyDescriptorsData":      { "type": "array", "minItems": 0, "description": "Body Descriptors Data representing joints and posture of a human or humanoid body.",
+                                  "items": { "anyOf": [
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Descriptors describe the input as it is." },
+      "DataLength":             { "type": "integer", "description": "Length of the Body Descriptors Data." },
+      "DataURI":                { "type": "string", "format": "uri", "description": "URI reference to the Body Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Descriptors describe the input as it is." },
+      "Data":                   { "type": "string", "description": "Inline Body Descriptors Data." } } },
+                                { "type": "object", "additionalProperties": false, "properties": {
+      "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Descriptors describe the input as it is." },
+      "DataID":                 { "type": "string", "description": "Identifier referencing Body Descriptors Data stored elsewhere." } } } ] } },
+
+    "BodyDescriptorsQualifier": { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/BodyDescriptorsQualifier.json",
+                                  "description": "Qualifier providing information on Sub-Types, Formats, and Attributes of Body Descriptors Data." },
+
+    "DataXMData":               { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                  "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Body Descriptors Object in a trusted data exchange context." },
+    "DescrMetadata":            { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Body Descriptors Object (plain text, max 2048 characters)." } } }

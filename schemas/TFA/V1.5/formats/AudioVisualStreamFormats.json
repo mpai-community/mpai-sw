@@ -1,0 +1,4 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/AudioVisualStreamFormats.json",
+  "title":   "Audio Visual Stream Formats V1.5",
+  "type":    "string", "enum": [ "DASH", "HLS", "MPEG-2TS", "RIST", "RTMP", "RTSP", "SmoothStreaming", "SRT", "WebRTC" ] } 

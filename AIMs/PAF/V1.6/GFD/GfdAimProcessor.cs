@@ -60,6 +60,7 @@ public sealed class GfdAimProcessor : IAimProcessor
             if (category is null && fps?.FaceCognitiveState?.Category is { } cog)
             { category = cog; intensity = fps.FaceCognitiveState.Degree ?? 0.6; }
             expression = EmFacs.ToActionUnits(category, intensity);
+            MpaiDiag.Emotion("GFD", $"{category ?? "no emotion"} {intensity:0.00} -> {string.Join(", ", expression.ActionUnits.Select(u => $"{u.Key} {u.Value:0.00}"))}");
         }
 
         // Words -> phonemes -> visemes (the lip shapes to move through).

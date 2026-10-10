@@ -1,0 +1,37 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/ECGQualifier.json",
+  "title":                  "ECG Qualifier V1.5",
+  "description":            "Qualifier for ECG content specifying subtype, format, and optional attributes.",
+  "type":                   "object",
+  "required":               [ "Header", "ECGQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-ECQ-V1.5" },
+    "MInstanceID":      { "type": "string" },
+    "UEnvironmentID":   { "type": "string" },
+
+    "ECGQualifierID":       { "type": "string", "description": "Unique identifier for this qualifier." },
+    "ECGQualifierTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":              { "type": "object", "additionalProperties": false, "properties": {
+
+      "LeadConfiguration":  { "type": "string", "enum": [ "12-lead", "3-lead", "5-lead", "Holter", "Telemetry",
+                                                          "Ambulatory", "StressTest", "Resting" ] } } },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+
+      "ContentFormat":      { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/ECGContentFormats.json" } } },
+
+    "Attributes":           { "type": "object", "additionalProperties": false, "properties": {
+
+      "samplingRate":       { "type": "number", "minimum": 1 },
+      "leadSet":            { "type": "string" },
+      "gain":               { "type": "number", "minimum": 0 },
+
+      "filterBand":         { "type": "object", "required": [ "low", "high" ], "additionalProperties": false, "properties": {
+        "low":              { "type": "number", "minimum": 0 },
+        "high":             { "type": "number", "minimum": 0 } } } } },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

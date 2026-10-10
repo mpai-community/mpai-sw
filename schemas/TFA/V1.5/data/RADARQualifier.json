@@ -1,0 +1,23 @@
+{ "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/RADARQualifier.json",
+  "$schema":                "https://json-schema.org/draft/2020-12/schema",
+
+  "title":                  "RADAR Qualifier V1.5",
+                            "description": "Qualifier describing subtypes, format, and attributes of RADAR data.",
+                            "type": "object", "required": [ "Header", "RADARQualifierID", "SubTypes", "Formats" ],
+                            "additionalProperties": false, "properties": {
+
+    "Header":               { "type": "string", "const": "TFA-RAQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "RADARQualifierID":     { "type": "string" },
+    "RADARQualifierTime":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":              { "type": "object", "additionalProperties": false },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":      { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/RADARContentFormats.json" } } },
+
+    "Attributes":           { "type": "object", "additionalProperties": false },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } } }

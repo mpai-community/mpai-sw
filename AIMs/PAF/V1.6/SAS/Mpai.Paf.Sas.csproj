@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- PAF-SAS-V1.6, Speaking Avatar Synthesis: the Speaking Avatar (XRV-SAV) - the
+       Avatar animated by the Face and Body Descriptors, and its Speech. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Mpai.Paf.Sas</RootNamespace>
+    <AssemblyName>Mpai.Paf.Sas</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
+  </ItemGroup>
+
+</Project>

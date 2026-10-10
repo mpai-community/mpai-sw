@@ -14,10 +14,6 @@ namespace Mpai.Core.OSD;
 // (BVH, SMPL, glTF, ...), chosen because 3D posture expresses the body's SEMANTICS
 // for Personal Status. This implementation emits a BVH skeleton; the Qualifier
 // records ContentFormat = "BVH".
-//
-// Gesture is a SUBSET of Body: a Gesture Descriptors Object shares the PAF-BDO
-// header and the SAME single Qualifier (TFA-BDQ) and content-format enumeration,
-// carrying the gesture-relevant subset of the body's joints.
 public sealed class BodyDescriptorsObject
 {
     public string Header { get; init; } = "PAF-BDO-V1.6";
@@ -56,7 +52,7 @@ public sealed class BodyDescriptorsDataItem
     public string? DataID { get; init; }       // by identifier
 }
 
-// TFA-BDQ-V1.5 - Body Descriptors Qualifier. Shared by Body AND Gesture. Mirrors
+// TFA-BDQ-V1.5 - Body Descriptors Qualifier. Shared by the Body Descriptors Object. Mirrors
 // schemas/TFA/V1.5/data/BodyDescriptorsQualifier.json: a Format object whose
 // ContentFormat is a value from BodyDescriptorsContentFormats.json.
 public sealed class BodyDescriptorsQualifier

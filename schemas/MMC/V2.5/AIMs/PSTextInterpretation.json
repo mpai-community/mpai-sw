@@ -1,0 +1,27 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/MMC/V2.5/AIMs/PSTextInterpretation.json",
+  "title":                "PS-Text Interpretation V2.5",
+
+  "Header":               "MMC-PTI-V2.5",
+
+  "Identifier":           {"ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "MMC-PTI-V2.5"},
+
+  "APIProfile":           "Basic",
+  "Description":          "This AIM extracts the Text Personal Status from the Text Descriptors Object: the one supplied from outside (Port 1) and the one derived by the Entity Text Description (Port 2).",
+
+  "ExternalPorts":        [{"Name": "TextDescriptorsObject",       "Direction": "Input",  "DataType": "MMC-TDO-V2.5", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "EntityTextDescriptorsObject", "Direction": "Input",  "DataType": "MMC-TDO-V2.5", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "TextPersonalStatus",          "Direction": "Output", "DataType": "MMC-TPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [ ],
+
+  "Topology":             [ ],
+
+  "Implementations":      [{"BinaryName": "/* provided by implementer */", "Architecture": "/* x86-64 | ARM64 */", "OperatingSystem": "/* Windows | Linux | MacOS */", "Version": "/* implementer version */", "Source": "/* AIMStorage | MPAIStore */", "Destination": "/* provided by implementer */"}],
+
+  "ResourcePolicies":     [ ],
+
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

@@ -1,0 +1,24 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/AnyQualifier.json",
+  "title":                  "Any Qualifier V1.5",
+  "type":                   "object",
+  "additionalProperties":   false,
+  "required":               [ "Header", "AnyQualifierID", "QualifierType", "QualifierValueOrRef" ],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-AYQ-V1.5" },
+    "AnyQualifierID":       { "type": "string" },
+    "AnyQualifierTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+    "QualifierType":        { "type": "string" },
+    "QualifierValueOrRef":  { "$ref": "#/$defs/ValueOrRef" },
+
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048 } },
+
+  "$defs": {
+    "ValueOrRef":           { "type": "array", "minItems": 1, "maxItems": 1, "items": { "oneOf": [
+      { "type": "object", "additionalProperties": true },
+      { "type": "string", "format": "uri" } ] } } } }

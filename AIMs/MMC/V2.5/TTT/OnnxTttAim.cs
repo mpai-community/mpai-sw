@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.ML.OnnxRuntime;
+using Mpai.Onnx;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using Mpai.Core;
@@ -68,9 +69,9 @@ public sealed class OnnxTttAim : ITttAim, IDisposable
             configuration.VocabPath,
             configuration.SpecialTokensPath);
 
-        _encoder      = new InferenceSession(configuration.EncoderModelPath);
-        _decoderFirst = new InferenceSession(configuration.DecoderFirstModelPath);
-        _decoderPast  = new InferenceSession(configuration.DecoderPastModelPath);
+        _encoder      = OnnxSessions.Create(configuration.EncoderModelPath);
+        _decoderFirst = OnnxSessions.Create(configuration.DecoderFirstModelPath);
+        _decoderPast  = OnnxSessions.Create(configuration.DecoderPastModelPath);
     }
 
     public async Task<BasicTextObject> ProcessAsync(
@@ -106,6 +107,8 @@ public sealed class OnnxTttAim : ITttAim, IDisposable
         {
             var translated = await Task.Run(
                 () => Translate(sourceText, source, targetId, token), token).ConfigureAwait(false);
+            // The text translated is the person's: in the log only with diagnostics on.
+            Console.WriteLine($"[MMC-TTT-V2.5] {source} -> {target}" + (MpaiDiag.Enabled ? $": \"{sourceText}\" -> \"{translated}\"" : ""));
 
             return BasicTextObject.FromText(
                 translated,

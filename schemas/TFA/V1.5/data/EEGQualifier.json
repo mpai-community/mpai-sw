@@ -1,0 +1,26 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/TFA/V1.5/data/EEGQualifier.json",
+  "title":                  "EEG Qualifier V1.5",
+  "description":            "Qualifier for EEG/MEG content specifying subtype, format, and optional attributes.",
+  "type":                   "object",
+  "required":               [ "Header", "EEGQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties":   false,
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "TFA-EEQ-V1.5" },
+    "MInstanceID":          { "type": "string" },
+    "UEnvironmentID":       { "type": "string" },
+    "EEGQualifierID":       { "type": "string" },
+    "EEGQualifierTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":              { "type": "object", "additionalProperties": false, "properties": {
+      "SignalType":         { "type": "string", "enum": [ "EEG", "MEG" ] } } },
+
+    "Formats":               { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":      { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/EEGContentFormats.json" } } },
+
+    "Attributes":           { "type": "object", "additionalProperties": true,
+                              "description": "Optional attributes such as samplingRate or electrodeLayout." },
+
+    "DataXMData":     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":  { "type": "string", "maxLength": 2048 } } }

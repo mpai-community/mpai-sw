@@ -1,0 +1,40 @@
+{ "$schema":                          "https://json-schema.org/draft/2020-12/schema",
+  "$id":                              "https://schemas.mpai.community/PAF/V1.6/data/Avatar.json",
+  "title":                            "Avatar V1.6",
+  "type":                             "object",
+  "required":                         [ "Header", "AvatarID" ],
+  "properties":                       {
+
+    "Header":                         { "type": "string", "const": "PAF-AVT-V1.6" },
+    "MInstanceID":                    { "type": "string" },
+    "UEnvironmentID":                 { "type": "string" },
+    "AvatarID":                       { "type": "string" },
+    "AvatarSpaceTime":                { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" },
+
+    "AvatarData":                     { "type": "object", "properties": {
+
+      "ModelOrModelID":               { "type": "array", "items": { "anyOf": [
+                                      { "type": "object", "properties": {
+        "3DModel":                    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/3DModelObject.json" } } },
+                                      { "type": "object", "properties": {
+        "3DModelID":                  { "type": "string" } } } ] } },
+
+      "SpeechObjectOrSpeechObjectID": { "type": "array", "items": { "anyOf": [
+                                      { "type": "object", "properties": {
+        "SpeechObject":               { "anyOf": [ { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BasicSpeechObject.json" }, { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpeechObject.json" } ] } } },
+                                      { "type": "object", "properties": {
+        "SpeechObjectID":             { "type": "string" } } } ] } },
+
+      "BodyDescriptorsObject":        { "$ref": "https://schemas.mpai.community/PAF/V1.6/data/BodyDescriptorsObject.json" },
+
+      "FaceDescriptorsObject":        { "$ref": "https://schemas.mpai.community/PAF/V1.6/data/FaceDescriptorsObject.json" },
+
+      "Accessories":                  { "type": "array", "minItems": 1, "items": { "type": "object",
+                                        "additionalProperties": false, "required": [ "Accessory" ], "properties": {
+        "Accessory":                  { "$ref": "https://schemas.mpai.community/PAF/V1.6/data/Accessory.json" },
+        "AccessorySpaceTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SpaceTime.json" } } } },
+
+      "ProcessID":                    { "type": "string" } } },
+
+    "DataXMData":                     { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                  { "type": "string", "maxLength": 2048 } } }

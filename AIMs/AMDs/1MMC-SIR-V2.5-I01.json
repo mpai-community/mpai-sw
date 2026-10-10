@@ -1,0 +1,29 @@
+{ "Identifier":       {"ImplementerID": "1", "ImplementationID": "MMC-SIR-V2.5-I01", "AIMName": "1MMC-SIR-V2.5-I01"},
+  "Header":           "MMC-SIR-V2.5",
+
+  "APIProfile":       "Basic",
+  "Description":      "Speaker Identity Recognition: receives a Basic Speech Object, which carries the time it was acquired, and, optionally, the Basic Audio Scene Descriptors of the scene it was isolated from; matches the speaker against the Subject Gallery held in Shared Storage; and returns the speaker identity as an Instance Identifier - the coarse \"speech\" layer when nobody matches, so that an identity is always returned for the speech received. The audio counterpart of Face Identity Recognition.",
+
+  "InternalTypes":    [],
+
+  "ExternalPorts":    [{"Name": "BasicSpeechObject",          "Direction": "Input",  "DataType": "OSD-BSO-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "AudioSceneDescriptors", "Direction": "Input",  "DataType": "OSD-BAS-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                       {"Name": "SpeakerID",             "Direction": "Output", "DataType": "OSD-IID-V1.5",                     "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":          [],
+
+  "Topology":         [],
+
+  "Implementations":  [{"ImplementationURI": "https://github.com/mpai-community/mpai-sw/tree/main/AIMs/MMC/V2.5/SIR",
+                        "MASPort":           443,
+                        "BinaryName":        "Mpai.Mmc.Sir",
+                        "Architecture":      "x86-64",
+                        "OperatingSystem":   "Windows",
+                        "Version":           "2.5",
+                        "Source":            "AIMStorage"}],
+
+  "ResourcePolicies": [{"Name": "Memory",    "Minimum": "0.5 GB", "Request": "1 GB",   "Maximum": "2 GB"},
+                       {"Name": "CPU:Class", "Minimum": "Low",    "Request": "Medium", "Maximum": "High"}],
+
+  "DataXMData":       {},
+  "Documentation":    [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-mmc/v2-5/"}]}

@@ -1,0 +1,20 @@
+# The MAS Service: MAS-App and its Apps, their AIMs and models. On loopback only: the
+# browser client's host, on this machine, is what the network reaches.
+[Unit]
+Description=MPAI-MAS - the MAS Service
+After=network.target mpai-ollama.service
+Wants=mpai-ollama.service
+
+[Service]
+User=mpai
+WorkingDirectory=/opt/mpai
+# The ONNX models: auto - on the GPU where the Service was packaged with MPAI_GPU=1 and
+# CUDA 13 and cuDNN 9 are installed, on the CPU otherwise; cuda - the GPU or fail; cpu.
+Environment=MPAI_ONNX_DEVICE=auto
+# The Service answers a few turns of each App before listening (WarmUp.cs), so that the
+# first person's first question is as fast as the next; it listens a little later.
+ExecStart=/opt/mpai/service/MasService /opt/mpai/mas-server.json
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

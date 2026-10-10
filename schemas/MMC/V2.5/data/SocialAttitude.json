@@ -7,6 +7,7 @@
   "additionalProperties":     false,
   "properties":               {
 
+    "Confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "How likely it is that the Social Attitude is the one the Entity has; Degree is its intensity." },
     "Header":                 { "type": "string", "const": "MMC-ESA-V2.5" },
     "MInstanceID":            { "type": "string" },
     "UEnvironmentID":         { "type": "string" },

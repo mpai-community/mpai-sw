@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 using Mpai.Core;
 
@@ -23,11 +24,13 @@ namespace Mpai.Core.OSD;
 //  might hold a BAS + a BVS + a BLS, aligned, so "this face" (visual) and
 //  "this voice direction" (audio) are registered to the same space.
 //
-//  RECURSIVE: a BMS entry may itself be a BMS (which in turn groups, say, a
-//  BUS + a BSS). So the entry's scene reference includes BMS among its options.
+//  NOT RECURSIVE (the author, 2026/10/02): a BMS holds Basic Scenes only, of
+//  any medium, none required but at least one; a BMS is not nested in another
+//  - that is the Audio-Visual Scene Descriptors (MSD) - and a Basic Object is
+//  not a member.
 //
-//  The schema's per-entry choice is anyOf[ the modality Basic scenes | BMS |
-//  an ID string ]. Following the same simplification used by the audio/visual
+//  The schema's per-entry choice is anyOf[ the modality Basic Scenes | an ID
+//  string ]. Following the same simplification used by the audio/visual
 //  scene types, the C# entry carries a single nullable object reference to the
 //  contained scene (its concrete BXS type checked at use), not a strict
 //  discriminated union - since the modality Basic-scene types share no common
@@ -44,12 +47,24 @@ public sealed class BasicAudioVisualSceneDescriptors
     // The common reference frame for all contained modality scenes.
     public SpaceTime? BAVSDescriptorsSpaceTime { get; init; }
 
+    // Where the Scene is heard and seen from, the Closed Space (OSD-CSP) it is
+    // in, and the Scene part of the Acoustic Profile - optional, added 2026/10/02
+    // so that a BMS can hold speech and audio together for CAE-ASM.
+    public PointOfView? UserPoV { get; init; }
+    public JsonArray? ClosedSpace { get; init; }
+    public AcousticProfile? AcousticProfile { get; init; }
+
     public double? GravityValue { get; init; }
 
     public int AVObjectCount { get; init; }
 
-    // Named "...Data" to match the schema property BasicAVSceneDescriptorsData.
-    public List<BasicAVSceneEntry> BasicAVSceneDescriptorsData { get; init; } = new();
+    // Named "...Data" to match the schema property BasicAVSceneDescriptorsData. Null
+    // when the Scene holds only Objects: the schema wants it absent rather than empty.
+    public List<BasicAVSceneEntry>? BasicAVSceneDescriptorsData { get; init; } = new();
+
+    // The Basic Objects placed in the Scene directly, of any medium (the author,
+    // 2026/10/05: BME integrates objects and scenes). Null when there are none.
+    public List<BasicAVObjectEntry>? BasicObjectsData { get; init; }
 
     // OPTIONAL alignment layer (populated by the OSD-AVA AIM, absent in the
     // degenerate composition-only BMS). Each element combines the constituent
@@ -69,12 +84,24 @@ public sealed class BasicAVSceneEntry
     // frame. Required - it is what keeps the fused modalities registered.
     public SpaceTime BXSSpaceTime { get; init; } = new();
 
-    // The contained Basic Scene Descriptor (BAS / BVS / BSS / B3S / BLS / BRS /
-    // BUS / BOS), or a nested BasicAudioVisualSceneDescriptors (recursion), or
-    // an ID string referencing one in the Repository. Typed as object because
-    // these share no common base type (all Basic, no hierarchy); the concrete
-    // type is checked at use (e.g. `entry.BXSOrBXSID is BasicAudioSceneDescriptors`).
+    // Where this member is heard and seen from; absent, the Scene's UserPoV.
+    public PointOfView? UserPoV { get; init; }
+
+    // The contained Basic Scene Descriptors (BAS / BSS / BVS / B3S / BLS / BRS /
+    // BUS / BOS), or its ID string. Typed as object because these share no
+    // common base type (all Basic, no hierarchy); the concrete type is checked
+    // at use (e.g. `entry.BXSOrBXSID is BasicAudioSceneDescriptors`).
     public object? BXSOrBXSID { get; init; }
+}
+
+// A Basic Object placed in a Basic Multimodal Scene directly: its placement in the
+// common frame, where it is heard and seen from, and the Object (BAO / BVO / BSO /
+// B3O / BLO / BRO / BUO / BOO) or its ID string.
+public sealed class BasicAVObjectEntry
+{
+    public SpaceTime BXOSpaceTime { get; init; } = new();
+    public PointOfView? UserPoV { get; init; }
+    public object? BXOOrBXOID { get; init; }
 }
 
 // ---------------------------------------------------------------------------
@@ -96,6 +123,12 @@ public sealed class AlignedMMObject
     // Optional consensus attitude of the fused entity. Does NOT replace the
     // constituents' own PointOfViews (those stay on the original scene entries).
     public PointOfView? AlignmentPointOfView { get; init; }
+
+    // How likely it is that the constituents are the same entity, [0, 1]; e.g. a
+    // horn heard by a microphone array of limited accuracy, aligned to a car. Two
+    // alignments competing for one constituent each carry their own. Optional, as
+    // every Confidence (the author, 2026/10/03).
+    public double? Confidence { get; init; }
 
     // The constituent objects fused into this entity (audio + visual, extensible),
     // or their id-string references. At least one; typically two.

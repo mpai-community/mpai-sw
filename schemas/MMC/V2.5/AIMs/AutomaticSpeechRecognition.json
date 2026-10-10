@@ -6,13 +6,15 @@
 
   "InternalTypes":   [ ],
 
-  "ExternalPorts":   [{"Name": "LanguageSelector",  "Direction": "Input",  "DataType": "OSD-SEL-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "AuxiliaryText",     "Direction": "Input",  "DataType": "OSD-TXO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "SpeakerID",         "Direction": "Input",  "DataType": "OSD-IID-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "SpeechOverlap",     "Direction": "Input",  "DataType": "MMC-SOL-V2.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "SpeakerTime",       "Direction": "Input",  "DataType": "OSD-TIM-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "RecognisedText",    "Direction": "Output", "DataType": "OSD-TXO-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""},
-                     {"Name": "SpeechDescriptors", "Direction": "Output", "DataType": "OSD-SPD-V1.5",                     "Technology": "", "Protocol": "", "IsRemote": ""}],
+  "ExternalPorts":   [{"Name": "LanguageSelector",  "Direction": "Input",  "DataType": "OSD-SEL-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "AuxiliaryText",     "Direction": "Input",  "DataType": "OSD-TXO-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeakerID",         "Direction": "Input",  "DataType": "OSD-IID-V1.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechOverlap",     "Direction": "Input",  "DataType": "MMC-SOL-V2.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "RecognisedText",    "Direction": "Output", "DataType": ["OSD-BTO-V1.5", "OSD-TXO-V1.5"], "PortNumber": 1,                     "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "SpeechDescriptors", "Direction": "Output", "DataType": "MMC-SDO-V2.5",                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "ImageSpeech",       "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "PortNumber": 1,                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "ResponseSpeech",    "Direction": "Input",  "DataType": "OSD-BSO-V1.5", "PortNumber": 2,                   "IsOptional": true, "Technology": "", "Protocol": "", "IsRemote": ""},
+                     {"Name": "TextQuestion",      "Direction": "Output", "DataType": "OSD-BTO-V1.5", "PortNumber": 2,                                       "Technology": "", "Protocol": "", "IsRemote": ""}],
 
   "SubAIMs":         [ ],
 
@@ -28,11 +30,11 @@
                         "Source":           "/* AIMStorage | MPAIStore */",
                         "Destination":      "/* provided by implementer */" }],
 
-  "ResourcePolicies":[{ "Name": "Memory"              , "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
-                      { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "CPU:Class"           , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
-                      { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
-                      { "Name": "GPU:CUDA:Class"      , "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+  "ResourcePolicies":[{ "Name": "Memory",               "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
+                      { "Name": "CPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "CPU:Class",            "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
+                      { "Name": "GPU:Number",           "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer */" },
+                      { "Name": "GPU:CUDA:Class",       "Minimum": "/* string */",         "Maximum": "/* string */",         "Request": "/* string */" },
                       { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* GB */",             "Maximum": "/* GB */",             "Request": "/* GB */" },
                       { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* GB/s */",           "Maximum": "/* GB/s */",           "Request": "/* GB/s */" } ],
 

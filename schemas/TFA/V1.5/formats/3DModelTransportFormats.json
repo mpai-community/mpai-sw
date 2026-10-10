@@ -1,0 +1,23 @@
+{ "$schema":  "https://json-schema.org/draft/2020-12/schema",
+  "$id":      "https://schemas.mpai.community/TFA/V1.5/formats/3DModelTransportFormats.json",
+  "title":    "3D Model Transport Formats V1.5",
+  "type": "string", "oneOf": [
+    { "const": "DASH", "description": "Dynamic Adaptive Streaming over HTTP for adaptive delivery of media content." },
+
+    { "const": "HLS", "description": "HTTP Live Streaming protocol for adaptive media streaming." },
+
+    { "const": "MPEG-I OMAF", "description": "MPEG-I Omnidirectional Media Application Format for immersive media delivery." },
+
+    { "const": "WebRTC", "description": "Real-time communication protocol enabling low-latency peer-to-peer streaming of media and data." },
+
+    { "const": "WebSocket", "description": "Persistent full-duplex communication protocol widely used for real-time avatar and animation data streaming." },
+
+    { "const": "RTSP", "description": "Real Time Streaming Protocol used for controlling streaming media sessions." },
+
+    { "const": "HTTP Progressive", "description": "Progressive download of content over HTTP." },
+
+    { "const": "gRPC", "description": "Remote procedure call framework enabling efficient streaming of structured data using Protocol Buffers." },
+
+    { "const": "MQTT", "description": "Lightweight publish-subscribe messaging protocol used for distributed and real-time systems." },
+
+    { "const": "QUIC", "description": "Transport protocol over UDP providing low-latency, multiplexed connections, used as a foundation for modern streaming protocols." } ] }

@@ -1,0 +1,25 @@
+{ "$id":                      "https://schemas.mpai.community/TFA/V1.5/data/BodyDescriptorsQualifier.json",
+  "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "title":                    "Body Descriptors Qualifier V1.5",
+  "description":              "Qualifier describing subtypes, format, and attributes of body descriptors.",
+  "type":                     "object",
+  "required":                 [ "Header", "BodyDescriptorsQualifierID", "Format" ],
+  "additionalProperties":     false,
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "TFA-BDQ-V1.5" },
+    "MInstanceID":            { "type": "string" },
+    "UEnvironmentID":         { "type": "string" },
+    "BodyDescriptorsQualifierID":{ "type": "string" },
+    "BodyDescriptorsQualifierTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubType":                { "type": "object", "additionalProperties": false },
+
+    "Format":                 { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":        { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/BodyDescriptorsContentFormats.json" } } },
+
+    "Attributes":             { "type": "object", "additionalProperties": false },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048 } } }
+

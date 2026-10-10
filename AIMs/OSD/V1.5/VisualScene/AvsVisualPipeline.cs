@@ -25,7 +25,7 @@ namespace Mpai.Osd.VisualScene;
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 //  FUTURE INPUT (reference model, not yet in the system): AVS is also to
-//  receive the PREVIOUS cycle's Full Environment Descriptors (CAV-FED-V1.1)
+//  receive the PREVIOUS cycle's Full Environment Descriptors (CAV-FED-V2.0)
 //  as prior context - FED(t-1) -> AVS(t) - to inform the current scene
 //  description (temporal continuity, tracking, disambiguation).
 //
@@ -34,7 +34,7 @@ namespace Mpai.Osd.VisualScene;
 //  MPAI-PTF Data Exchange Metadata (DataXMData -> PTF/V1.0): it is external,
 //  provenance/authorisation/confidence-checked data, to be trust-evaluated,
 //  NOT treated as HCI-internal state. (FED from a REMOTE CAV crosses the same
-//  way, arriving in the Ego-Remote HCI Message (CAV-ERH-V1.1), also PTF-borne.)
+//  way, arriving in the Ego-Remote HCI Message (CAV-ERH-V2.0), also PTF-borne.)
 //
 //  Depends on: fused AudioVisualSceneDescriptors (OSD-BMS) and the FED type,
 //  neither of which exists yet. Add when those are built.
@@ -84,12 +84,17 @@ public sealed class AvsVisualPipeline
                 // whole source image is carried; EXTENSION POINT: crop to the
                 // face box so FIR receives just the face region.
                 VObjectIDOrVObject = visual,
-                PointOfView = new PointOfView
+                // Where the face is: bearing only (r unknown without depth),
+                // (r=0, phi=azimuth, theta=elevation), until LiDAR fusion
+                // supplies depth.
+                VisualObjectSpaceTime = new SpaceTime
                 {
-                    PointOfViewID = Guid.NewGuid().ToString(),
-                    // Bearing only (r unknown without depth): (r=0, phi=azimuth, theta=elevation).
-                    SpherPosition = new double[] { 0.0, azimuth, elevation }
-                    // CartPosition left at origin until LiDAR fusion supplies depth.
+                    SpaceTimeID = Guid.NewGuid().ToString(),
+                    SpatialAttitude1 = new SpatialAttitude
+                    {
+                        ObjectSpatialAttitudeID = Guid.NewGuid().ToString(),
+                        Position = new Position { PositionID = Guid.NewGuid().ToString(), SpherPosition = new double[] { 0.0, azimuth, elevation } }
+                    }
                 }
             });
         }
@@ -98,6 +103,8 @@ public sealed class AvsVisualPipeline
         {
             BasicVisualSceneDescriptorsID = Guid.NewGuid().ToString(),
             VisualObjectCount = entries.Count,
+            // The camera's place is not known here: at the origin, looking ahead.
+            UserPoV = new PointOfView { PointOfViewID = "camera" },
             BasicVisualSceneDescriptorsEntries = entries
             // EXTENSION POINTs: crop each face to its own BasicVisualObject;
             // add body detection (also valid OSD-BVS objects); fuse with the

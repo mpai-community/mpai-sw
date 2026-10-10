@@ -1,0 +1,72 @@
+{ "$schema":                         "https://json-schema.org/draft/2020-12/schema",
+  "$id":                             "https://schemas.mpai.community/TFA/V1.5/data/AudioVisualQualifier.json",
+  "title":                           "AudioVisual Qualifier V1.5",
+  "description":                     "Specifies Sub-Type, Content and Transport Formats for audio-visual (AV) data.",
+  "type":                            "object",
+  "additionalProperties":            false,
+  "required":                        ["Header", "AudioVisualQualifierID", "SubTypes", "Formats"],
+  "properties":                      {
+
+    "Header":                        { "type": "string", "const": "TFA-AVQ-V1.5" },
+    "MInstanceID":                   { "type": "string" },
+    "UEnvironmentID":                { "type": "string" },
+    "AudioVisualQualifierID":        { "type": "string" },
+    "AudioVisualQualifierTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":                       { "type": "object" },
+
+    "Formats":                        { "type": "object", "additionalProperties": false, "properties": {
+
+      "Content":                     { "type": "object", "additionalProperties": false, "properties": {
+
+        "3DModelFormatContent":      {  "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/3DModelContentFormats.json" },
+
+        "SpeechFormatContent":       { "type": "object", "additionalProperties": false, "properties": {
+          "RawData":                 { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json" },
+          "OtherContentFormats":     { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/SpeechContentFormats.json" } } },
+
+        "AudioFormatContent":        { "type": "object", "additionalProperties": false, "properties": {
+          "RawData":                 { "type": "object", "additionalProperties": false, "properties": {
+            "SampleSpace":           { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/PCM.json" },
+            "TransformSpace":        { "type": "object", "additionalProperties": false, "properties": {
+              "Sequence":            { "type": "string", "enum": ["Sequential", "Interleaved"] },
+              "Precision":           { "type": "string", "enum": ["float32", "float64"] } } },
+            "Ambisonics":            { "type": "string", "enum": [ "1storder", "2ndorder", "3rdorder", "4thorder", "5thorder", "6thorder", "7thorder" ] },
+            "SpherHarmDecompos":     { "type": "object", "additionalProperties": false, "properties": {
+                                                "Precision": { "type": "string", "enum": ["float32", "float64"] } } } } },
+          "OtherContentFormats":     { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioContentFormats.json" } } },
+
+        "VisualFormatContent":       { "type": "object", "additionalProperties": false, "properties": {
+
+          "TimeSampling":            { "type": "object", "additionalProperties": false, "properties": {
+            "Precision":             { "type": "array", "items": { "type": "object", "additionalProperties": false, "properties": {
+                                       "bits-per-pixel": { "type": "integer" } } } },
+            "Time":                  { "type": "number" },
+            "Space":                 { "type": "number" } } },
+
+          "2D":                      { "type": "object", "additionalProperties": false, "properties": {
+            "Static":                { "type": "object", "additionalProperties": false, "properties": {
+              "MPAIContentFormat":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BoundingBox.json" },
+              "OtherContentFormats": { "type": "object", "additionalProperties": false, "properties": { "ContentFormat":
+                                     { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/Visual2DStaticFormats.json" } } } } },
+            "Dynamic":               { "type": "object", "additionalProperties": false, "properties": {
+              "OtherContentFormats": { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/Visual2DDynamicFormats.json" },
+              "MPAIContentFormat":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BoundingBox.json" } } } } },
+
+          "3D":                      { "type": "object", "additionalProperties": false, "properties": {
+            "Static":                { "type": "object", "additionalProperties": false, "properties": {
+              "OtherContentFormats": { "type": "object", "additionalProperties": false, "properties": { "ContentFormat":
+                                     { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/Visual3DStaticFormats.json" } } },
+              "MPAIContentFormat":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BoundingBox.json" } } },
+            "Dynamic":               { "type": "object", "additionalProperties": false, "properties": {
+              "OtherContentFormats": { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/Visual3DDynamicFormats.json" },
+              "MPAIContentFormat":   { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/BoundingBox.json" } } } } } } } } },
+
+      "Transport":                   { "type": "object", "additionalProperties": false, "properties": {
+        "File":                      { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioVisualFileFormats.json" },
+        "Stream":                    { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/AudioVisualStreamFormats.json" } } } } },
+
+    "Attributes":                    { "type": "object", "additionalProperties": false },
+
+    "DataXMData":                    {"$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":                 { "type": "string", "maxLength": 2048 } } }

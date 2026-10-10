@@ -1,0 +1,30 @@
+﻿{
+    "Name": "Access Control",
+    "Description": "Show your face and say a sentence: access is granted if you are registered.",
+    "Icon": "icon.svg",
+    "Pane": "none",
+    "Version": "1.0",
+    "Standard": "MPAI-MMC V2.5",
+    "UseCase": "MAC",
+    "Module": "1MMC-MAC-V2.5-I01",
+    "Keywords": [
+        "access",
+        "control",
+        "recognise",
+        "face",
+        "voice",
+        "identity",
+        "door"
+    ],
+    "Categories": [
+        "Identity"
+    ],
+    "Languages": [
+        "en"
+    ],
+    "Asks": [
+        "camera",
+        "microphone"
+    ],
+    "Keeps": "Nothing: your face and your voice are compared with those registered, and forgotten."
+}

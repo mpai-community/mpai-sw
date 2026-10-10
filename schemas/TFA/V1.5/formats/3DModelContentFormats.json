@@ -1,0 +1,24 @@
+{ "$schema":  "https://json-schema.org/draft/2020-12/schema",
+  "$id":      "https://schemas.mpai.community/TFA/V1.5/formats/3DModelContentFormats.json",
+  "title":    "3D Model Content Formats V1.5",
+  "type":     "string", "oneOf": [
+
+    { "const": "3MF", "description": "3D Manufacturing Format for representing 3D objects with materials and geometry." },
+
+    { "const": "FBX", "description": "Autodesk FBX format supporting meshes, skeletal animation, and production pipelines." },
+
+    { "const": "glTF", "description": "GL Transmission Format optimized for efficient transmission and rendering of 3D scenes." },
+
+    { "const": "GLB", "description": "Binary version of glTF packaging geometry, textures, and animation in a single file, widely used for real-time avatars." },
+
+    { "const": "VRM", "description": "Avatar-specific format based on glTF designed for humanoid characters, including metadata, rigging, and facial expressions." },
+
+    { "const": "OBJ", "description": "Wavefront OBJ format representing static geometry with optional materials." },
+
+    { "const": "PLY", "description": "Polygon File Format storing geometry and associated properties such as color and normals." },
+
+    { "const": "STL", "description": "Stereolithography format representing triangulated surfaces, commonly used in 3D printing." },
+
+    { "const": "USD", "description": "Universal Scene Description format enabling complex scene composition, animation, and interchange." },
+
+    { "const": "USDZ", "description": "Compressed, package-based version of USD optimized for real-time rendering and AR applications (e.g., mobile avatars)." } ] }

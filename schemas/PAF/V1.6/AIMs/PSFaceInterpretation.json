@@ -1,0 +1,27 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$comment":             "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id":                  "https://schemas.mpai.community/PAF/V1.6/AIMs/PSFaceInterpretation.json",
+  "title":                "PS-Face Interpretation V1.6",
+
+  "Header":               "PAF-PFI-V1.6",
+
+  "Identifier":           {"ImplementerID": "/* String assigned by IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "PAF-PFI-V1.6"},
+
+  "APIProfile":           "Basic",
+  "Description":          "This AIM extracts the Face Personal Status from the Face Descriptors Object: the one supplied from outside (Port 1) and the one derived by the Entity Face Description (Port 2).",
+
+  "ExternalPorts":        [{"Name": "FaceDescriptorsObject",       "Direction": "Input",  "DataType": "PAF-FDO-V1.6", "PortNumber": 1, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "EntityFaceDescriptorsObject", "Direction": "Input",  "DataType": "PAF-FDO-V1.6", "PortNumber": 2, "Technology": "Software", "Protocol": "", "IsRemote": false},
+                           {"Name": "FacePersonalStatus",          "Direction": "Output", "DataType": "MMC-FPS-V2.5", "Technology": "Software", "Protocol": "", "IsRemote": false}],
+
+  "SubAIMs":              [ ],
+
+  "Topology":             [ ],
+
+  "Implementations":      [{"BinaryName": "/* provided by implementer */", "Architecture": "/* x86-64 | ARM64 */", "OperatingSystem": "/* Windows | Linux | MacOS */", "Version": "/* implementer version */", "Source": "/* AIMStorage | MPAIStore */", "Destination": "/* provided by implementer */"}],
+
+  "ResourcePolicies":     [ ],
+
+  "DataXMData":           { },
+
+  "Documentation":        [{"Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-paf/v1-6/"}]}

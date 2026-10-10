@@ -79,8 +79,10 @@ public sealed class PiperTtsAim : ITtsAim
     // Primary language code -> voice. Empty when built with a single voice.
     private readonly IReadOnlyDictionary<string, PiperVoice> _voices;
 
+    // ONE TTS SERVES EVERY CLIENT AND EVERY MODULE. The Controller retains this
+    // AIM and shares it, so a call's prosody travels as a parameter, never in a
+    // field another call could overwrite mid-synthesis.
     private readonly HashSet<string> _warned = new();
-    private string _prosodyArgs = "";
 
     public PiperTtsAim(IMpaiTtsV1 piper, PiperVoiceProfile voice)
         : this(piper, voice, new Dictionary<string, PiperVoice>())
@@ -105,7 +107,7 @@ public sealed class PiperTtsAim : ITtsAim
     // Status by the AIF processor. Empty => neutral synthesis (unchanged).
     public async Task<BasicSpeechObject> ProcessAsync(BasicTextObject text, string prosodyArgs)
     {
-        _prosodyArgs = prosodyArgs ?? "";
+        prosodyArgs ??= "";
         var selected = SelectVoice(text);
 
         // A voice can fail where the translation succeeded - an installed piper
@@ -119,7 +121,7 @@ public sealed class PiperTtsAim : ITtsAim
         // delivers Output Text, and the log says why nothing was spoken.
         try
         {
-            return await SynthesiseAsync(text, selected);
+            return await SynthesiseAsync(text, selected, prosodyArgs);
         }
         catch (Exception failure)
         {
@@ -136,7 +138,7 @@ public sealed class PiperTtsAim : ITtsAim
             try
             {
                 Console.WriteLine("[MMC-TTS-V2.5] falling back to the default voice.");
-                return await SynthesiseAsync(text, fallback);
+                return await SynthesiseAsync(text, fallback, prosodyArgs);
             }
             catch (Exception failure)
             {
@@ -151,10 +153,10 @@ public sealed class PiperTtsAim : ITtsAim
             BuildSpeechQualifier(text, _voice));
     }
 
-    private async Task<BasicSpeechObject> SynthesiseAsync(BasicTextObject text, PiperVoice voice)
+    private async Task<BasicSpeechObject> SynthesiseAsync(BasicTextObject text, PiperVoice voice, string prosodyArgs)
     {
         // Synthesise: Piper produces WAV bytes from the inline text.
-        var wav = await voice.Engine.GenerateAsync(text.GetText(), _prosodyArgs);
+        var wav = await voice.Engine.GenerateAsync(text.GetText(), prosodyArgs);
 
         // Build the output Speech Qualifier and attach it to the Basic Speech Object.
         var qualifier = BuildSpeechQualifier(text, voice.Profile);
@@ -183,7 +185,9 @@ public sealed class PiperTtsAim : ITtsAim
 
         // Speaking Italian text in an English voice is a defect, not a detail.
         // Say so once per language rather than let it pass unnoticed.
-        if (_warned.Add(requested))
+        bool first;
+        lock (_warned) first = _warned.Add(requested);
+        if (first)
         {
             Console.WriteLine(
                 $"[MMC-TTS-V2.5] no voice configured for language '{requested}'; " +
