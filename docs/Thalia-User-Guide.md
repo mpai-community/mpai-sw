@@ -1,11 +1,13 @@
-# MAS-App - User Guide
+# Thalia - User Guide
 
-MAS-App is a **Service** offering four AI applications - MAD, AMQ, MAT and MPD -
-and two **clients** to use them with: one for the Windows desktop, one for a web
-browser. This guide explains how to install it, start it and use it.
+Thalia is the avatar of **MPAI as a Service**. A **Service** offers AI applications
+- MAD, AMQ, MAT and MPD - and a **client** in your web browser shows Thalia, a 3-D
+Speaking Avatar who listens, looks, answers and shows expression. This guide
+explains how to install Thalia on your computer, start her and use her.
 
-For what the software is, see [MPAI Software](MPAI-Software.md). For how it is
-built, see the [Developer Guide](MAS-App-Developer.md).
+If you want to build your own Thalia, or change what she does, read the
+[Technical Guide](Thalia-Technical-Guide.md). The AI models she needs are listed,
+with where to download them, in [Thalia - Models](Thalia-Models.md).
 
 ---
 
@@ -20,14 +22,14 @@ built, see the [Developer Guide](MAS-App-Developer.md).
   ollama pull llama3.2:3b
   ```
 - **A microphone and speakers.** For MPD, also **a webcam**.
-- **For the browser client:** Microsoft Edge or Google Chrome.
+- **A browser:** Microsoft Edge or Google Chrome.
 - **The AI models**, placed under `Models\` in the folder where you put the
   software (section 2).
 
 ## 2. The models
 
 The models are not in the repository. Obtain each from its source - listed, with
-its size and SHA-256, in [MAS-App - Models](MAS-App-Models.md) - and place it under
+its size and SHA-256, in [Thalia - Models](Thalia-Models.md) - and place it under
 `Models\` at the path the settings file (`AIMs\aim-settings.json`) names:
 
 | Used for | Files under `Models\` | Needed by |
@@ -65,8 +67,8 @@ add to it may be relative; it is then taken from the folder of the software:
 
 ## 4. Starting it
 
-Use one PowerShell window for each program, in the folder where you put the
-software.
+Use one PowerShell window for each of the two programs, in the folder where you put
+the software.
 
 **Window 1 - the Service.** Start it first, and wait: loading the models takes a
 minute or two.
@@ -77,20 +79,14 @@ It is ready when it prints `[MAS] Listening on https://localhost:5105/`. Above
 that it lists the Modules it loaded, the four Apps, and the Data Types it
 carries.
 
-Then start either client, or both.
+Then start the browser client.
 
-**Window 2 - the browser client.**
+**Window 2 - the browser client.** It serves Thalia's page.
 ```
 dotnet run --project UserAgent\Clients\Browser\Host\RcaWeb.Host.csproj -- --Service https://localhost:5105/ --Urls https://localhost:5010
 ```
 Open `https://localhost:5010` in Edge or Chrome and press **Start**. The browser
 asks to use the microphone - allow it.
-
-**Window 3 - the desktop client.**
-```
-dotnet run --project UserAgent\Clients\Desktop\src\RcaApp.csproj
-```
-It opens its own window with the avatar.
 
 To stop a program, press **Ctrl+C** in its window.
 
@@ -109,7 +105,7 @@ conversation, and forgets it when you stop the App.
 
 **AMQ - questions about a picture.** She asks whether you want to ask about a
 picture; answer yes or no. Then press **Choose a picture...** (in the browser)
-or pick a file (on the desktop), and ask your question. She answers aloud and
+and pick a picture file or take one with the camera, and ask your question. She answers aloud and
 shows the answer. Answer no to finish.
 
 **MAT - translation.** Choose the input and the output language, then speak or

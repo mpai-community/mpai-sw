@@ -1,0 +1,5 @@
+# docs
+
+- [Thalia - User Guide](Thalia-User-Guide.md): to install, start and use Thalia.
+- [Thalia - Technical Guide](Thalia-Technical-Guide.md): to build your own Thalia, change it or add an App.
+- [Thalia - Models](Thalia-Models.md): the AI models Thalia needs, with where to download each.

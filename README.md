@@ -4,10 +4,9 @@ Reference software for the standards of MPAI - Moving Picture, Audio and Data
 Coding by Artificial Intelligence (<https://mpai.community>). Contact:
 secretariat@mpai.community. Licence: BSD-3-Clause (see `LICENSE`).
 
-This repository holds one application, **MAS-App**: a Service that offers four
-AI applications over the network, and two clients - one for the desktop, one
-for the browser - through which a person uses them. Every application presents
-a 3-D Speaking Avatar that listens, looks, answers and shows expression.
+This repository holds **Thalia**, the avatar of MPAI as a Service: a **Service** that offers AI
+applications over the network, and a **client** in your web browser through which a person uses them. Every
+application presents a 3-D Speaking Avatar that listens, looks, answers and shows expression.
 
 | App | Name | What it does |
 |---|---|---|
@@ -15,10 +14,14 @@ a 3-D Speaking Avatar that listens, looks, answers and shows expression.
 | **AMQ** | Multimodal Question Answering | Show a picture, ask about it, and the avatar answers. |
 | **MAT** | Multimodal Translation | Speak or type in one language; the avatar says it in another. |
 | **MPD** | Multimodal Affective Dialogue | A conversation in which the avatar reads your words, voice and face and answers with feeling. |
+| **MAC**, **ACR** | Access Control, Access Registration | Registering a person, and recognising them, by face and voice. |
 
-- **To install and use it:** [MAS-App User Guide](docs/MAS-App-User.md)
-- **To build on it:** [MAS-App Developer Guide](docs/MAS-App-Developer.md)
-- **The AI models it needs:** [MAS-App - Models](docs/MAS-App-Models.md)
+## Which guide to read
+
+- **To use Thalia:** the [User Guide](docs/Thalia-User-Guide.md) - install her on your computer, start her and talk to her.
+- **To build your own Thalia:** the [Technical Guide](docs/Thalia-Technical-Guide.md) - how she is built, how to build and run
+  the software, how to change it or add an App. The AI models she needs, and where to download each, are in
+  [Thalia - Models](docs/Thalia-Models.md).
 
 ## The standards it implements
 
@@ -60,10 +63,10 @@ icon. The work is done by the Module on the Service.
 | `AIF/` | The AI Framework: the Controller, the Store of L3s, the Metadata and PortData checks, Shared Storage, Trust. |
 | `AIMs/` | The AIMs (`MMC`, `OSD`, `PAF`, `HCI`, `Onnx`), the shared data types (`Core/`), the providers that build each Module's AIMs (`Providers/`), the L3s (`AMDs/`) and the settings (`aim-settings.json`). |
 | `MAS/` | The MPAI-MAS **Service** (`Service/`) and the library it is made of (`Server/`), with the scripts to install it on Linux and publish it on Windows. |
-| `UserAgent/` | The clients and what they run: the **desktop client** (`Clients/Desktop`), the **browser client** (`Clients/Browser`), the workflow interpreter (`Rca`, `Wdl`), the avatar library (`UaKit`), the physical layer, the spatial audio renderer, the client's own workflow (`Orchestration/`) and the avatar (`Assets/`). |
+| `UserAgent/` | The person's side: the **browser client** (`Clients/Browser`), the workflow interpreter (`Rca`, `Wdl`), the Controller API across the network (`Remote`), the client's own workflow (`Orchestration/`) and the avatar (`Assets/`). |
 | `Apps/` | One folder per App: its workflow, `app.json` and icon. |
 | `schemas/` | The JSON Schemas of the MPAI Data Types and the L2 metadata of the AIMs. |
-| `docs/` | The User and Developer guides, the models and their provenance. |
+| `docs/` | The User Guide, the Technical Guide, and the list of AI models with where to download each. |
 | `Models/`, `Access/`, `SharedStorage/` | Where the models, the Controller's static data and the governed storage go on your machine. They are not distributed (see below). |
 
 **The folder can be put anywhere.** The software finds its own root by going up
@@ -73,8 +76,8 @@ and nothing in `MAS/Service/mas-server.example.json`, names a drive or a folder.
 ## What is not in the repository
 
 **AI models** are not distributed here. They are obtained separately, by name,
-size, SHA-256 and source, and placed under `Models/` - see
-[MAS-App - Models](docs/MAS-App-Models.md). Nor are there any credentials,
+size, SHA-256 and where to download them, and placed under `Models/` - see
+[Thalia - Models](docs/Thalia-Models.md). Nor are there any credentials,
 certificates, server configurations or personal data.
 
 ## Privacy, by design

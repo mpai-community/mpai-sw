@@ -103,15 +103,5 @@
   },
   "1MMC-ESD-V2.5-I01": {
     "EcapaModel": "/opt/mpai/Models/ecapa-tdnn.onnx"
-  },
-  "1MMC-OCR-V2.5-I01": {
-    "DetModel": "/opt/mpai/Models/OCR/ch_PP-OCRv5_server_det.onnx",
-    "ClsModel": "/opt/mpai/Models/OCR/ch_ppocr_mobile_v2.0_cls_infer.onnx",
-    "RecModel": "/opt/mpai/Models/OCR/latin_PP-OCRv5_rec_mobile_infer.onnx",
-    "KeysFile": "/opt/mpai/Models/OCR/ppocrv5_latin_dict.txt",
-    "SHA256:DetModel": "127EDF0182BB3D218AD59476377B02CA90296CFB4CC85DF55042D671A3E53AEB",
-    "SHA256:ClsModel": "E47ACEDF663230F8863FF1AB0E64DD2D82B838FCEB5957146DAB185A89D6215C",
-    "SHA256:RecModel": "B20BD37C168A570F583AFBC8CD7925603890EFBCDC000A59E22C269D160B5F5A",
-    "SHA256:KeysFile": "7629FFD77277FD4093B556769752EE9F7C881754A8544C79A7C438CD9A93D1E6"
   }
 }

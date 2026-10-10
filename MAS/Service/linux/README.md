@@ -82,7 +82,7 @@ The log shows each turn and its time ("warm-up ..."). `"WarmUp": false` in
 The Service listens on the server's loopback only (`127.0.0.1:5005`): the network
 reaches the client's host, over HTTPS, and the host passes the client's requests on.
 No bearer token is then needed. The Service can also be on a machine of its own,
-reached by the client's host or by desktop clients: see "Other layouts" below.
+reached by the client's host: see "Other layouts" below.
 
 ## Ubuntu 24.04 with an NVIDIA GPU: the repositories
 
@@ -308,10 +308,6 @@ end's trusted certificates). On the front end, install `client/` and
 MPAI_MAS_TOKEN=<the same string>
 ```
 
-**Desktop clients.** The Windows desktop client reaches a Service directly: on each
-PC, set `MPAI_MAS_SERVER=https://<service machine>:5005/` and
-`MPAI_MAS_TOKEN=<the token>`, with the Service listening beyond loopback as above.
-
 **Ollama elsewhere**: set `OllamaUrl`, and leave out `mpai-ollama`.
 
 **In WSL** (as tested): the same, in a folder of the WSL user; WSL forwards the ports
@@ -334,7 +330,6 @@ host with it the four Apps answered.
 Not tested:
 
 - two real machines, and the Service over https;
-- desktop clients reaching a Service on another machine;
 - the systemd units running as services: they were checked with `systemd-analyze
   verify`, and the three programs run with exactly their command lines - but not
   under systemd, nor on port 443 (5443 was used), nor as a `mpai` user;

@@ -17,7 +17,8 @@ Test/Reports/
 
 # governed storage: biometrics / runtime data - NEVER commit. Anchored to the
 # root: AIF/Communication/SharedStorage is source, not data.
-/SharedStorage/
+/SharedStorage/*
+!SharedStorage/README.md
 # Access: the Controller's data, machine-local like Shared Storage.
 /Access/
 TestData/
