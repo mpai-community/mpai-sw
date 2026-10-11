@@ -1,0 +1,37 @@
+{ "$schema":                "https://json-schema.org/draft/2020-12/schema",
+  "$id":                    "https://schemas.mpai.community/CAV2/V2.0/data/MotorResponse.json",
+  "title":                  "Motor Response V2.0",
+  "type":                   "object",
+  "additionalProperties":   false,
+  "required":               [ "Header", "MotorResponseID", "MotorID", "MotorResponseTime", "MotorState" ],
+  "properties":             {
+
+    "Header":               { "type": "string", "const": "CAV-MRP-V2.0", "description": "Motor Response Header – Standard CAV-MRP-Vx.y" },
+    "MInstanceID":          { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Motor Response." },
+    "UEnvironmentID":       { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Motor Response." },
+    "MotorResponseID":      { "type": "string", "description": "Unique identifier of this Motor Response instance." },
+    "MotorResponseTime":    { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Motor Response was produced." },
+
+    "MotorResponseSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Motor Response applies." },
+
+    "MotorID":              { "type": "string", "description": "Identifier of the motor producing this response." },
+    "MotorState":           { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/MotorStates.json", "description": "Operational state of the motor (e.g., active, idle, derated, fault)." },
+
+    "AchievedVelocity":     { "type": "number", "description": "Velocity actually reached at MotorResponseTime (m/s)." },
+    "AchievedTorque":       { "type": "number", "description": "Torque actually delivered by the motor (N·m)." },
+    "AchievedPosition":     { "type": "number", "description": "Shaft or steering position measured at response time (radians or degrees)." },
+    "AchievedAcceleration": { "type": "number", "description": "Acceleration measured at response time (m/s²)." },
+
+    "MotorTemperature":     { "type": "number", "description": "Temperature of motor windings or housing (°C)." },
+    "CurrentDraw":          { "type": "number", "description": "Electrical current drawn by the motor at response time (A)." },
+    "DeratingActive":       { "type": "boolean", "description": "Indicates whether thermal or current derating mode is active." },
+
+    "AnomalyFlags":         { "type": "object", "additionalProperties": false, "description": "Set of flags indicating detected anomalies.", "properties": {
+      "SensorFault":        { "type": "boolean", "description": "Indicates a motor sensor fault." },
+      "Overload":           { "type": "boolean", "description": "Indicates the motor is in an overload condition." },
+      "ThermalWarning":     { "type": "boolean", "description": "Indicates a thermal warning has been triggered." },
+      "UnexpectedBehavior": { "type": "boolean", "description": "Indicates deviation from expected motor behavior." } } },
+
+    "DataXMData":           { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                              "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Motor Response in a trusted data exchange context." },
+    "DescrMetadata":        { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Motor Response (plain text, max 2048 characters)." } } }

@@ -1,0 +1,28 @@
+{ "$schema":        "https://json-schema.org/draft/2020-12/schema",
+  "$id":            "https://schemas.mpai.community/CAV2/V2.0/data/WheelStates.json",
+  "title":          "WheelStates V2.0",
+  "description":    "Enumerates wheel actuator states for CAV Motion Actuation.",
+  "type":           "string",
+  "enum":           [ "Normal", "Hold", "ActiveSteering", "Released", "Stuck", "MechanicalStopReached", "Overheated", "Degraded", "Fault", "Unavailable", 
+                      "Calibration", "SelfTest", "DeratedThermal", "DeratedLoad", "SensorFault", "CommunicationFault", "LowPower", "EmergencyOverride" ],
+
+  "oneOf": [
+    { "const": "Normal",                "description": "Steering actuator operating normally & following commands within expected tolerance." },
+    { "const": "Hold",                  "description": "Actuator holding the wheel at its current angle (e.g., hill-hold stabilisation)." },
+    { "const": "ActiveSteering",        "description": "Actuator actively controlling the wheel angle in response to commands." },
+    { "const": "Released",              "description": "Wheel released with minimal assistive torque applied." },
+    { "const": "Stuck",                 "description": "Wheel cannot move as commanded; mechanical or servo obstruction." },
+    { "const": "MechanicalStopReached", "description": "Wheel angle reached mechanical end-stop; no further movement allowed." },
+    { "const": "Overheated",            "description": "Actuator temperature exceeds rated thermal limits; performance derated." },
+    { "const": "Degraded",              "description": "Reduced operational capability due to subsystem constraints or partial fault." },
+    { "const": "Fault",                 "description": "General actuator or sensor fault requiring inspection or fallback mode." },
+    { "const": "Unavailable",           "description": "Steering actuator unavailable (offline, in maintenance, or non-responsive)." },
+    { "const": "Calibration",           "description": "Actuator performing calibration or alignment procedures." },
+    { "const": "SelfTest",              "description": "Actuator performing startup or periodic diagnostics." },
+    { "const": "DeratedThermal",        "description": "Thermal derating active due to excessive actuator temperature." },
+    { "const": "DeratedLoad",           "description": "Derating active due to high mechanical or steering rack load." },
+    { "const": "SensorFault",           "description": "Fault detected in wheel angle, encoder, or feedback sensors." },
+    { "const": "CommunicationFault",    "description": "Communication between steering controller and actuator is impaired." },
+    { "const": "LowPower",              "description": "Insufficient power supply to support nominal steering behavior." },
+    { "const": "EmergencyOverride",     "description": "Emergency logic temporarily overrides actuator control for safety." } ] }
+

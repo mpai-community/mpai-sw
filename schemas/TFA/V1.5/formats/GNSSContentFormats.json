@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":     "https://schemas.mpai.community/TFA/V1.5/formats/GNSSContentFormats.json",
+  "title":   "GNSS Content Formats V1.5",
+  "type":    "string", "oneOf": [
+    { "const": "GPS",
+      "description": "Global Positioning System (United States), the first and most widely used global GNSS." },
+    { "const": "GLONASS",
+      "description": "Global Navigation Satellite System (Russian Federation), a fully operational global GNSS." },
+    { "const": "Galileo",
+      "description": "European Union global GNSS providing highÃ¢â‚¬â€˜precision civilian positioning services." },
+    { "const": "BeiDou",
+      "description": "Chinese global GNSS (BDS), fully commissioned in 2020 with a 35Ã¢â‚¬â€˜satellite constellation." },
+    { "const": "QZSS",
+      "description": "JapanÃ¢â‚¬â„¢s regional QuasiÃ¢â‚¬â€˜Zenith Satellite System designed to augment GPS in East Asia/Oceania." },
+    { "const": "NavIC",
+      "description": "IndiaÃ¢â‚¬â„¢s IRNSS/NavIC regional navigation system covering India and ~1500 km beyond." } ] }

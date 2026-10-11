@@ -1,0 +1,44 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/CAV2/V2.0/data/MotorCommand.json",
+  "title":                    "Motor Command V2.0",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "MotorCommandID", "MotorID", "MotorCommand" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "CAV-MRC-V2.0", "description": "Motor Command Header – Standard CAV-MRC-Vx.y" },
+    "MInstanceID":            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Motor Command." },
+    "UEnvironmentID":         { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Motor Command." },
+    "MotorCommandID":         { "type": "string", "description": "Unique identifier of this Motor Command instance." },
+    "MotorCommandTime":       { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Motor Command was produced." },
+
+    "MotorCommandSpaceTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Motor Command applies." },
+
+    "MotorID":                { "type": "string", "description": "Identifier of the motor to which this command is addressed." },
+
+    "MotorCommand":           { "type": "object", "additionalProperties": false, "required": [ "ControlMode", "MotorCommandTime" ], "description": "Set of Motor Command parameters.", "properties": {
+      "ControlMode":          { "type": "string", "enum": [ "velocity", "torque", "position", "acceleration" ], "description": "Specifies which control modality is active." },
+      "MotorCommandTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time interval during which the command shall be applied." },
+      "TargetVelocity":       { "type": "number", "description": "Target motor output velocity (m/s). Valid when ControlMode = velocity." },
+      "TargetTorque":         { "type": "number", "description": "Target motor torque (N·m). Valid when ControlMode = torque." },
+      "TargetPosition":       { "type": "number", "description": "Target shaft or steering position (radians or degrees). Valid when ControlMode = position." },
+      "TargetAcceleration":   { "type": "number", "description": "Target acceleration (m/s²). Valid when ControlMode = acceleration." },
+      "ControlProfile":       { "type": "array", "description": "Optional multi-phase actuation profile (ramp-up, hold, ramp-down).",
+                                "items": { "type": "object", "additionalProperties": false, "required": [ "Phase", "Duration" ], "properties": {
+        "Phase":              { "type": "string", "enum": [ "ramp-up", "hold", "ramp-down" ], "description": "Phase of the actuation profile." },
+        "Duration":           { "type": "number", "description": "Duration of this phase in seconds." },
+        "Velocity":           { "type": "number", "description": "Target velocity for this phase (m/s)." },
+        "Torque":             { "type": "number", "description": "Target torque for this phase (N·m)." },
+        "Acceleration":       { "type": "number", "description": "Target acceleration for this phase (m/s²)." } } } },
+      "SafetyLimits":         { "type": "object", "additionalProperties": false, "description": "Optional safety envelope for this command.", "properties": {
+        "MaxCurrent":         { "type": "number", "description": "Maximum allowable motor current (A)." },
+        "MaxTemperature":     { "type": "number", "description": "Maximum allowable motor temperature (°C)." },
+        "MaxTorque":          { "type": "number", "description": "Maximum allowable torque (N·m)." } } },
+      "HealthAwareness":      { "type": "object", "additionalProperties": false, "description": "Optional health-aware parameters for this command.", "properties": {
+        "ThermalDerating":    { "type": "boolean", "description": "Indicates whether thermal derating mode is active." },
+        "ExpectedLoad":       { "type": "number", "description": "Estimated load to be compensated (N·m or kg)." },
+        "MotorStateHint":     { "type": "string", "description": "Optional hint from the motor-health subsystem." } } } } },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Motor Command in a trusted data exchange context." },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Motor Command (plain text, max 2048 characters)." } } }

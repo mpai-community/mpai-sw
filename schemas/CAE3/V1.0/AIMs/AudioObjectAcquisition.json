@@ -1,0 +1,23 @@
+{
+  "Identifier":       {"ImplementerID": "IIDRA-assigned", "ImplementationID": "/* String from Implementer */", "AIMName": "CAE-AOA-V1.0"},
+
+  "Header":           "CAE-AOA-V1.0",
+
+  "APIProfile":       "Basic",
+
+  "Description":      "This AIM acquires an Audio Object from a source. A device yields a Basic Audio Object, because a microphone produces samples and not a composition; a stored source may yield either, because what was stored may already be composed. The output Port therefore accepts both, and the value's Header says which was acquired. The source, not this Port, decides.",
+
+  "ExternalPorts":    [{"Name": "UserCommand", "Direction": "Input", "DataType": "CAE-UCM-V1.0", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "InputAudio", "Direction": "Input", "DataType": "OSD-BAO-V1.5", "PortNumber": 1, "IsOptional": true, "Technology": "Hardware", "Protocol": "", "IsRemote": ""},
+                       {"Name": "StoredAudio", "Direction": "Input", "DataType": ["OSD-BAO-V1.5", "OSD-AUO-V1.5"], "PortNumber": 2, "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": ""},
+                       {"Name": "OutputAudio", "Direction": "Output", "DataType": ["OSD-BAO-V1.5", "OSD-AUO-V1.5"], "Technology": "Software", "Protocol": "", "IsRemote": ""}],
+
+  "Implementations":  [{"ImplementationURI": "/* URI storing Implementation */", "BinaryName": "/* BinaryName */", "Architecture": "/* x86 | x86-64 | ARM | ARM64 | MIPS | RISC-V */", "OperatingSystem": "/* Windows | Linux | MacOS | Debian | Ubuntu | RedHat | Android | Zephyr | RTOS | Oniro | iOS */", "Version": "/* Version */", "Source": "/* AIMStorage | MPAIStore | AIMURL */", "Destination": "/* Destination URI */"}],
+
+  "ResourcePolicies": [{"Name": "Memory", "Minimum": "/* GB */", "Request": "/* GB */", "Maximum": "/* GB */"},
+                       {"Name": "CPU:Class", "Minimum": "/* Low | Medium | High */", "Request": "/* Low | Medium | High */", "Maximum": "/* Low | Medium | High */"}],
+
+  "DataXMData":       {},
+
+  "Documentation":    [{"Type": "Specification", "URI": "https://mpai.community/standards/mpai-cae/"}]
+}

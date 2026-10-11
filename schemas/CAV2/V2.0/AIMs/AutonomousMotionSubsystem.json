@@ -1,0 +1,96 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id": "https://schemas.mpai.community/CAV2/V2.0/AIMs/AutonomousMotionSubsystem.json",
+  "title": "Autonomous Motion Subsystem V2.0",
+
+  "Identifier":   { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-AMS-V2.0" },
+
+  "Header":       "CAV-AMS-V2.0",
+
+  "APIProfile":   "Basic",
+  "Description":  "This AIM enables a CAV to plan and actuate a Route",
+
+  "InternalTypes":  [
+    { "Name": "FullEnvironmentDescriptors", "DataType": "CAV-FED-V2.0" },
+    { "Name": "AMSData"                   , "DataType": "CAV-AMD-V2.0" },
+    { "Name": "Route"                     , "DataType": "CAV-RTE-V2.0" },
+    { "Name": "RouteRequest"              , "DataType": "CAV-INT-V2.0" },
+    { "Name": "RouteResponse"             , "DataType": "CAV-INT-V2.0" },
+    { "Name": "CAVState"                  , "DataType": "CAV-CST-V2.0" },
+    { "Name": "RoadState"                 , "DataType": "CAV-RDS-V2.0" }
+  ],
+
+  "ExternalPorts":  [
+    { "Name": "BasicOfflineMapObject", "Direction": "Input",   "DataType": "OSD-BOO-V1.5",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "BasicEnvironmentDescriptorsEF", "Direction": "Input",   "DataType": "CAV-BED-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "FullEnvironmentDescriptorsEF" , "Direction": "Input",   "DataType": "CAV-FED-V2.0", "PortNumber": 1, "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "FullEnvironmentDescriptorsRF" , "Direction": "Input",   "DataType": "CAV-FED-V2.0", "PortNumber": 2, "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "EgoRemoteAMSMessageRF"        , "Direction": "Input",   "DataType": "CAV-ERA-V2.0", "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": true },
+    { "Name": "AMSHCIMessageHR"              , "Direction": "Input",   "DataType": "CAV-AHM-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "AMSMASMessageMT"              , "Direction": "Input",   "DataType": "CAV-AMM-V2.0", "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "AlertET"                      , "Direction": "Input",   "DataType": "CAV-ALT-V2.0", "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "AMSHCIMessageRH"              , "Direction": "Output",  "DataType": "CAV-AHM-V2.0", "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "EgoRemoteAMSMessageFR"        , "Direction": "Output",  "DataType": "CAV-ERA-V2.0", "IsOptional": true,  "Technology": "Software", "Protocol": "", "IsRemote": true },
+    { "Name": "AMSMASMessageTM"              , "Direction": "Output",  "DataType": "CAV-AMM-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "AMSDataMX"                    , "Direction": "Output",  "DataType": "CAV-AMD-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false }
+  ],
+
+  "SubAIMs":  [
+    { "Identifier": { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-FED-V2.0" } },
+    { "Identifier": { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-RSP-V2.0" } },
+    { "Identifier": { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-TPD-V2.0" } },
+    { "Identifier": { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-AMM-V2.0" } }
+  ],
+
+  "Topology":             [{"Output": {"AIMName": "", "DataType": "OSD-BOO-V1.5"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "OSD-BOO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BOO-V1.5"}, "Input": {"AIMName": "CAV-RSP-V2.0", "DataType": "OSD-BOO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "OSD-BOO-V1.5"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "OSD-BOO-V1.5"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-BED-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-BED-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-FED-V2.0", "PortNumber": 1}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-FED-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-FED-V2.0", "PortNumber": 2}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-FED-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-ERA-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-ERA-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-AHM-V2.0"}, "Input": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-AHM-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-AMM-V2.0"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-AMM-V2.0"}},
+                          {"Output": {"AIMName": "", "DataType": "CAV-ALT-V2.0"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-ALT-V2.0"}},
+                          {"Output": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-AHM-V2.0"}, "Input": {"AIMName": "", "DataType": "CAV-AHM-V2.0"}},
+                          {"Output": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-ERA-V2.0"}, "Input": {"AIMName": "", "DataType": "CAV-ERA-V2.0"}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-AMM-V2.0"}, "Input": {"AIMName": "", "DataType": "CAV-AMM-V2.0"}},
+                          {"Output": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "", "DataType": "CAV-AMD-V2.0"}},
+                          {"Output": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-FED-V2.0"}, "Input": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-FED-V2.0"}},
+                          {"Output": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-FED-V2.0"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-FED-V2.0"}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-INT-V2.0"}, "Input": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-INT-V2.0"}},
+                          {"Output": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-INT-V2.0"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-INT-V2.0"}},
+                          {"Output": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0", "PortNumber": 1}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0", "PortNumber": 2}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-CST-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-CST-V2.0"}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-RDS-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-RDS-V2.0"}},
+                          {"Output": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "CAV-RSP-V2.0", "DataType": "CAV-AMD-V2.0"}},
+                          {"Output": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-AMD-V2.0"}},
+                          {"Output": {"AIMName": "CAV-AMM-V2.0", "DataType": "CAV-AMD-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-AMD-V2.0"}},
+                          {"Output": {"AIMName": "CAV-TPD-V2.0", "DataType": "CAV-FED-V2.0"}, "Input": {"AIMName": "CAV-FED-V2.0", "DataType": "CAV-FED-V2.0"}}],
+
+  "Implementations":  [
+   {
+    "ImplementationURI": "/* URI storing Implementation */",
+    "BinaryName": "/* BinaryName */",
+    "Architecture": "/* x86 | x86-64 | ARM | ARM64 | MIPS | RISC-V */",
+    "OperatingSystem": "/* Windows | Linux | MacOS | Debian | Ubuntu | RedHat | Android | Zephyr | RTOS | Oniro | iOS */",
+    "Version": "/* Version */",
+    "Source": "/* AIMStorage | MPAIStore | AIMURL */",
+    "Destination": "/* Destination URI */"
+   }
+  ],
+
+  "ResourcePolicies":  [
+    { "Name": "Memory"              , "Minimum": "/* GB */",                                                                                                                 "Maximum": "/* GB */",                                                                                                                 "Request": "/* GB */" },
+    { "Name": "CPU:Number"          , "Minimum": "/* integer, 0=all */",                                                                                                     "Maximum": "/* integer, 0=all */",                                                                                                     "Request": "/* integer, 0=all */" },
+    { "Name": "CPU:Class"           , "Minimum": "/* Low | Medium | High */",                                                                                                "Maximum": "/* Low | Medium | High */",                                                                                                "Request": "/* Low | Medium | High */" },
+    { "Name": "GPU:Number"          , "Minimum": "/* integer, 0=all */",                                                                                                     "Maximum": "/* integer, 0=all */",                                                                                                     "Request": "/* integer, 0=all */" },
+    { "Name": "GPU:CUDA:Class"      , "Minimum": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */", "Maximum": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */", "Request": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */" },
+    { "Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */",                                                          "Maximum": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */",                                                          "Request": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */" },
+    { "Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* float_GHz */",                                                                                                          "Maximum": "/* float_GHz */",                                                                                                          "Request": "/* float_GHz */" }
+  ],
+
+  "DataXMData":  { },
+
+  "Documentation":  [{ "Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-cav/" }] }

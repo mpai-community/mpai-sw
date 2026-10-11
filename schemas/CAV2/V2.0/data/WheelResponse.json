@@ -1,0 +1,32 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/CAV2/V2.0/data/WheelResponse.json",
+  "title":                        "Wheel Response V2.0",
+  "description":                  "A Data Type representing the measured state and condition of a specific wheel of the Connected Autonomous Vehicle in response to a steering command.",
+  "type":                         "object",
+  "additionalProperties":         false,
+  "required":                     [ "Header", "WheelResponseID", "WheelID", "WheelResponseTime", "WheelResponse" ],
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "CAV-WHR-V2.0", "description": "Wheel Response Header – Standard CAV-WHR-Vx.y." },
+    "MInstanceID":                { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Wheel Response instance." },
+    "WheelResponseID":            { "type": "string", "description": "Unique identifier of this Wheel Response instance." },
+    "WheelID":                    { "type": "string", "description": "Identifier of the wheel reporting the response." },
+    "WheelResponseTime":          { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Wheel Response instance was produced." },
+
+    "WheelResponse":              { "type": "object", "additionalProperties": false, "required": [ "WheelState", "WheelAngle" ],
+                                    "description": "Set of measured wheel response parameters.", "properties": {
+      "WheelState":               { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/WheelStates.json", "description": "Current state of the wheel." },
+      "WheelAngle":               { "type": "number", "minimum": -90, "maximum": 90, "description": "Measured steering angle in degrees (–90 to +90)." },
+      "SteeringRate":             { "type": "number", "description": "Measured angular steering rate in degrees per second." },
+      "ActuatorLoad":             { "type": "number", "description": "Estimated steering actuator load or torque (Nm)." },
+      "Temperature":              { "type": "number", "description": "Temperature of the steering actuator (°C)." },
+      "AnomalyFlags":             { "type": "object", "additionalProperties": false, "description": "Anomaly flags indicating fault conditions of the steering actuator.", "properties": {
+        "SensorFault":            { "type": "boolean", "description": "Indicates a sensor fault condition." },
+        "MechanicalStopProximity":{ "type": "boolean", "description": "Indicates proximity to the mechanical steering stop." },
+        "Overload":               { "type": "boolean", "description": "Indicates an actuator overload condition." },
+        "UnexpectedBehavior":     { "type": "boolean", "description": "Indicates unexpected steering behaviour." },
+        "CommunicationFault":     { "type": "boolean", "description": "Indicates a communication fault condition." } } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                    "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Wheel Response instance in a trusted data exchange context." },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Wheel Response instance (plain text, max 2048 characters)." } } }

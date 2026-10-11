@@ -1,0 +1,34 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/CAV2/V2.0/data/BrakeCommand.json",
+  "title":                        "Brake Command V2.0",
+  "type":                         "object",
+  "additionalProperties":         false,
+  "required":                     [ "Header", "BrakeCommandID", "BrakeID", "BrakeCommand" ],
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "CAV-BRC-V2.0", "description": "Brake Command Header – Standard CAV-BRC-Vx.y" },
+    "MInstanceID":                { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Brake Command." },
+    "UEnvironmentID":             { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Brake Command." },
+    "BrakeCommandID":             { "type": "string", "description": "Unique identifier of this Brake Command instance." },
+    "BrakeCommandTime":           { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Brake Command was produced." },
+
+    "BrakeCommandSpaceTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Brake Command applies." },
+
+    "BrakeID":                    { "type": "string", "description": "Identifier of the Brake to which this command is addressed." },
+
+    "BrakeCommand":               { "type": "array", "minItems": 1, "description": "Set of braking command parameters.", "items": { 
+                                    "type": "object", "additionalProperties": false, "required": [ "TargetVelocity", "BrakeCommandTime" ], "properties": {
+      "TargetVelocity":           { "type": "number", "description": "Expected velocity (m/s) at the end of BrakeCommandTime." },
+      "BrakeCommandTime":         { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time after which TargetVelocity should be reached." },
+      "BrakePressureTarget":      { "type": "number", "description": "Target hydraulic or actuator line pressure (bar or Pa)." },
+      "BrakeForceTarget":         { "type": "number", "description": "Target clamp or actuator force (N)." },
+      "BrakeTorqueTarget":        { "type": "number", "description": "Target brake torque (N·m)." },
+      "DecelerationTarget":       { "type": "number", "description": "Target longitudinal deceleration (m/s²)." },
+      "RegenerativeBrakeFraction":{ "type": "number", "minimum": 0, "maximum": 1, "description": "Fraction [0..1] of braking to be provided by the regenerative system." },
+      "ABSAllow":                 { "type": "boolean", "description": "Indicates whether ABS is allowed to intervene during this command." },
+      "EmergencyBrakeFlag":       { "type": "boolean", "description": "Indicates that this is an autonomous emergency braking (AEB) request." },
+      "RampTime":                 { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Ramp-up/down time for achieving braking targets." } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                    "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Brake Command in a trusted data exchange context." },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Brake Command (plain text, max 2048 characters)." } } }

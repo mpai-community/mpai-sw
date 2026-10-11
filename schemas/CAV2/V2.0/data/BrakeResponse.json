@@ -1,0 +1,49 @@
+{ "$schema":                  "https://json-schema.org/draft/2020-12/schema",
+  "$id":                      "https://schemas.mpai.community/CAV2/V2.0/data/BrakeResponse.json",
+  "title":                    "Brake Response V2.0",
+  "type":                     "object",
+  "additionalProperties":     false,
+  "required":                 [ "Header", "BrakeResponseID", "BrakeID", "BrakeState" ],
+  "properties":               {
+
+    "Header":                 { "type": "string", "const": "CAV-BRR-V2.0", "description": "Brake Response Header – Standard CAV-BRR-Vx.y" },
+    "MInstanceID":            { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this Brake Response." },
+    "UEnvironmentID":         { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this Brake Response." },
+    "BrakeResponseID":        { "type": "string", "description": "Unique identifier of this Brake Response instance." },
+    "BrakeResponseTime":      { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this Brake Response was produced." },
+
+    "BrakeResponseSpaceTime": { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this Brake Response applies." },
+
+    "BrakeID":                { "type": "string", "description": "Identifier of the Brake producing this response." },
+
+    "BrakeState":             { "$ref": "https://schemas.mpai.community/CAV2/V2.0/data/BrakeStates.json", "description": "Operational state of the Brake (e.g., Applied, Released, Fault, Overheated)." },
+
+    "VelocityReached":        { "type": "number", "description": "Vehicle velocity (m/s) at BrakeResponseTime." },
+
+    "BrakePressure":          { "type": "number", "description": "Hydraulic or actuator pressure reported by the brake module (bar or Pa)." },
+
+    "BrakeForceApplied":      { "type": "number", "description": "Estimated caliper or actuator force applied (N)." },
+
+    "BrakeTorqueEstimate":    { "type": "number", "description": "Brake torque estimate derived from caliper force or EMB motor current (N·m)." },
+
+    "BrakeTemperature":       { "type": "number", "description": "Brake pad or disc temperature (°C)." },
+
+    "BrakePadWear":           { "type": "number", "minimum": 0, "maximum": 1, "description": "Remaining pad life as a fraction from 0.0 (fully worn) to 1.0 (new)." },
+
+    "ABSActivation":          { "type": "boolean", "description": "Indicates whether ABS/ESC is currently modulating brake pressure." },
+
+    "WheelSlipRatio":         { "type": "number", "description": "Slip ratio derived from wheel-speed sensors and vehicle-speed estimation." },
+
+    "BrakeEventDuration":     { "type": "number", "description": "Duration (ms) of the braking event from start to response time." },
+
+    "OverheatFlag":           { "type": "boolean", "description": "Indicates that brake thermal thresholds have been exceeded." },
+
+    "SensorDegradationFlag":  { "type": "boolean", "description": "Indicates degraded pad-wear or brake-temperature sensor behaviour." },
+
+    "LinePressureAnomaly":    { "type": "boolean", "description": "Indicates hydraulic or actuator pressure irregularities." },
+
+    "ErrorCode":              { "type": "string", "description": "Fault or diagnostic code reported by the brake subsystem." },
+
+    "DataXMData":             { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Brake Response in a trusted data exchange context." },
+    "DescrMetadata":          { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Brake Response (plain text, max 2048 characters)." } } }

@@ -1,0 +1,43 @@
+{ "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "https://schemas.mpai.community/AIF/V3.0/data/AIMMetadata.json",
+  "$id": "https://schemas.mpai.community/CAV2/V2.0/AIMs/MASResponseAnalysis.json",
+  "title": "MAS Response Analysis V2.0",
+
+  "Identifier":   { "ImplementerID": "/* String from IIDRA */", "ImplementationID": "/* String from Implementer */", "AIMName": "CAV-MRA-V2.0" },
+
+  "Header":       "CAV-MRA-V2.0",
+
+  "APIProfile":   "Basic",
+  "Description":  "This AIM analyses the responses from the mechanical subsystem and produces an AMS-MAS Message to the AMS.",
+
+  "ExternalPorts":  [
+    { "Name": "AMSMASMessageIn" , "Direction": "Input"  , "DataType": "CAV-AMM-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "SpatialAttitude" , "Direction": "Input"  , "DataType": "OSD-OSA-V1.5", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "BrakeResponse"   , "Direction": "Input"  , "DataType": "CAV-BRR-V2.0", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "MotorResponse"   , "Direction": "Input"  , "DataType": "CAV-MRP-V2.0", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "WheelResponse"   , "Direction": "Input"  , "DataType": "CAV-WHR-V2.0", "IsOptional": true, "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "RoadState"       , "Direction": "Input"  , "DataType": "CAV-RDS-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false },
+    { "Name": "AMSMASMessageOut", "Direction": "Output" , "DataType": "CAV-AMM-V2.0",  "Technology": "Software", "Protocol": "", "IsRemote": false }
+  ],
+
+  "SubAIMs":  [ ],
+
+  "Topology":  [ ],
+
+  "Implementations":  [
+    {"ImplementationURI": "/* URI storing Implementation */", "BinaryName": "/* BinaryName */", "Architecture": "/* x86 | x86-64 | ARM | ARM64 | MIPS | RISC-V */", "OperatingSystem": "/* Windows | Linux | MacOS | Debian | Ubuntu | RedHat | Android | Zephyr | RTOS | Oniro | iOS */", "Version": "/* Version */", "Source": "/* AIMStorage | MPAIStore | AIMURL */", "Destination": "/* Destination URI */"}
+  ],
+
+  "ResourcePolicies":  [
+    {"Name": "Memory", "Minimum": "/* GB */", "Maximum": "/* GB */", "Request": "/* GB */"},
+    {"Name": "CPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer, 0=all */"},
+    {"Name": "CPU:Class", "Minimum": "/* Low | Medium | High */", "Maximum": "/* Low | Medium | High */", "Request": "/* Low | Medium | High */"},
+    {"Name": "GPU:Number", "Minimum": "/* integer, 0=all */", "Maximum": "/* integer, 0=all */", "Request": "/* integer, 0=all */"},
+    {"Name": "GPU:CUDA:Class", "Minimum": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */", "Maximum": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */", "Request": "/* SM10|SM11|SM12|SM13|SM20|SM21|SM30|SM32|SM35|SM37|SM50|SM52|SM53|SM60|SM61|SM62|SM70|SM72|SM75|SM80|SM86|SM87|SM90 */"},
+    {"Name": "GPU:CUDA:FrameBuffer", "Minimum": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */", "Maximum": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */", "Request": "/* float_GB_GDDR|GDDR2|GDDR3|GDDR4|GDDR5|GDDR5X|GDDR6|GDDR6X */"},
+    {"Name": "GPU:CUDA:MemorySpeed", "Minimum": "/* float_GHz */", "Maximum": "/* float_GHz */", "Request": "/* float_GHz */"}
+  ],
+
+  "DataXMData":  {},
+
+  "Documentation":  [{ "Type": "Tutorial", "URI": "https://mpai.community/standards/mpai-cav/" }] }

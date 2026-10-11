@@ -1,0 +1,32 @@
+{ "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "$id":                  "https://schemas.mpai.community/CAV2/V2.0/data/GNSSObject.json",
+  "title":                "GNSS Object V2.0",
+  "type":                 "object",
+  "additionalProperties": false,
+  "required":             [ "Header", "GNSSObjectID", "GNSSData" ],
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "CAV-GNO-V2.0",
+                            "description": "GNSS Object Header – Standard CAV-GNO-Vx.y" },
+    "MInstanceID":        { "type": "string", "description": "Identifier of the M-Instance (Virtual Space) associated with this GNSS Object." },
+    "UEnvironmentID":     { "type": "string", "description": "Identifier of the U-Environment (Real Space) associated with this GNSS Object." },
+    "GNSSObjectID":       { "type": "string", "description": "Unique identifier of this GNSS Object instance." },
+    "GNSSObjectTime":     { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Time this GNSS Object was produced." },
+
+    "GNSSObjectSpaceTime":{ "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Space/Time where/when this GNSS Object applies." },
+
+    "GNSSData":           { "type": "array", "minItems": 1, "description": "GNSS Data from a Global Navigation Satellite System receiver.", "items": { "oneOf": [
+                          { "type": "object", "additionalProperties": false, "required": [ "DataLength", "DataURI" ], "properties": {
+      "DataLength":       { "type": "integer", "minimum": 0, "description": "Length of the GNSS Data." },
+      "DataURI":          { "type": "string", "format": "uri", "description": "URI reference to the GNSS Data." } } },
+                          { "type": "object", "additionalProperties": false, "required": [ "Data" ], "properties": {
+      "Data":             { "type": "string", "description": "Inline GNSS Data." } } },
+                          { "type": "object", "additionalProperties": false, "required": [ "DataID" ], "properties": {
+      "DataID":           { "type": "string", "description": "Identifier referencing GNSS Data stored elsewhere." } } } ] } },
+
+    "GNSSDataQualifier":  { "$ref": "https://schemas.mpai.community/TFA/V1.5/data/GNSSQualifier.json",
+                            "description": "Qualifier providing information on Sub-Types, Formats, and Attributes of GNSS Data." },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                            "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this GNSS Object in a trusted data exchange context." },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the GNSS Object (plain text, max 2048 characters)." } } }

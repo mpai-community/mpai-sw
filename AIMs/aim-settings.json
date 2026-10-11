@@ -101,5 +101,32 @@
   },
   "1MMC-ESD-V2.5-I01": {
     "EcapaModel": "Models\\ecapa-tdnn.onnx"
+  },
+  "1CAE-ASI-V2.5-I01": {
+    "YamnetModel": "Models\\yamnet.onnx",
+    "YamnetClassMap": "Models\\yamnet_class_map.csv"
+  },
+  "1CAE-AII-V2.5-I01": {
+    "YamnetModel": "Models\\yamnet.onnx",
+    "YamnetClassMap": "Models\\yamnet_class_map.csv"
+  },
+  "1CAV-SAG-V2.0-I01": {
+    "GnssWeight": "0.1"
+  },
+  "1OSD-BVS-V1.5-I02": {
+    "Model": "Models\\yolox_s.onnx",
+    "SHA256:Model": "C5C2D13E59AE883E6AF3B45DAEA64AF4833A4951C92D116EC270D9DDBE998063",
+    "FocalPixels": "500",
+    "CameraHeight": "1.5",
+    "HorizonRow": "140",
+    "ImageWidth": "640",
+    "LaneHalfWidth": "1.75",
+    "AlertDistance": "15",
+    "AlertTime": "2",
+    "ScoreThreshold": "0.3"
+  },
+  "1CAV-BED-V2.0-I01": {
+    "Gate": "3",
+    "DropAfterMisses": "5"
   }
 }

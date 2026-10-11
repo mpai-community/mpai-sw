@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The Offline Map of the CAV (M3233 3.1): way points, road segments, the Route of
+       least time, a Route as a line to follow, the map as GeoJSON in an Offline Map
+       Object. Read by the AIMs of the AMS, made by the simulation of the User Agent. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

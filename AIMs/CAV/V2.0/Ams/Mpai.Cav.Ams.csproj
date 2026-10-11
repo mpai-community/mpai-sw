@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The AIMs of Stage 1 of the Autonomous Motion Subsystem (M3233): Full
+       Environment Description, Route, Path and Motion Selection Planning, Traffic
+       Obstacle Avoidance, AMS Memory, and the provider that builds them. Each runs
+       continuously on its own Ports. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\Map\Mpai.Cav.Map.csproj" />
+    <ProjectReference Include="..\Ess\Mpai.Cav.Ess.csproj" />
+  </ItemGroup>
+
+</Project>

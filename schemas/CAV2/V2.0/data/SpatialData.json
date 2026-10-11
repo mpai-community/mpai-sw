@@ -1,0 +1,31 @@
+{ "$schema":                      "https://json-schema.org/draft/2020-12/schema",
+  "$id":                          "https://schemas.mpai.community/CAV2/V2.0/data/SpatialData.json",
+  "title":                        "Spatial Data V2.0",
+  "description":                  "Spatial Data produced by the Motion Actuation Subsystem describing the Spatial Attitude of the Connected Autonomous Vehicle.",
+  "type":                         "object",
+  "additionalProperties":         false,
+  "required":                     [ "Header", "SpatialDataID", "SpaceTime", "SpatialData" ],
+  "properties":                   {
+
+    "Header":                     { "type": "string", "const": "CAV-SPD-V2.0", "description": "Spatial Data Header – Standard CAV-SPD-Vx.y." },
+    "SpatialDataID":              { "type": "string", "description": "Unique identifier of this Spatial Data instance." },
+    "SpaceTime":                  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json", "description": "Spatial Attitude and Time of this Spatial Data instance." },
+
+    "SpatialData":                { "type": "object", "additionalProperties": false, "required": [ "OdometerData", "SpeedometerData", "AccelerometerData", "InclinometerData", "GyroscopeData" ],
+                                    "description": "Set of Spatial Data measurements.", "properties": {
+      "OdometerData":             { "type": "number", "description": "Distance travelled by the CAV, expressed in metres (m)." },
+      "SpeedometerData":          { "type": "number", "description": "Speed of the CAV, expressed in metres/second (m/s)." },
+      "AccelerometerData":        { "type": "number", "description": "Acceleration of the CAV, expressed in metres/second/second (m/s²)." },
+      "InclinometerData":         { "type": "object", "additionalProperties": false, "required": [ "LongitudinalInclination", "LateralInclination" ],
+                                    "description": "Inclination of the CAV in the direction of travel and perpendicular to it, in degrees (°).", "properties": {
+        "LongitudinalInclination":{ "type": "number", "description": "CAV inclination in the direction of travel, in degrees (°)." },
+        "LateralInclination":     { "type": "number", "description": "CAV inclination perpendicular to the direction of travel, in degrees (°)." } } },
+      "GyroscopeData":            { "type": "object", "additionalProperties": false, "required": [ "YawRate" ],
+                                    "description": "Rate at which the CAV turns about its axes, in degrees/second (°/s), positive anticlockwise.", "properties": {
+        "YawRate":                { "type": "number", "description": "Rate of turn about the vertical axis, in degrees/second (°/s), positive to the left." },
+        "PitchRate":              { "type": "number", "description": "Rate of turn about the lateral axis, in degrees/second (°/s)." },
+        "RollRate":               { "type": "number", "description": "Rate of turn about the longitudinal axis, in degrees/second (°/s)." } } } } },
+
+    "DataXMData":                 { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json",
+                                    "description": "MPAI-PTF Data Exchange Metadata providing provenance, authorisation, legal, security, and confidence information associated with this Spatial Data instance in a trusted data exchange context." },
+    "DescrMetadata":              { "type": "string", "maxLength": 2048, "description": "Human-readable descriptive metadata of the Spatial Data instance (plain text, max 2048 characters)." } } }

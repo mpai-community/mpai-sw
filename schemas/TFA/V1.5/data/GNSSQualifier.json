@@ -1,0 +1,24 @@
+{ "$id":                  "https://schemas.mpai.community/TFA/V1.5/data/GNSSQualifier.json",
+  "$schema":              "https://json-schema.org/draft/2020-12/schema",
+  "title":                "GNSS Qualifier V1.5",
+  "description":          "Qualifier describing the structure, content format, subtype and attributes of GNSS data.",
+  "type":                 "object",
+  "required":             [ "Header", "GNSSQualifierID", "SubTypes", "Formats" ],
+  "additionalProperties": false,
+  "properties":           {
+
+    "Header":             { "type": "string", "const": "TFA-GNQ-V1.5" },
+    "MInstanceID":        { "type": "string" },
+    "UEnvironmentID":     { "type": "string" },
+    "GNSSQualifierID":    { "type": "string" },
+    "GNSSQualifierTime":  { "$ref": "https://schemas.mpai.community/OSD/V1.5/data/SimpleTime.json" },
+
+    "SubTypes":            { "type": "object", "additionalProperties": false },
+
+    "Formats":             { "type": "object", "additionalProperties": false, "properties": {
+      "ContentFormat":    { "$ref": "https://schemas.mpai.community/TFA/V1.5/formats/GNSSContentFormats.json" } } },
+
+    "Attributes":         { "type": "object", "additionalProperties": false },
+
+    "DataXMData":         { "$ref": "https://schemas.mpai.community/PTF/V1.0/data/DataExchangeMetadata.json" },
+    "DescrMetadata":      { "type": "string", "maxLength": 2048 } } }

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Human-CAV Interaction in the CAV (M3243): the provider that builds the Sub-AIMs
+       of 1CAV-HCI-V2.0-I01 - those of MMC, CAE, CVE, OSD and PAF the HCI L3 names. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\AIF\Controller\AIF.Controller.csproj" />
+    <ProjectReference Include="..\..\..\..\AIF\Store\AIF.Store.csproj" />
+    <ProjectReference Include="..\..\..\Core\Mpai.Core.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\BAS\Mpai.Osd.Bas.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\BVS\Mpai.Osd.Bvs.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\BLS\Mpai.Osd.Bls.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\AVA\Mpai.Osd.Ava.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\VII\Mpai.Osd.Vii.csproj" />
+    <ProjectReference Include="..\..\..\OSD\V1.5\VisualScene\Mpai.Osd.VisualScene.csproj" />
+    <ProjectReference Include="..\..\..\CAE3\V1.0\ASI\Mpai.Cae.Asi.csproj" />
+    <ProjectReference Include="..\..\..\CAE3\V1.0\AII\Mpai.Cae.Aii.csproj" />
+    <ProjectReference Include="..\..\..\CAE3\V1.0\QCV\Mpai.Cae.Qcv.csproj" />
+    <ProjectReference Include="..\..\..\CVE\V1.0\VSI\Mpai.Cve.Vsi.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\FIR\Mpai.Paf.Fir.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\SIR\Mpai.Mmc.Sir.csproj" />
+    <ProjectReference Include="..\..\..\HCI\IDR\Mpai.Hci.Idr.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\ASR\Mpai.Mmc.Asr.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\NLU\Mpai.Mmc.Nlu.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\SPE\Mpai.Mmc.Spe.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\FPE\Mpai.Paf.Fpe.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\PMX\Mpai.Mmc.Pmx.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\EDP\Mpai.Mmc.Edp.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\PSD\Mpai.Paf.Psd.csproj" />
+    <ProjectReference Include="..\..\..\MMC\V2.5\TTS\Mpai.Mmc.Tts.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\GFD\Mpai.Paf.Gfd.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\GBD\Mpai.Paf.Gbd.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\SAS\Mpai.Paf.Sas.csproj" />
+    <ProjectReference Include="..\..\..\PAF\V1.6\SAR\Mpai.Paf.Sar.csproj" />
+  </ItemGroup>
+
+</Project>
