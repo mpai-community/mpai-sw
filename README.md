@@ -4,11 +4,15 @@ Reference software for the standards of MPAI - Moving Picture, Audio and Data
 Coding by Artificial Intelligence (<https://mpai.community>). Contact:
 secretariat@mpai.community. Licence: BSD-3-Clause (see `LICENSE`).
 
-This repository holds **Thalia**, the avatar of MPAI as a Service: a **Service** that offers AI
-applications over the network, and a **client** in your web browser through which a person uses them. Every
-application presents a 3-D Speaking Avatar that listens, looks, answers and shows expression.
+This repository holds the software of an MPAI platform: the **AI Framework**, the **AI Modules** (AIMs) that every application
+shares, and the **User Agents** - the applications a person uses. Two groups of applications are built on it:
 
-| App | Name | What it does |
+- **Thalia**, the avatar of MPAI as a Service: a **Service** that offers AI applications over the network and a **client** in your
+  web browser. Every application presents a 3-D Speaking Avatar that listens, looks, answers and shows expression. Available.
+- **Athena** (preliminary name): one interface, on your own computer, for driving simulations of a Connected Autonomous Vehicle (CAV).
+  The CAV's AIMs are in this repository; the application is not yet released.
+
+| Thalia App | Name | What it does |
 |---|---|---|
 | **MAD** | Multimodal Conversation | A spoken or typed conversation with the avatar. |
 | **AMQ** | Multimodal Question Answering | Show a picture, ask about it, and the avatar answers. |
@@ -18,10 +22,11 @@ application presents a 3-D Speaking Avatar that listens, looks, answers and show
 
 ## Which guide to read
 
-- **To use Thalia:** the [User Guide](docs/Thalia-User-Guide.md) - install her on your computer, start her and talk to her.
-- **To build your own Thalia:** the [Technical Guide](docs/Thalia-Technical-Guide.md) - how she is built, how to build and run
-  the software, how to change it or add an App. The AI models she needs, and where to download each, are in
-  [Thalia - Models](docs/Thalia-Models.md).
+- **To use it:** the [User Guide](docs/User-Guide.md). For Thalia it leads to the [Thalia User Guide](docs/Thalia-User-Guide.md):
+  install her, start her and talk to her.
+- **To build, change or extend it:** the [Developer Guide](docs/Developer-Guide.md): the platform, which AIMs serve which application,
+  how to build and add an AIM, a Module, an App. For Thalia in depth, the [Technical Guide](docs/Thalia-Technical-Guide.md); the AI
+  models she needs, and where to download each, are in [Thalia - Models](docs/Thalia-Models.md).
 
 ## The standards it implements
 
@@ -30,6 +35,7 @@ application presents a 3-D Speaking Avatar that listens, looks, answers and show
 - **MPAI-MMC** - Multimodal Conversation: <https://mpai.community/standards/mpai-mmc/>
 - **MPAI-PAF** - Portable Avatar Format: <https://mpai.community/standards/mpai-paf/>
 - **MPAI-OSD** - Object and Scene Description: <https://mpai.community/standards/mpai-osd/>
+- **MPAI-CAV** - Connected Autonomous Vehicle: <https://mpai.community/standards/mpai-cav/> (with **MPAI-CAE**, **MPAI-CVE**)
 
 ## The ideas in one page
 
@@ -61,12 +67,12 @@ icon. The work is done by the Module on the Service.
 | Folder | What it holds |
 |---|---|
 | `AIF/` | The AI Framework: the Controller, the Store of L3s, the Metadata and PortData checks, Shared Storage, Trust. |
-| `AIMs/` | The AIMs (`MMC`, `OSD`, `PAF`, `HCI`, `Onnx`), the shared data types (`Core/`), the providers that build each Module's AIMs (`Providers/`), the L3s (`AMDs/`) and the settings (`aim-settings.json`). |
+| `AIMs/` | The AIMs (`MMC`, `OSD`, `PAF`, `HCI`, `CAV`, `CAE3`, `CVE`, `Onnx`), the shared data types (`Core/`), the providers that build each Module's AIMs (`Providers/`), the L3s (`AMDs/`) and the settings (`aim-settings.json`). |
 | `MAS/` | The MPAI-MAS **Service** (`Service/`) and the library it is made of (`Server/`), with the scripts to install it on Linux and publish it on Windows. |
 | `UserAgent/` | The person's side: the **browser client** (`Clients/Browser`), the workflow interpreter (`Rca`, `Wdl`), the Controller API across the network (`Remote`), the client's own workflow (`Orchestration/`) and the avatar (`Assets/`). |
 | `Apps/` | One folder per App: its workflow, `app.json` and icon. |
 | `schemas/` | The JSON Schemas of the MPAI Data Types and the L2 metadata of the AIMs. |
-| `docs/` | The User Guide, the Technical Guide, and the list of AI models with where to download each. |
+| `docs/` | The User Guide, the Developer Guide, Thalia's guides, and the list of AI models with where to download each. |
 | `Models/`, `Access/`, `SharedStorage/` | Where the models, the Controller's static data and the governed storage go on your machine. They are not distributed (see below). |
 
 **The folder can be put anywhere.** The software finds its own root by going up
