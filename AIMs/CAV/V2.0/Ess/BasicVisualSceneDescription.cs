@@ -21,6 +21,13 @@ namespace Mpai.Cav.Ess;
 //  - an Alert when an object in the ego's lane is nearer than AlertDistance, or will
 //    be reached within AlertTime at the closing speed the prior Basic Environment
 //    Descriptors give for the object there.
+// THE CAMERA THAT LOOKS BACK (M3253): a picture says where its camera is looking by the orientation in the Space-Time of
+// the Basic Visual Object - its yaw, 0 along the CAV's heading, 180 back along the road. The settings of that camera
+// are those with the prefix Rear (RearFocalPixels, RearCameraHeight, RearHorizonRow, RearImageWidth, RearCameraAhead,
+// RearCameraLeft); without them a picture that looks back is not described. What it gives the Basic Environment
+// Description is where the vehicles behind are - the distance of the front of each from the ego's front, negative:
+// behind it - and how far to the left of the ego, the Point of View of its descriptors turned back the same way; it
+// gives no Alert: what comes up behind is not in the ego's way.
 // Every frame is described: a frame arriving while another is described waits
 // (Block, in its L3) - the CAV is to perform, not to keep up (M3233).
 public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDisposable
@@ -30,7 +37,10 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
     private static readonly HashSet<string> RoadUsers = ["car", "truck", "bus", "motorcycle", "bicycle", "person"];
 
     private readonly YoloxObjectDetector detector;
-    private readonly double focal, height, horizon, width, laneHalf, alertDistance, alertTime, cameraAhead, cameraLeft;
+    private sealed record Camera(double Focal, double Height, double Horizon, double Width, double Ahead, double Left);
+    private readonly Camera front;
+    private readonly Camera? back;
+    private readonly double laneHalf, alertDistance, alertTime;
     private JsonNode? prior;
     private long frames, alerts;
 
@@ -40,19 +50,27 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
         var model = settings.TryGetValue("Model", out var m) ? m : @"Models\yolox_s.onnx";
         detector = new YoloxObjectDetector(Path.IsPathRooted(model) ? model : Path.Combine(root, model),
                                            scoreThreshold: (float)EssJson.Setting(settings, "ScoreThreshold", 0.3));
-        focal = EssJson.Setting(settings, "FocalPixels", 500);
-        height = EssJson.Setting(settings, "CameraHeight", 1.5);
-        horizon = EssJson.Setting(settings, "HorizonRow", 140);
-        width = EssJson.Setting(settings, "ImageWidth", 640);
+        front = Look("", settings);
+        back = settings.ContainsKey("RearFocalPixels") ? Look("Rear", settings) : null;
         // Where the camera is, from the point the distances are given to - the ego's front - and its centreline:
         // CameraAhead metres ahead of that point (negative: behind it), CameraLeft metres to the left. Zero, as
         // the camera of the first simulation was, they change nothing; a rig whose cameras are not there says so.
-        cameraAhead = EssJson.Setting(settings, "CameraAhead", 0);
-        cameraLeft = EssJson.Setting(settings, "CameraLeft", 0);
         laneHalf = EssJson.Setting(settings, "LaneHalfWidth", 1.75);
         alertDistance = EssJson.Setting(settings, "AlertDistance", 15);
         alertTime = EssJson.Setting(settings, "AlertTime", 2);
     }
+
+    // A camera: its focal length (px), its height above the road, the row of the horizon, the width of its picture, and where
+    // it is - CameraAhead metres ahead of the ego's front (negative: behind it), CameraLeft metres to the left of its centreline.
+    // Zero, as the camera of the first simulation was, they change nothing; a rig whose cameras are not there says so.
+    private static Camera Look(string prefix, IReadOnlyDictionary<string, string> settings) => new(
+        EssJson.Setting(settings, prefix + "FocalPixels", 500), EssJson.Setting(settings, prefix + "CameraHeight", 1.5),
+        EssJson.Setting(settings, prefix + "HorizonRow", 140), EssJson.Setting(settings, prefix + "ImageWidth", 640),
+        EssJson.Setting(settings, prefix + "CameraAhead", 0), EssJson.Setting(settings, prefix + "CameraLeft", 0));
+
+    // Whether the picture looks back: the yaw of its Space-Time, more than a quarter turn from the CAV's heading.
+    private static bool LooksBack(JsonNode frame) =>
+        EssJson.Vector(frame["BasicVisualObjectTime"]?["SpatialAttitude1"]?["Orientation"]?["Orientation"]) is { } o && Math.Abs(Math.IEEERemainder(o.Z, 360)) > 90;
 
     public string InstanceId { get; }
     public Task<Message> ProcessAsync(Message message) => throw new NotSupportedException("OSD-BVS for the ESS runs continuously.");
@@ -69,12 +87,14 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
             var image = Image(frame, ports);
             if (image is null) { context.Report("A frame without image data was not described."); continue; }
             var ms = EssJson.Milliseconds(frame["BasicVisualObjectTime"]?["Time"]) ?? ports.Now.ToUnixTimeMilliseconds();
+            var rear = LooksBack(frame);
+            if (rear && back is null) { context.Report("A frame from a camera that looks back, and no settings for it: not described."); continue; }
 
-            var objects = Describe(image);
+            var objects = Describe(image, rear ? back! : front, rear);
             var id = $"BVS{++frames:D6}";
-            await ports.WriteAsync(Descriptors, 1, SceneDescriptors(id, ms, objects).ToJsonString());
+            await ports.WriteAsync(Descriptors, 1, SceneDescriptors(id, ms, objects, rear ? back! : front, rear).ToJsonString());
 
-            var urgent = objects.Where(o => Urgent(o)).ToList();
+            var urgent = rear ? new List<Seen>() : objects.Where(o => Urgent(o)).ToList();
             if (urgent.Count > 0)
                 await ports.WriteAsync(Alert, 1, new JsonObject
                 {
@@ -88,8 +108,11 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
 
     public sealed record Seen(int Index, string Class, double Score, double Ahead, double Left, double AheadAccuracy, ObjectDetection Box);
 
-    public IReadOnlyList<Seen> Describe(byte[] image)
+    public IReadOnlyList<Seen> Describe(byte[] image) => Describe(image, front, false);
+
+    private IReadOnlyList<Seen> Describe(byte[] image, Camera camera, bool rear)
     {
+        var (focal, height, horizon, width, cameraAhead, cameraLeft) = camera;
         var found = detector.Detect(image).Where(d => RoadUsers.Contains(d.ClassName)).OrderByDescending(d => d.Score).ToList();
         var kept = new List<ObjectDetection>();
         foreach (var d in found)
@@ -101,8 +124,9 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
             var rows = d.Y2 - horizon;
             if (rows < 1) continue;                                   // at or above the horizon: not on the road
             var fromCamera = focal * height / rows;
-            var left = -(d.CentreX - width / 2) * fromCamera / focal + cameraLeft;
-            var ahead = fromCamera + cameraAhead;
+            // Looking back, the picture's right is the ego's left, and what is further from the camera is further behind.
+            var left = (rear ? 1 : -1) * (d.CentreX - width / 2) * fromCamera / focal + cameraLeft;
+            var ahead = rear ? cameraAhead - fromCamera : fromCamera + cameraAhead;
             seen.Add(new Seen(seen.Count + 1, d.ClassName, d.Score, ahead, left, fromCamera * fromCamera / (focal * height), d));
         }
         return seen;
@@ -134,7 +158,7 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
 
     // ---- the Data Types ------------------------------------------------------------
 
-    private JsonObject SceneDescriptors(string id, long ms, IReadOnlyList<Seen> objects) => new()
+    private JsonObject SceneDescriptors(string id, long ms, IReadOnlyList<Seen> objects, Camera camera, bool rear) => new()
     {
         ["Header"] = Descriptors, ["MInstanceID"] = "", ["BasicVisualSceneDescriptorsID"] = id,
         ["BVSDescriptorsSpaceTime"] = EssJson.SpaceTime(id + "-ST", ms),
@@ -143,7 +167,7 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
         {
             ["Header"] = "OSD-OPV-V1.5", ["PointOfViewID"] = $"{id}-POV",
             ["General"] = new JsonObject { ["CoordType"] = "Cartesian", ["ObjectType"] = "Generic", ["MediaType"] = "Visual" },
-            ["CartPosition"] = new JsonArray(0.0, 0.0, height), ["Orientation"] = new JsonArray(0.0, 0.0, 0.0)
+            ["CartPosition"] = new JsonArray(0.0, 0.0, camera.Height), ["Orientation"] = new JsonArray(0.0, 0.0, rear ? 180.0 : 0.0)
         },
         ["VisualObjectCount"] = objects.Count,
         ["BasicVisualSceneDescriptors"] = new JsonArray(objects.Select(o => (JsonNode)new JsonObject
@@ -154,7 +178,7 @@ public sealed class BasicVisualSceneDescription : IAimProcessor, IAimRunner, IDi
     };
 
     private JsonObject Placed(string id, long ms, Seen o) =>
-        EssJson.Attitude(id + "-SA", ms, (o.Ahead, o.Left, 0), (o.AheadAccuracy, o.AheadAccuracy * Math.Abs(o.Left) / o.Ahead + 0.1, 0.1), (0, 0, 0));
+        EssJson.Attitude(id + "-SA", ms, (o.Ahead, o.Left, 0), (o.AheadAccuracy, o.AheadAccuracy * Math.Abs(o.Left) / Math.Abs(o.Ahead) + 0.1, 0.1), (0, 0, 0));
 
     private JsonObject VisualObject(string id, long ms, Seen o) => new()
     {

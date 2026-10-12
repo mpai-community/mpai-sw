@@ -23,7 +23,7 @@ public sealed class AmsProvider : IAimProvider
     {
         Fed => new FullEnvironmentDescription(aimName, settings),
         Rsp => new RouteSelectionPlanning(aimName),
-        Psp => new PathSelectionPlanning(aimName),
+        Psp => new PathSelectionPlanning(aimName, settings),
         Msp => new MotionSelectionPlanning(aimName, settings),
         Toa => new TrafficObstacleAvoidance(aimName, settings),
         Amm => new AmsMemory(aimName, moduleStorage),

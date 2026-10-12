@@ -148,6 +148,7 @@ public sealed class MotionSelectionPlanning(string instanceId, IReadOnlyDictiona
             var p = EssJson.Vector(b["SpatialAttitude"]?["Position"]?["CartPosition"]);
             var v = EssJson.Vector(b["SpatialAttitude"]?["Position"]?["CartVelocity"]);
             if (p is null || p.Value.X <= 0) continue;
+            if (speed + (v?.X ?? 0) < -1) continue;       // coming the other way: not followed - the Path Selection Planning meets it, or does not pull out
             ahead.Add((p.Value.X, Math.Max(0, speed + (v?.X ?? 0))));
         }
         ahead.Sort((x, y) => x.Gap.CompareTo(y.Gap));

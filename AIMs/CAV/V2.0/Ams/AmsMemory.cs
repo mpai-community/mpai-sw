@@ -31,16 +31,12 @@ public sealed class AmsMemory(string instanceId, IRuledStorage? storage) : IAimP
         {
             if (await ports.ReadAsync(port.DataType, 1, 0) is not { } m) continue;
             var json = JsonNode.Parse(m.Json)!;
-            if (port.DataType == AmsTypes.Fed) { fed = json; continue; }   // what decisions are taken on, not a decision
+            if (port.DataType != AmsTypes.Message) { Absorb(port.DataType, json); continue; }
+            // An AMS-MAS Message: the AMS Data of its instant. What was given out before it - the Route, the Path, the
+            // Alerts, the Full Environment Descriptors - is taken in first, whatever order the ports were served in.
+            foreach (var type in new[] { AmsTypes.Route, AmsTypes.Path, AmsTypes.Alert, AmsTypes.Fed })
+                while (await ports.ReadAsync(type, 1, 0) is { } earlier) Absorb(type, JsonNode.Parse(earlier.Json)!);
             Keep(port.DataType, json);
-            switch (port.DataType)
-            {
-                case AmsTypes.Route: routeId = json["RouteID"]?.GetValue<string>(); continue;
-                case AmsTypes.Path: path = json; continue;
-                case AmsTypes.Alert: alerts.Add(json); continue;
-                case AmsTypes.Trajectory: continue;
-            }
-            // An AMS-MAS Message: the AMS Data of its instant.
             var ms = AmsTypes.Ms(json["AMSMASMessageTime"]);
             var id = $"AMD{++count:D6}";
             var data = new JsonObject
@@ -55,6 +51,18 @@ public sealed class AmsMemory(string instanceId, IRuledStorage? storage) : IAimP
             if (fed is not null) data["FED"] = fed.DeepClone();
             data["AMSMASMessage"] = json.DeepClone();
             await ports.WriteAsync(AmsTypes.Data, 1, data.ToJsonString());
+        }
+    }
+
+    private void Absorb(string dataType, JsonNode json)
+    {
+        if (dataType == AmsTypes.Fed) { fed = json; return; }              // what decisions are taken on, not a decision
+        Keep(dataType, json);
+        switch (dataType)
+        {
+            case AmsTypes.Route: routeId = json["RouteID"]?.GetValue<string>(); break;
+            case AmsTypes.Path: path = json; break;
+            case AmsTypes.Alert: alerts.Add(json); break;
         }
     }
 

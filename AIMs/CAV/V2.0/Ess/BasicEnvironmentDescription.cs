@@ -25,6 +25,11 @@ namespace Mpai.Cav.Ess;
 //    is, and is dropped when the ego reaches it;
 //  - the Basic Environment Descriptors V2.0 on the ego frame, given out and returned
 //    to the describer as its prior;
+//  - THE CAMERAS THAT LOOK BACK (M3253): the descriptors of a camera that looks back - the Point of View of the descriptors
+//    turned half a turn - say what is behind, X negative, and come every so often, not at each frame. Once one has come,
+//    each stream is matched to the tracks of its own side only (the front's to those not behind the ego's front, the rear's
+//    to those not ahead of it) and counts the misses of those: a track the front camera loses beside the ego is the rear's to
+//    keep, and the other way. The rear's descriptors are fused, and go out with the next of the front's;
 //  - where no descriptors come for Quiet milliseconds of the ego's time (1 s: longer
 //    than a frame takes to be described, and than its MaxAge) - a camera
 //    stopped - the tracks predicted and a miss counted for each, and the
@@ -59,7 +64,8 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
     private readonly double laneHalf = EssJson.Setting(settings, "LaneHalfWidth", 1.75);
     private readonly List<Track> tracks = [];
     private JsonNode? ego, weather;
-    private long? lastMs, lastGiven, lastDescribed;
+    private long? lastMs, lastGiven, lastDescribed, lastFront, lastRear;
+    private bool rearHeard;
     private long tracksMade, instances;
 
     public string InstanceId { get; } = instanceId;
@@ -79,7 +85,7 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
                     if (EssJson.Milliseconds(json!["SpatialAttitudeTime"]) is { } now && lastDescribed is { } described && now - described >= quiet
                         && (lastGiven is not { } given || now - given >= 100))
                     {
-                        Fuse(null, now);
+                        Fuse(null, now, false);
                         await Give(ports, now);
                     }
                     continue;
@@ -87,9 +93,11 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
                 case Full: continue;                                 // other CAVs' objects: a later stage
             }
             var ms = EssJson.Milliseconds(json!["BVSDescriptorsSpaceTime"]?["Time"]) ?? ports.Now.ToUnixTimeMilliseconds();
-            lastDescribed = ms;
-            Fuse(json!, ms);
-            await Give(ports, ms);
+            var behind = EssJson.Vector(json!["UserPoV"]?["Orientation"]) is { } o && Math.Abs(Math.IEEERemainder(o.Z, 360)) > 90;
+            if (!behind) lastDescribed = ms;
+            rearHeard |= behind;
+            Fuse(json!, ms, behind);
+            if (!behind) await Give(ports, ms);
         }
     }
 
@@ -101,10 +109,14 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
     }
 
     // What the descriptors say at ms; with none, only the prediction and the misses.
-    private void Fuse(JsonNode? descriptors, long ms)
+    private void Fuse(JsonNode? descriptors, long ms, bool behind)
     {
-        var dt = lastMs is { } l ? Math.Max(0.001, (ms - l) / 1000.0) : 0;
+        var dt = lastMs is { } l ? (ms == l ? 0 : Math.Max(0.001, (ms - l) / 1000.0)) : 0;
         lastMs = ms;
+        // How long since this stream last spoke: what each camera tells of a track is told every so often.
+        var dtStream = (behind ? lastRear : lastFront) is { } sl ? Math.Max(0.001, (ms - sl) / 1000.0) : 0;
+        if (descriptors is not null) { if (behind) lastRear = ms; else lastFront = ms; }
+        else dtStream = dt;
         var egoSpeed = EgoSpeed();
         foreach (var t in tracks)
         {
@@ -118,7 +130,7 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
             }
         }
 
-        var free = new HashSet<Track>(tracks);
+        var free = new HashSet<Track>(tracks.Where(t => !rearHeard || descriptors is null || (behind ? t.X < 1 : t.X > -1)));
         var id = descriptors?["BasicVisualSceneDescriptorsID"]?.GetValue<string>();
         foreach (var entry in descriptors?["BasicVisualSceneDescriptors"]?.AsArray() ?? [])
         {
@@ -140,7 +152,7 @@ public sealed class BasicEnvironmentDescription(string instanceId, IReadOnlyDict
                 free.Remove(track);
                 double rx = p.X - track.X, ry = p.Y - track.Y;
                 track.X += Alpha * rx; track.Y += Alpha * ry;
-                if (dt > 0) { track.Vx += Beta * rx / dt; track.Vy += Beta * ry / dt; }
+                if (dtStream > 0) { track.Vx += Beta * rx / dtStream; track.Vy += Beta * ry / dtStream; }
                 track.Existence += (1 - track.Existence) * 0.3;
             }
             track.Class = cls; track.Score = score; track.Misses = 0; track.Last = ms;

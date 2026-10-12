@@ -77,6 +77,7 @@ public sealed class TrafficObstacleAvoidance(string instanceId, IReadOnlyDiction
             var p = EssJson.Vector(o!["BasicEnvironmentObject"]!["SpatialAttitude"]?["Position"]?["CartPosition"]);
             var v = EssJson.Vector(o["BasicEnvironmentObject"]!["SpatialAttitude"]?["Position"]?["CartVelocity"]);
             if (p is null || p.Value.X <= 0 || (gap is not null && p.Value.X >= gap)) continue;
+            if (speed + (v?.X ?? 0) < -1) continue;       // coming the other way: the Path Selection Planning's to meet, or not to pull out
             (gap, closing) = (p.Value.X, -(v?.X ?? 0));
         }
         var grip = friction is { } mu ? mu * G : double.PositiveInfinity;
